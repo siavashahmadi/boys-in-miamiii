@@ -13,7 +13,7 @@ function decorate(p: Pitch, whoami: string | null) {
   return {
     cat, pending, voted,
     votes: p.voters.length,
-    badge: pending ? "⏳ AWAITING SIA'S BLESSING" : '✅ LOCKED IN',
+    badge: pending ? '⏳ AWAITING APPROVAL' : '✅ LOCKED IN',
     badgeBg: pending ? 'var(--c-gold-s)' : 'var(--c-mint-s)',
     badgeCol: pending ? 'var(--c-gold)' : 'var(--c-mint)',
     statusLabel: pending ? 'pending' : 'locked in',

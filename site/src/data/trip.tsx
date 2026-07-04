@@ -29,91 +29,41 @@ export const CATS: Record<CatKey, Cat> = {
 };
 
 export const ANCHORS = [
-  { emoji: '⭐', label: 'Home base (probably)', mx: 56, my: 15, tint: 'var(--c-gold)' },
+  { emoji: '⭐', label: 'Casa de los Uncs', mx: 56, my: 15, tint: 'var(--c-gold)' },
   { emoji: '✈️', label: 'FLL airport', mx: 44, my: 26, tint: 'var(--c-teal)' },
 ];
 
-// ---------- lodging: the final four ----------
-export interface Bnb {
-  id: string;
+// ---------- lodging: the one we locked in ----------
+export interface House {
   name: string;
+  area: string;
   price: string;
-  beds: string;
-  blurb: string;
-  icon: string;
-  bg: string;
+  specs: string;
   url: string;
-  tag: string;
-  tagColor: string;
-  status: 'candidate' | 'booked';
+  blurb: string;
+  amenities: { emoji: string; label: string }[];
+  mapQuery: string; // swap for the exact street address once we have it
 }
-// When one gets booked: flip its status to 'booked' and redeploy. That's it.
-export const BNBS: Bnb[] = [
-  {
-    id: 'bnb_lbts',
-    name: 'The Normal Ass House',
-    price: '$1,828 total',
-    beds: '3 bd · 7 beds · 2 ba (be mindful lucas)',
-    blurb: "walkable beach AND a private pool AND a grill. sia's vote, kia co-signed 'if it's not in the ghetto.' only sin: 30 min from the casino.",
-    icon: '🏖️',
-    bg: 'linear-gradient(135deg,#A8DDC5,#9FC7E8)',
-    url: 'https://www.airbnb.com/rooms/38513885',
-    tag: '⭐ the presumptive one',
-    tagColor: 'var(--c-gold)',
-    status: 'candidate',
-  },
-  {
-    id: 'bnb_extra_bath',
-    name: 'The Extra Bathroom House',
-    price: '$2,073 total',
-    beds: '4 bd · 7 beds · 3 ba',
-    blurb: "heated pool + pool table. joe and lucas are 'down to pay extra,' which is rich coming from the casino caucus. most expensive of the four.",
-    icon: '🎱',
-    bg: 'linear-gradient(135deg,#F5C6D3,#F5D9A8)',
-    url: 'https://www.airbnb.com/rooms/613636449757891426',
-    tag: 'the bougie pick',
-    tagColor: 'var(--c-lav)',
-    status: 'candidate',
-  },
-  {
-    id: 'bnb_penthouse',
-    name: 'The Penthouse',
-    price: '~$1,808 all-in',
-    beds: '3 bd · 8 beds · 3 ba · ★5.0',
-    blurb: "south FL penthouse GOES HARD (lucas, twice). closest to joe's church. no private pool, and $58/day of fees hiding in the fine print like roaches.",
-    icon: '🏙️',
-    bg: 'linear-gradient(135deg,#9FD3E0,#C4B4E4)',
-    url: 'https://www.airbnb.com/rooms/1639960090219590758',
-    tag: "lucas's dream",
-    tagColor: 'var(--c-teal)',
-    status: 'candidate',
-  },
-  {
-    id: 'bnb_vrbo',
-    name: 'The Janky One',
-    price: '$1,602 total',
-    beds: '6 beds · walkable to everything',
-    blurb: "pete's own listing copy: 'looks old and janky but walkable to a lot of stores.' tom's pick because it's the cheapest and tom is the only honest man here.",
-    icon: '🛖',
-    bg: 'linear-gradient(135deg,#F5D9A8,#EBB59A)',
-    url: 'https://www.vrbo.com/9682046ha',
-    tag: "tom's budget king",
-    tagColor: 'var(--c-pink)',
-    status: 'candidate',
-  },
-];
-
-export const STAY_BUDGET_LINE = 'budget was $100/night per person, $1,600 total (allegedly). every finalist blew past it. nobody cares anymore.';
-export const STAY_STATUS_LINE = "the vote died. everybody has preferences and nobody's saying shit, so pete's booking one that works and isn't too pricey. objections close when he hits book.";
-
-export interface DeadOption { title: string; epitaph: string }
-export const STAY_GRAVEYARD: DeadOption[] = [
-  { title: 'the 6-bed steal', epitaph: "got sniped mid-deliberation. pete: 'omg…. this one got booked… WTFFF'" },
-  { title: 'the $1,900 beach condo', epitaph: 'right on the beach, zero private pool. next.' },
-  { title: 'the rookie paycheck house', epitaph: "sia posted it. pete: 'HOW MUCH?!? sia is that rookie that gets his first paycheck and buys a nice ass car'" },
-  { title: 'south beach townhouse', epitaph: '3 beds for 6 grown men. character-building denied.' },
-  { title: 'the OG villa', epitaph: 'everyone loved it. 4 beds though. RIP to a real one.' },
-];
+export const HOUSE: House = {
+  name: 'Casa de los Uncs',
+  area: 'Fort Lauderdale, FL',
+  price: '$2,073 for the long weekend',
+  specs: '4 bedrooms · 7 beds · 3 baths · ★4.85',
+  url: 'https://www.airbnb.com/rooms/613636449757891426',
+  blurb:
+    "home base. tucked in fort lauderdale, the quieter stretch up by lauderdale-by-the-sea, old-florida low-rise, flip-flops-and-a-tee kind of block, beach a short hop away. heated pool for the unc lifestyle, a pool table for the 2am tournaments nobody remembers, and three full bathrooms so nobody's fighting for the shower before the casino. we paid a little extra for that third bathroom and we'd do it again.",
+  amenities: [
+    { emoji: '🏊', label: 'heated pool' },
+    { emoji: '🎱', label: 'pool table' },
+    { emoji: '🚿', label: '3 full baths' },
+    { emoji: '🛏️', label: '7 beds' },
+    { emoji: '🎰', label: '~30 min to the casino' },
+    { emoji: '🏖️', label: 'near the beach' },
+  ],
+  mapQuery: 'Fort Lauderdale, FL',
+};
+export const HOUSE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(HOUSE.mapQuery)}`;
+export const HOUSE_MAP_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(HOUSE.mapQuery)}&z=13&output=embed`;
 
 // ---------- itinerary ----------
 export interface DayItem { time: string; title: string; note: string }
@@ -123,9 +73,9 @@ export const DAYS: Day[] = [
     label: 'THURSDAY', title: 'Wheels up', date: 'Jul 23 · leave ATL', accent: 'var(--c-coral)', bg: 'var(--c-coral-s)',
     items: [
       { time: '4:30p', title: 'Get to ATL', note: "it's ATL on a thursday. leave early or get left." },
-      { time: '6:40p', title: 'ATL → FLL', note: 'jetblue. $208 a head. aisle seats for the tall ones or there will be words.' },
-      { time: '~9:00p', title: 'Land + grab the whip', note: "kia's LMco rate or pete's discount, whoever's manager replies first." },
-      { time: '10:00p', title: 'Check into the house', note: 'whichever one pete picked. act surprised.' },
+      { time: '6:40p', title: 'ATL → FLL', note: 'jetblue. aisle seats for the tall ones or there will be words.' },
+      { time: '~9:00p', title: 'Land + grab the whip', note: "sia's working the LMco rate at the rental counter. still gotta actually book it." },
+      { time: '10:00p', title: 'Check into Casa de los Uncs', note: 'heated pool, pool table, three bathrooms. we made it.' },
       { time: '11:00p', title: 'Hard rock recon?', note: 'joe has been waiting his whole life. something light.' },
     ],
   },
@@ -133,7 +83,7 @@ export const DAYS: Day[] = [
     label: 'FRIDAY', title: 'Beach & the grill', date: 'Jul 24', accent: 'var(--c-teal)', bg: 'var(--c-teal-s)',
     items: [
       { time: '10:00a', title: 'Recovery breakfast', note: 'grease. electrolytes. no regrets yet, too early.' },
-      { time: '12:00p', title: 'Beach', note: "walkable if the right house won. 'lol a block away is nothing.'" },
+      { time: '12:00p', title: 'Beach', note: "short hop from the house. 'lol a block away is nothing.'" },
       { time: '4:00p', title: 'Pool', note: 'unc status activates. wife beaters optional but encouraged.' },
       { time: '7:00p', title: 'Kia on the grill', note: "'gimme a pool and a grill.' dinner: solved." },
       { time: '11:00p', title: 'Night moves TBD', note: 'pitch it on the map ↓ sia is judging.' },
@@ -145,7 +95,7 @@ export const DAYS: Day[] = [
       { time: '11:00a', title: 'Pool + soccer ball action', note: 'a lil touch in the yard. loser does the dishes.' },
       { time: '2:00p', title: 'Find Neon?', note: "he's out there somewhere. lucas has a feeling." },
       { time: '6:00p', title: 'Dinner TBD', note: 'map ↓. funny pitches get approved faster.' },
-      { time: '9:00p', title: "JOE'S CHURCH", note: "hard rock casino. tom's just watching. lucas is betting the airbnb refund." },
+      { time: '9:00p', title: "JOE'S CHURCH", note: "hard rock casino, ~30 min south. tom's just watching. lucas is betting rent money." },
       { time: '2:00a', title: 'Leave the casino', note: 'this is a lie and we all know it.' },
     ],
   },
@@ -192,14 +142,14 @@ export const WEATHER_SUB = "it's july in south florida. sun, one violent 20-minu
 export const WEATHER_FALLBACK_NOTE = 'real forecast unlocks ~jul 10 when the trip enters the 16-day window. until then: educated guesses.';
 export const PACKING = {
   title: '🧳 what to actually pack',
-  body: 'SPF 30 minimum (it’s literally in the footer), one dry shirt per day because you WILL sweat through the first, a wife beater for kia, the soccer ball, and sunglasses you can afford to lose at the casino.',
+  body: 'SPF 50 minimum (it’s literally in the footer), one dry shirt per day because you WILL sweat through the first, a wife beater for kia, the soccer ball, and sunglasses you can afford to lose at the casino.',
 };
 
 // ---------- budget ----------
-export const BUDGET_SUB = "who fronted what, so nobody's holding a grudge on the flight home. flights ($208) were every-man-for-himself, so the tab starts here.";
+export const BUDGET_SUB = "who fronted what, so nobody's holding a grudge on the flight home. flights were every-man-for-himself (ask tom), so the tab starts here.";
 export const TOM_CALLOUT = {
-  title: '🧾 standing debts',
-  body: "tom owes the group $80 for the markers incident. his words: 'i will subsidize $80 towards abnb or dinner.' it WILL be collected.",
+  title: '🧾 the market maker owes us',
+  body: "the flights were dirt cheap, so naturally we called tom the market maker. then tom bought his ticket first, locked his low price, and the second sia hit purchase jetblue jacked it +$124. everybody after tom paid up. classic pump and dump. tom felt bad and put $80 in the pool for a group dinner or jet skis. we're holding him to it.",
 };
 export const BUDGET_EMPTY = "nothing logged yet. the airbnb deposit is coming for one of us. probably pete.";
 
@@ -211,7 +161,7 @@ export const INFO_CARDS: InfoCard[] = [
     body: (
       <>
         <b style={{ color: 'var(--ink)' }}>Out:</b> thu 7/23, 6:40p ATL → FLL, jetblue. all six of us.<br />
-        <b style={{ color: 'var(--ink)' }}>Back:</b> sun 7/26, 6:55p. <b style={{ color: 'var(--c-lav)' }}>lucas &amp; tom on the 8:40</b> like it's a residency. ~$208 a head, paid.
+        <b style={{ color: 'var(--ink)' }}>Back:</b> sun 7/26, 6:55p. <b style={{ color: 'var(--c-lav)' }}>lucas &amp; tom on the 8:40</b> like it's a residency. everyone's booked.
       </>
     ),
   },
@@ -219,7 +169,7 @@ export const INFO_CARDS: InfoCard[] = [
     emoji: '🚗', iconBg: 'var(--c-teal-s)', title: 'The whip',
     body: (
       <>
-        <span style={{ color: 'var(--c-coral)', fontWeight: 600 }}>not booked.</span> needs to seat 6. kia's <b style={{ color: 'var(--c-teal)' }}>LMco benefit</b> pending since jun 29 (his manager is 'dealing with some stress rn'). minivan $156 vs explorer $206. somebody lock in.
+        <span style={{ color: 'var(--c-coral)', fontWeight: 600 }}>not booked yet.</span> needs to seat 6. sia's got the <b style={{ color: 'var(--c-teal)' }}>LMco rate</b>. kia was gonna ask his manager for a hookup but she's slammed rn, so that's on hold. minivan ~$156 vs explorer ~$206. someone lock it in.
       </>
     ),
   },
@@ -227,7 +177,7 @@ export const INFO_CARDS: InfoCard[] = [
     emoji: '🏠', iconBg: 'var(--c-mint-s)', title: 'Home base',
     body: (
       <>
-        fort lauderdale. which house? nobody voted, democracy is dead. <b style={{ color: 'var(--c-mint)' }}>pete's picking one that works and isn't too pricey.</b> <a href="#stay" style={{ color: 'var(--c-mint)', fontWeight: 600 }}>the final four →</a>
+        we're locked in at <b style={{ color: 'var(--c-mint)' }}>Casa de los Uncs</b> in fort lauderdale. heated pool, pool table, and enough bathrooms to keep the peace. <a href="#stay" style={{ color: 'var(--c-mint)', fontWeight: 600 }}>see the spot →</a>
       </>
     ),
   },
@@ -235,7 +185,7 @@ export const INFO_CARDS: InfoCard[] = [
     emoji: '💸', iconBg: 'var(--c-gold-s)', title: 'The kitty',
     body: (
       <>
-        current balance: <b style={{ color: 'var(--c-gold)' }}>tom's $80</b> from the markers incident. venmo situation TBD. fronting money for grown men is a mistake someone makes exactly once.
+        <b style={{ color: 'var(--c-gold)' }}>tom's $80</b> is in the pool for a group dinner or jet skis, his penance for pumping the flight price on us. venmo logistics TBD. <a href="#budget" style={{ color: 'var(--c-gold)', fontWeight: 600 }}>the tab →</a>
       </>
     ),
   },
@@ -244,8 +194,8 @@ export const INFO_CARDS: InfoCard[] = [
 export const FOOTER = {
   tagline: (
     <>
-      built for the boys. all pitches subject to the whims, mood, and blood-alcohol level of <a href="#admin" style={{ color: 'var(--ink2)', fontWeight: 600, cursor: 'pointer' }}>management</a>. tapback energy only.
+      built for the boys. six of us, one house, one long weekend. let's not lose anybody. <a href="#admin" style={{ color: 'var(--ink3)', fontWeight: 600, cursor: 'pointer', textDecoration: 'none' }}>·</a>
     </>
   ),
-  small: 'no refunds · no crying · SPF 30 minimum',
+  small: 'no refunds · SPF 50 minimum',
 };

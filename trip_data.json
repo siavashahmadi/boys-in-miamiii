@@ -13,8 +13,8 @@
     { "name": "Pete", "full_name": "Peter", "handle": "+14045193313", "notes": "Organizer; found most lodging options; will book" },
     { "name": "Lucas", "full_name": "Lucas", "handle": "+16784694136", "notes": "Aka Luke; later return flight; cleared 07/26 work shift; penthouse fan" },
     { "name": "Joe", "full_name": "Joseph", "handle": "+14046187352", "notes": "Casino is his one requirement; willing to pay extra" },
-    { "name": "Kia", "full_name": "Kiarash", "handle": "+16785490790", "notes": "Pool and grill advocate; flight-time analysis; LMco rental benefit" },
-    { "name": "Tom", "full_name": "Tommy (legal name Alex Haile)", "handle": "+16788952250", "notes": "Needs good wifi; $80 subsidy from flight booking mishap" }
+    { "name": "Kia", "full_name": "Kiarash", "handle": "+16785490790", "notes": "Pool and grill advocate; flight-time analysis; reminded Sia to use the LMco rental benefit (that benefit is Sia's, not Kia's); was going to ask his own manager for a discount but she was too stressed" },
+    { "name": "Tom", "full_name": "Tommy (legal name Alex Haile)", "handle": "+16788952250", "notes": "Needs good wifi; the 'market maker' who booked his flight first and locked the low price before the price spiked on everyone else; put $80 in the group pool as penance" }
   ],
   "dates": {
     "start": "2026-07-23",
@@ -33,11 +33,12 @@
     "airline": "JetBlue",
     "outbound": "Thu 2026-07-23, ~6:40 PM departure from ATL, all six together",
     "return": "Sun 2026-07-26 from FLL: four on the 6:55 PM JetBlue; Lucas and Tom on the ~8:40 PM flight, landing ATL ~10 PM",
-    "price_per_person_usd": 208,
+    "price_per_person_usd": null,
+    "price_note": "Prices fluctuated and everyone paid a different amount (not a flat $208). The flight started dirt cheap; Tom booked first and locked the low price; the moment Sia hit purchase the price jumped +$124, so everyone who booked after Tom paid more.",
     "notes": [
       "Booked during/after a 7:30 PM group call on Jun 29",
-      "Next day the later return dropped to the earlier flight's price; under-24h change window noted; no rebooking confirmed",
-      "Tom 'moved the markers' during booking, costing everyone $80-100 extra; he offered $80 toward Airbnb or dinner",
+      "The 'market maker' bit: flight was cheap, the group joked Tom was a market maker; Tom bought first and locked his low price, then the price spiked +$124 right as Sia checked out. Everyone after Tom paid up. Tom's 'moving the markers' line refers to this joke.",
+      "Tom felt bad and put $80 into a group pool for a group dinner or jet skis (his words: '$80 towards abnb or dinner')",
       "Times confirmed by Sia 2026-07-03"
     ]
   },
@@ -268,9 +269,10 @@
     "lodging_cap_rule": "max $100/night/person",
     "lodging_finalist_range_usd": [1602, 2073],
     "per_person_lodging_estimate_usd": [267, 346],
-    "flights_per_person_usd": 208,
+    "flights_per_person_usd": null,
+    "flights_note": "Varied per person; Tom locked the cheap price first, then it spiked +$124 for everyone after him",
     "extra_payers": ["Joe and Lucas fine paying extra for nicer place / 3rd bathroom"],
-    "subsidies": [{ "from": "Tom", "amount_usd": 80, "toward": "Airbnb or dinner", "reason": "flight booking mishap cost everyone $80-100 extra" }],
+    "subsidies": [{ "from": "Tom", "amount_usd": 80, "toward": "group dinner or jet skis", "reason": "the 'market maker' bit: booked first and locked the low flight price, then it spiked +$124 on everyone else" }],
     "splitting": "no Venmo or cost-split mechanics discussed yet"
   },
   "transportation": {
@@ -285,7 +287,8 @@
         { "vehicle": "Sprinter van", "price_usd": 315, "by": "Sia", "note": "half joke" }
       ],
       "discounts": [
-        { "by": "Kia", "what": "LMco employee rental benefit, 'can't beat those prices / insurance'", "status": "waiting on manager approval since Jun 29" },
+        { "by": "Sia", "what": "LMco (Lockheed Martin) employee rental benefit; Kia recommended Sia use it ('can't beat those prices / insurance')", "status": "available, not yet booked" },
+        { "by": "Kia", "what": "was going to ask his own manager for a separate discount", "status": "on hold, his manager was too stressed to ask" },
         { "by": "Pete", "what": "small rental discount, offered to book" }
       ]
     },

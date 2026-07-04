@@ -97,14 +97,16 @@ export default function App() {
   };
 
   return (
-    <div style={{ minHeight: '100vh' }}>
+    <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Nav view={view} setView={setView} theme={theme} toggleTheme={toggleTheme} />
-      {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} />}
-      {view === 'stay' && <Stay />}
-      {view === 'plan' && <Plan />}
-      {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} />}
-      {view === 'weather' && <Weather weather={weather} />}
-      {view === 'budget' && <Budget expenses={expenses} whoami={who} onAdd={addExpense} onDelete={removeExpense} />}
+      <main style={{ flex: 1 }}>
+        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} />}
+        {view === 'stay' && <Stay />}
+        {view === 'plan' && <Plan />}
+        {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} />}
+        {view === 'weather' && <Weather weather={weather} />}
+        {view === 'budget' && <Budget expenses={expenses} whoami={who} onAdd={addExpense} onDelete={removeExpense} />}
+      </main>
       <Footer />
       {admin && <Admin pitches={pitches} onVerdict={verdict} onExit={exitAdmin} />}
       {!who && <IdentityPicker onPick={(n) => { setWhoami(n); setWho(n); }} />}
