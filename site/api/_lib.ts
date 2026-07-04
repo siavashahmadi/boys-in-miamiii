@@ -1,6 +1,6 @@
 // Minimal Upstash Redis REST client + shared state helpers for the api routes.
 // Env vars are injected by the Vercel + Upstash marketplace integration.
-import { ALL_SEED_PITCHES, SEED_EXPENSES, type Expense, type Pitch } from '../shared/seeds';
+import { ALL_SEED_PITCHES, SEED_EXPENSES, type Expense, type Pitch } from '../shared/seeds.js';
 
 const URL_ = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || '';
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || '';

@@ -1,5 +1,5 @@
-import type { Expense } from '../shared/seeds';
-import { bad, loadState, saveExpenses, type Req, type Res } from './_lib';
+import type { Expense } from '../shared/seeds.js';
+import { bad, loadState, saveExpenses, type Req, type Res } from './_lib.js';
 
 const clamp = (s: unknown, n: number) => String(s ?? '').slice(0, n);
 

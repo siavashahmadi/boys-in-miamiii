@@ -1,5 +1,5 @@
-import type { CatKey, Pitch } from '../shared/seeds';
-import { bad, loadState, savePitches, type Req, type Res } from './_lib';
+import type { CatKey, Pitch } from '../shared/seeds.js';
+import { bad, loadState, savePitches, type Req, type Res } from './_lib.js';
 
 const CATS: CatKey[] = ['eats', 'water', 'beach', 'night', 'culture', 'chaos'];
 const clamp = (s: unknown, n: number) => String(s ?? '').slice(0, n);

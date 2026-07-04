@@ -2,6 +2,8 @@
 // Password comes from the SITE_PASSWORD env var (any username works).
 // Also stamps noindex so nothing gets crawled even if the URL leaks.
 
+declare const process: { env: Record<string, string | undefined> };
+
 export const config = { matcher: '/(.*)' };
 
 export default function middleware(req: Request): Response | undefined {

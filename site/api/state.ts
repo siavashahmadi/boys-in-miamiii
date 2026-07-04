@@ -1,4 +1,4 @@
-import { bad, loadState, type Req, type Res } from './_lib';
+import { bad, loadState, type Req, type Res } from './_lib.js';
 
 export default async function handler(req: Req, res: Res) {
   if (req.method !== 'GET') return bad(res, 405, 'GET only');
