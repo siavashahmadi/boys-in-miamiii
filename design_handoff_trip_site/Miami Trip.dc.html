@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script>
+  (function(){try{var t=localStorage.getItem('miami_theme');if(t!=='light'&&t!=='dark'){t=(window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches)?'dark':'light';}document.documentElement.setAttribute('data-theme',t);}catch(e){document.documentElement.setAttribute('data-theme','light');}})();
+</script>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  :root {
+    --bg:#FBF6EF; --bg2:#F3EAE0; --surface:#FFFFFF; --surface2:#FBF3EB;
+    --border:rgba(64,54,74,.12); --ink:#3A3350; --ink2:#6E6784; --ink3:#9C95AC;
+    --shadow:0 12px 34px rgba(120,90,110,.12); --shadowSm:0 4px 14px rgba(120,90,110,.10);
+    --navBg:rgba(251,246,239,.82);
+    --glass:rgba(255,255,255,.55); --glassBorder:rgba(255,255,255,.75);
+    --heroGrad:linear-gradient(135deg,#FADFCF 0%,#F5D8E3 32%,#DDECE5 66%,#D3E6F1 100%);
+    --mapOcean:#CFE7EE; --mapLand:#EAE2D2; --mapIsland:#F1E9D9; --mapRoad:#CDC2B2; --mapLabel:#8C8498;
+    --c-coral:#E38C74; --c-coral-s:rgba(227,140,116,.16);
+    --c-teal:#3FA5B2; --c-teal-s:rgba(63,165,178,.16);
+    --c-gold:#D6A94E; --c-gold-s:rgba(214,169,78,.18);
+    --c-lav:#987FCF; --c-lav-s:rgba(152,127,207,.16);
+    --c-mint:#5AA57E; --c-mint-s:rgba(90,165,126,.16);
+    --c-pink:#CE86A6; --c-pink-s:rgba(206,134,166,.16);
+    --accent:#E38C74;
+  }
+  html[data-theme="dark"] {
+    --bg:#1E1830; --bg2:#251E38; --surface:#2A2240; --surface2:#31294A;
+    --border:rgba(255,255,255,.10); --ink:#F1ECF8; --ink2:#BCB2D0; --ink3:#8A82A2;
+    --shadow:0 14px 40px rgba(0,0,0,.4); --shadowSm:0 6px 18px rgba(0,0,0,.32);
+    --navBg:rgba(30,24,48,.82);
+    --glass:rgba(20,16,30,.42); --glassBorder:rgba(255,255,255,.14);
+    --heroGrad:linear-gradient(135deg,#3C2A3F 0%,#432F4A 32%,#2C3B45 66%,#293446 100%);
+    --mapOcean:#233C46; --mapLand:#2E2A40; --mapIsland:#37324C; --mapRoad:#4A4462; --mapLabel:#9990AE;
+  }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:'Outfit',sans-serif; -webkit-font-smoothing:antialiased; overflow-x:hidden; transition:background .4s,color .4s; }
+  ::selection { background:var(--c-coral); color:#fff; }
+  input, textarea, select, button { font-family:'Outfit',sans-serif; }
+  input::placeholder, textarea::placeholder { color:var(--ink3); }
+  input:focus, textarea:focus { outline:2px solid var(--c-teal); }
+  @keyframes gradShift { 0%{background-position:0% 50%;} 50%{background-position:100% 50%;} 100%{background-position:0% 50%;} }
+  @keyframes floaty { 0%,100%{transform:translateY(0) rotate(-4deg);} 50%{transform:translateY(-12px) rotate(-1deg);} }
+  @keyframes softGlow { 0%,100%{box-shadow:0 0 0 rgba(0,0,0,0), var(--shadow);} 50%{box-shadow:0 0 26px rgba(227,140,116,.28), var(--shadow);} }
+  @keyframes stampSlam { 0%{transform:translate(-50%,-50%) scale(4) rotate(-28deg);opacity:0;} 55%{transform:translate(-50%,-50%) scale(.84) rotate(-8deg);opacity:1;} 70%{transform:translate(-50%,-50%) scale(1.1) rotate(-12deg);} 100%{transform:translate(-50%,-50%) scale(1) rotate(-10deg);opacity:1;} }
+  @keyframes flashFade { 0%{opacity:0;} 12%{opacity:.7;} 100%{opacity:0;} }
+  @keyframes fling { 0%{transform:translate(-50%,-50%) scale(.2);opacity:0;} 12%{opacity:1;} 100%{transform:translate(calc(-50% + var(--tx)),calc(-50% + var(--ty))) scale(1.3) rotate(var(--r));opacity:0;} }
+  @keyframes marquee { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+  @keyframes pinPop { 0%{transform:translate(-50%,-50%) scale(0);} 70%{transform:translate(-50%,-50%) scale(1.15);} 100%{transform:translate(-50%,-50%) scale(1);} }
+  @keyframes spotlight { 0%,100%{transform:translateX(-6%);} 50%{transform:translateX(6%);} }
+</style>
+</helmet>
+
+<div style="min-height:100vh;">
+
+  <!-- NAV -->
+  <nav style="position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:10px; padding:11px 14px; background:var(--navBg); backdrop-filter:blur(16px); border-bottom:1px solid var(--border);">
+    <button onClick="{{ goHome }}" style="flex:0 0 auto; font-family:'DM Serif Display'; font-size:19px; letter-spacing:.3px; color:var(--ink); background:transparent; border:none; cursor:pointer; padding:0;">Miami <span style="color:var(--c-coral); font-style:italic;">&amp;</span> Ftl.</button>
+    <div style="flex:1 1 auto; min-width:0; display:flex; justify-content:flex-end;">
+      <div style="display:flex; gap:3px; align-items:center; padding:4px; border-radius:13px; background:var(--surface2); border:1px solid var(--border); overflow-x:auto; max-width:100%;">
+        <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="6">
+          <button onClick="{{ t.onClick }}" style="flex:0 0 auto; display:flex; align-items:center; gap:5px; padding:8px 12px; border:none; border-radius:10px; cursor:pointer; font-size:13px; font-weight:{{ t.weight }}; background:{{ t.bg }}; color:{{ t.col }}; white-space:nowrap;">{{ t.emoji }} {{ t.label }}</button>
+        </sc-for>
+      </div>
+    </div>
+    <button onClick="{{ toggleTheme }}" title="Toggle theme" style="flex:0 0 auto; width:36px; height:36px; display:flex; align-items:center; justify-content:center; border:1px solid var(--border); border-radius:10px; background:var(--surface); color:var(--ink); cursor:pointer; font-size:15px;">{{ themeIcon }}</button>
+  </nav>
+
+  <sc-if value="{{ isHome }}" hint-placeholder-val="{{ true }}">
+
+  <!-- DASHBOARD HEADER -->
+  <section data-screen-label="Dashboard" style="max-width:1120px; margin:0 auto; padding:40px 22px 8px;">
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap;">
+      <div>
+        <div style="font-size:12px; letter-spacing:2px; font-weight:700; color:var(--c-coral);">TRIP DASHBOARD</div>
+        <h1 style="font-family:'DM Serif Display'; font-size:clamp(30px,5vw,46px); margin:6px 0 0; line-height:1.05;">Miami <span style="color:var(--c-coral); font-style:italic;">&amp;</span> Fort Lauderdale</h1>
+        <div style="font-size:14px; color:var(--ink2); margin-top:6px;">Jul 23–26, 2026 · home base in Fort Lauderdale · {{ squadCount }} degenerates confirmed</div>
+      </div>
+      <div style="text-align:right; padding:12px 18px; border-radius:16px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+        <div style="font-size:11px; color:var(--ink3); letter-spacing:1.5px; font-weight:600;">WHEELS UP IN</div>
+        <div style="font-family:'DM Serif Display'; font-size:32px; line-height:1.1; margin-top:2px;">{{ cd.days }}<span style="font-size:15px; color:var(--ink2);">d</span> {{ cd.hours }}<span style="font-size:15px; color:var(--ink2);">h</span> {{ cd.mins }}<span style="font-size:15px; color:var(--ink2);">m</span> <span style="color:var(--c-teal);">{{ cd.secs }}</span><span style="font-size:15px; color:var(--ink2);">s</span></div>
+      </div>
+    </div>
+
+    <!-- STAT TILES -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(148px,1fr)); gap:12px; margin-top:22px;">
+      <sc-for list="{{ stats }}" as="s" hint-placeholder-count="6">
+        <div style="padding:18px 18px 16px; border-radius:18px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+          <div style="display:flex; align-items:center; gap:7px;"><span style="font-size:15px;">{{ s.emoji }}</span><span style="font-size:12px; color:var(--ink2); font-weight:600;">{{ s.label }}</span></div>
+          <div style="font-family:'DM Serif Display'; font-size:30px; line-height:1.05; margin-top:8px; color:{{ s.color }};">{{ s.value }}</div>
+          <div style="font-size:11.5px; color:var(--ink3); margin-top:3px;">{{ s.sub }}</div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  <!-- LOGISTICS -->
+  <section data-screen-label="Logistics" style="max-width:1120px; margin:0 auto; padding:34px 22px 8px;">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:16px;">
+      <h2 style="font-family:'DM Serif Display'; font-size:clamp(22px,3.4vw,30px); margin:0;">Getting there &amp; staying</h2>
+      <span style="font-size:13px; color:var(--ink3);">the boring-but-important stuff.</span>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;">
+      <div style="padding:24px; border-radius:20px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+        <div style="width:44px; height:44px; border-radius:12px; background:var(--c-coral-s); display:flex; align-items:center; justify-content:center; font-size:22px;">✈️</div>
+        <div style="font-weight:700; font-size:17px; margin:14px 0 6px;">Flights</div>
+        <div style="font-size:14px; color:var(--ink2); line-height:1.6;"><b style="color:var(--ink);">Out:</b> Thu 7/23, ~6:40p ATL → FLL.<br><b style="color:var(--ink);">Back:</b> Sun 7/26, most 6:30–8:00p FLL → ATL. Times vary — check your <i>own</i> ticket.</div>
+      </div>
+      <div style="padding:24px; border-radius:20px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+        <div style="width:44px; height:44px; border-radius:12px; background:var(--c-teal-s); display:flex; align-items:center; justify-content:center; font-size:22px;">🚗</div>
+        <div style="font-weight:700; font-size:17px; margin:14px 0 6px;">Rental car</div>
+        <div style="font-size:14px; color:var(--ink2); line-height:1.6;">Sia's booking it on the <b style="color:var(--c-teal);">Lockheed Martin discount</b>. You're welcome. <span style="color:var(--c-coral);">(Status: not actually booked yet. Sia — buddy — handle it.)</span></div>
+      </div>
+      <div style="padding:24px; border-radius:20px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+        <div style="width:44px; height:44px; border-radius:12px; background:var(--c-mint-s); display:flex; align-items:center; justify-content:center; font-size:22px;">🏠</div>
+        <div style="font-weight:700; font-size:17px; margin:14px 0 6px;">Home base</div>
+        <div style="font-size:14px; color:var(--ink2); line-height:1.6;">Fort Lauderdale — but which house? Nobody's booked squat. <a href="#stay" style="color:var(--c-mint); font-weight:600;">Vote on the Stay page →</a></div>
+      </div>
+      <div style="padding:24px; border-radius:20px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+        <div style="width:44px; height:44px; border-radius:12px; background:var(--c-gold-s); display:flex; align-items:center; justify-content:center; font-size:22px;">💸</div>
+        <div style="font-weight:700; font-size:17px; margin:14px 0 6px;">The kitty</div>
+        <div style="font-size:14px; color:var(--ink2); line-height:1.6;">Venmo <b style="color:var(--c-gold);">@Sia</b> your share <b>before</b> we leave. Fronting money for grown men is a mistake I make exactly once.</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SNAPSHOTS -->
+  <section style="max-width:1120px; margin:0 auto; padding:38px 22px 48px;">
+    <div style="display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-bottom:16px;">
+      <h2 style="font-family:'DM Serif Display'; font-size:clamp(22px,3.4vw,30px); margin:0;">Quick look</h2>
+      <span style="font-size:13px; color:var(--ink3);">jump into the details.</span>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px;">
+
+      <!-- STAY SNAPSHOT -->
+      <div style="padding:22px; border-radius:20px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div style="font-weight:700; font-size:16px;">🏝️ Where we're staying</div>
+          <a href="#stay" style="font-size:12.5px; color:var(--c-teal); font-weight:600; text-decoration:none;">Vote →</a>
+        </div>
+        <div style="font-family:'DM Serif Display'; font-size:24px; line-height:1.1; margin:14px 0 3px;">{{ leadingBnb.name }}</div>
+        <div style="font-size:13px; color:var(--ink2);">Leading the vote · {{ leadingBnb.price }} · {{ leadingBnb.count }} ♥</div>
+        <div style="font-size:12.5px; color:var(--c-coral); margin-top:10px; font-weight:600;">⚠ Not booked yet — lock it in before prices climb.</div>
+      </div>
+
+      <!-- BUDGET SNAPSHOT -->
+      <div style="padding:22px; border-radius:20px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div style="font-weight:700; font-size:16px;">💸 Budget so far</div>
+          <a href="#budget" style="font-size:12.5px; color:var(--c-teal); font-weight:600; text-decoration:none;">Details →</a>
+        </div>
+        <div style="display:flex; gap:20px; margin:14px 0 4px;">
+          <div><div style="font-family:'DM Serif Display'; font-size:26px; line-height:1;">{{ budget.totalStr }}</div><div style="font-size:11.5px; color:var(--ink3);">spent so far</div></div>
+          <div><div style="font-family:'DM Serif Display'; font-size:26px; line-height:1; color:var(--c-gold);">{{ budget.perStr }}</div><div style="font-size:11.5px; color:var(--ink3);">per person</div></div>
+        </div>
+        <div style="margin-top:10px; display:flex; flex-direction:column; gap:6px;">
+          <sc-for list="{{ budget.top }}" as="e" hint-placeholder-count="2">
+            <div style="display:flex; justify-content:space-between; font-size:12.5px; color:var(--ink2);"><span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ e.desc }} · {{ e.payer }}</span><b style="color:var(--ink);">{{ e.amountStr }}</b></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- PLANS SNAPSHOT -->
+      <div style="padding:22px; border-radius:20px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div style="font-weight:700; font-size:16px;">📍 The plan</div>
+          <a href="#map" style="font-size:12.5px; color:var(--c-teal); font-weight:600; text-decoration:none;">Map →</a>
+        </div>
+        <div style="font-size:13px; color:var(--ink2); margin:12px 0 10px;"><b style="color:var(--c-mint);">{{ approvedCount }} locked in</b> · <b style="color:var(--c-gold);">{{ pendingCount }} awaiting Sia</b></div>
+        <div style="display:flex; flex-direction:column; gap:6px;">
+          <sc-for list="{{ approvedPlans }}" as="p" hint-placeholder-count="4">
+            <div style="display:flex; align-items:center; gap:8px; font-size:13px;"><span style="font-size:14px;">{{ p.cat.emoji }}</span><span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ p.title }}</span></div>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- WEATHER SNAPSHOT -->
+      <div style="padding:22px; border-radius:20px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+        <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+          <div style="font-weight:700; font-size:16px;">🌤️ Weather</div>
+          <a href="#weather" style="font-size:12.5px; color:var(--c-teal); font-weight:600; text-decoration:none;">Forecast →</a>
+        </div>
+        <div style="display:flex; gap:18px; margin:14px 0 4px;">
+          <div><div style="font-family:'DM Serif Display'; font-size:26px; line-height:1;">89°</div><div style="font-size:11.5px; color:var(--ink3);">Fort Lauderdale</div></div>
+          <div><div style="font-family:'DM Serif Display'; font-size:26px; line-height:1; color:var(--c-teal);">91°</div><div style="font-size:11.5px; color:var(--ink3);">Miami</div></div>
+        </div>
+        <div style="font-size:12.5px; color:var(--ink2); margin-top:8px;">Hot, humid, daily 3pm downpour. Bring the SPF.</div>
+      </div>
+
+    </div>
+  </section>
+
+  </sc-if>
+
+  <sc-if value="{{ isStay }}" hint-placeholder-val="{{ false }}">
+  <!-- AIRBNB SHOWDOWN -->
+  <section id="stay" data-screen-label="Airbnb Showdown" style="max-width:1120px; margin:0 auto; padding:40px 22px 20px;">
+    <div style="margin-bottom:22px;">
+      <div style="font-size:12px; letter-spacing:2px; font-weight:700; color:var(--c-coral);">HOME BASE</div>
+      <h1 style="font-family:'DM Serif Display'; font-size:clamp(30px,5vw,44px); margin:6px 0 0; line-height:1.05;">Where should we stay?</h1>
+      <p style="font-size:14px; color:var(--ink2); margin:6px 0 0; max-width:560px;">Nothing's booked yet. Democracy is the only thing between us and a one-star roach motel. <b style="color:var(--c-teal);">Cast your vote.</b></p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:18px; margin-top:28px;">
+      <sc-for list="{{ bnbs }}" as="b" hint-placeholder-count="4">
+        <div style="display:flex; flex-direction:column; border-radius:22px; overflow:hidden; background:var(--surface); border:2px solid {{ b.borderCol }}; box-shadow:var(--shadowSm);">
+          <div style="height:118px; background:{{ b.bg }}; display:flex; align-items:center; justify-content:center; font-size:48px; position:relative;">
+            {{ b.icon }}
+            <span style="position:absolute; top:10px; right:10px; background:var(--surface); padding:5px 11px; border-radius:999px; font-weight:700; font-size:14px; color:var(--ink);">{{ b.price }}</span>
+          </div>
+          <div style="padding:18px; display:flex; flex-direction:column; flex:1;">
+            <div style="font-weight:700; font-size:18px;">{{ b.name }}</div>
+            <div style="font-size:12px; color:var(--ink3); margin:4px 0 9px;">{{ b.beds }}</div>
+            <div style="font-size:13.5px; color:var(--ink2); line-height:1.55; flex:1;">{{ b.blurb }}</div>
+            <button onClick="{{ b.onVote }}" style="margin-top:16px; display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 16px; border:none; border-radius:13px; cursor:pointer; font-weight:600; font-size:14px; background:{{ b.btnBg }}; color:{{ b.btnCol }};">
+              <span>{{ b.btnLabel }}</span>
+              <span style="font-weight:700;">{{ b.count }} ♥</span>
+            </button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  </sc-if>
+
+  <sc-if value="{{ isPlan }}" hint-placeholder-val="{{ false }}">
+  <!-- ITINERARY -->
+  <section id="plan" data-screen-label="Itinerary" style="max-width:1200px; margin:0 auto; padding:40px 22px 20px;">
+    <div style="margin-bottom:22px;">
+      <div style="font-size:12px; letter-spacing:2px; font-weight:700; color:var(--c-coral);">DAY BY DAY</div>
+      <h1 style="font-family:'DM Serif Display'; font-size:clamp(30px,5vw,44px); margin:6px 0 0; line-height:1.05;">The game plan</h1>
+      <p style="font-size:14px; color:var(--ink2); margin:6px 0 0;">Subject to change, hangovers, and Sia's mood.</p>
+    </div>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); gap:16px;">
+      <sc-for list="{{ days }}" as="d" hint-placeholder-count="4">
+        <div style="border-radius:22px; background:var(--surface); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadowSm);">
+          <div style="padding:18px 20px; background:{{ d.bg }};">
+            <div style="font-size:12px; letter-spacing:2px; font-weight:700; color:{{ d.accent }};">{{ d.label }}</div>
+            <div style="font-family:'DM Serif Display'; font-size:23px; line-height:1.05; margin-top:5px;">{{ d.title }}</div>
+            <div style="font-size:12px; color:var(--ink3); margin-top:4px;">{{ d.date }}</div>
+          </div>
+          <div style="padding:6px 0;">
+            <sc-for list="{{ d.items }}" as="it" hint-placeholder-count="4">
+              <div style="display:flex; gap:12px; padding:11px 20px; border-bottom:1px solid var(--border);">
+                <div style="font-weight:700; font-size:12px; color:{{ d.accent }}; min-width:50px; padding-top:2px;">{{ it.time }}</div>
+                <div style="flex:1;"><div style="font-size:14px; font-weight:600;">{{ it.title }}</div><div style="font-size:12px; color:var(--ink3); line-height:1.45; margin-top:2px;">{{ it.note }}</div></div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </section>
+
+  </sc-if>
+
+  <sc-if value="{{ isMap }}" hint-placeholder-val="{{ false }}">
+  <!-- MAP + BOARD -->
+  <section id="map" data-screen-label="Map" style="max-width:1200px; margin:0 auto; padding:40px 22px 44px;">
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px;">
+      <div>
+        <div style="font-size:12px; letter-spacing:2px; font-weight:700; color:var(--c-coral);">THE LAY OF THE LAND</div>
+        <h1 style="font-family:'DM Serif Display'; font-size:clamp(30px,5vw,44px); margin:6px 0 0; line-height:1.05;">The map</h1>
+        <p style="font-size:15px; color:var(--ink2); margin:8px 0 0; max-width:560px;">Everywhere we might go — plus home base and the airport. Tap a pin or a place to see the details, vote it up, or pitch a new one for Sia to judge.</p>
+      </div>
+      <button onClick="{{ toggleForm }}" style="padding:13px 22px; border:none; border-radius:14px; cursor:pointer; font-weight:600; font-size:15px; color:#fff; background:var(--c-coral); box-shadow:var(--shadowSm);">＋ Pitch a place</button>
+    </div>
+
+    <!-- FILTER TABS -->
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px;">
+      <sc-for list="{{ filterTabs }}" as="t" hint-placeholder-count="7">
+        <button onClick="{{ t.onPick }}" style="padding:8px 15px; border-radius:999px; cursor:pointer; font-size:13px; font-weight:600; border:1px solid {{ t.border }}; background:{{ t.bg }}; color:{{ t.col }};">{{ t.label }}</button>
+      </sc-for>
+    </div>
+
+    <!-- PITCH FORM -->
+    <sc-if value="{{ showForm }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-bottom:18px; padding:24px; border-radius:20px; background:var(--surface); border:1px solid var(--c-coral); box-shadow:var(--shadowSm);">
+        <div style="font-weight:700; font-size:18px; margin-bottom:16px;">Pitch your idea 🎤</div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:14px;">
+          <label style="display:block;"><span style="font-size:12px; color:var(--ink2); font-weight:600;">WHAT IS IT? *</span><input value="{{ form.title }}" onChange="{{ onTitle }}" placeholder="e.g. Sunset booze cruise" style="width:100%; margin-top:6px; padding:11px 13px; border-radius:11px; border:1px solid var(--border); background:var(--surface2); color:var(--ink); font-size:14px;"></label>
+          <label style="display:block;"><span style="font-size:12px; color:var(--ink2); font-weight:600;">WHO'S IN? (your name first) *</span><input value="{{ form.who }}" onChange="{{ onWho }}" placeholder="Joseph, Marcus" style="width:100%; margin-top:6px; padding:11px 13px; border-radius:11px; border:1px solid var(--border); background:var(--surface2); color:var(--ink); font-size:14px;"></label>
+        </div>
+        <div style="margin-top:14px;">
+          <span style="font-size:12px; color:var(--ink2); font-weight:600;">CATEGORY</span>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+            <sc-for list="{{ catList }}" as="c" hint-placeholder-count="6">
+              <button onClick="{{ c.onPick }}" style="padding:8px 14px; border-radius:999px; cursor:pointer; font-size:13px; font-weight:600; border:1px solid {{ c.chipBorder }}; background:{{ c.chipBg }}; color:{{ c.chipCol }};">{{ c.emoji }} {{ c.label }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <label style="display:block; margin-top:14px;"><span style="font-size:12px; color:var(--ink2); font-weight:600;">LINK (menu, tickets, whatever)</span><input value="{{ form.link }}" onChange="{{ onLink }}" placeholder="https://..." style="width:100%; margin-top:6px; padding:11px 13px; border-radius:11px; border:1px solid var(--border); background:var(--surface2); color:var(--ink); font-size:14px;"></label>
+        <label style="display:block; margin-top:14px;"><span style="font-size:12px; color:var(--ink2); font-weight:600;">WHY? MAKE YOUR CASE.</span><textarea value="{{ form.note }}" onChange="{{ onNote }}" rows="2" placeholder="Sell it. Funny works on Sia." style="width:100%; margin-top:6px; padding:11px 13px; border-radius:11px; border:1px solid var(--border); background:var(--surface2); color:var(--ink); font-size:14px; resize:vertical;"></textarea></label>
+        <div style="display:flex; gap:12px; margin-top:18px;">
+          <button onClick="{{ submitForm }}" style="padding:12px 24px; border:none; border-radius:12px; cursor:pointer; font-weight:700; font-size:15px; color:#fff; background:var(--c-mint);">Submit to the king 👑</button>
+          <button onClick="{{ toggleForm }}" style="padding:12px 20px; border:1px solid var(--border); border-radius:12px; cursor:pointer; font-size:14px; color:var(--ink2); background:transparent;">nvm</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <!-- MAP GRID -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; align-items:start;">
+
+      <!-- MAP CANVAS -->
+      <div style="position:relative; width:100%; aspect-ratio:5/6; border-radius:22px; overflow:hidden; border:1px solid var(--border); box-shadow:var(--shadow); background:var(--mapOcean);">
+        <svg viewBox="0 0 100 120" width="100%" height="100%" style="position:absolute; inset:0; display:block;">
+          <rect x="0" y="0" width="100" height="120" fill="var(--mapOcean)"></rect>
+          <path d="M0,0 L58,0 C61,16 56,32 59,50 C61,64 55,80 58,96 C60,110 54,116 59,120 L0,120 Z" fill="var(--mapLand)"></path>
+          <path d="M67,10 C74,11 79,18 78,28 C77,40 73,50 69,52 C65,49 65,26 66,16 C66,12 66,10 67,10 Z" fill="var(--mapIsland)"></path>
+          <path d="M73,55 C78,57 80,64 79,70 C78,74 74,73 73,71 C71,66 71,58 72,56 Z" fill="var(--mapIsland)"></path>
+          <path d="M66,82 C74,82 82,90 81,102 C80,112 75,117 70,116 C66,114 65,96 65,90 C65,85 65,83 66,82 Z" fill="var(--mapIsland)"></path>
+          <path d="M30,0 L33,120" stroke="var(--mapRoad)" stroke-width="1.6" stroke-dasharray="5 4" fill="none" opacity=".8"></path>
+          <text x="7" y="24" fill="var(--mapLabel)" font-family="Outfit" font-size="3.3" font-weight="600" letter-spacing=".5" opacity=".85">FORT LAUDERDALE</text>
+          <text x="9" y="100" fill="var(--mapLabel)" font-family="DM Serif Display" font-size="6" opacity=".55">Miami</text>
+          <text x="70" y="114" fill="var(--mapLabel)" font-family="Outfit" font-size="2.6" font-weight="600" letter-spacing=".4" opacity=".8">MIAMI BEACH</text>
+          <text x="94" y="58" fill="var(--mapLabel)" font-family="Outfit" font-size="3" font-weight="600" letter-spacing="1.5" opacity=".65" transform="rotate(90 94 58)">ATLANTIC OCEAN</text>
+        </svg>
+
+        <!-- ANCHORS -->
+        <sc-for list="{{ anchors }}" as="a" hint-placeholder-count="2">
+          <div style="position:absolute; left:{{ a.mx }}%; top:{{ a.my }}%; transform:translate(-50%,-50%); z-index:6; display:flex; flex-direction:column; align-items:center; gap:3px; pointer-events:none;">
+            <div style="width:30px; height:30px; border-radius:9px; background:var(--surface); border:2px solid {{ a.tint }}; display:flex; align-items:center; justify-content:center; font-size:15px; box-shadow:var(--shadowSm);">{{ a.emoji }}</div>
+            <div style="font-size:9.5px; font-weight:700; color:var(--ink); background:var(--surface); padding:2px 6px; border-radius:6px; border:1px solid var(--border); white-space:nowrap; letter-spacing:.2px;">{{ a.label }}</div>
+          </div>
+        </sc-for>
+
+        <!-- PINS -->
+        <sc-for list="{{ mapPins }}" as="p" hint-placeholder-count="8">
+          <button onClick="{{ p.onClick }}" style="position:absolute; left:{{ p.mx }}%; top:{{ p.my }}%; transform:translate(-50%,-50%); z-index:{{ p.z }}; width:{{ p.size }}; height:{{ p.size }}; border-radius:50%; border:2.5px solid var(--surface); background:{{ p.cat.color }}; color:#fff; cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:{{ p.fs }}; box-shadow:{{ p.glow }}; animation:pinPop .3s ease; padding:0;">{{ p.cat.emoji }}</button>
+        </sc-for>
+
+        <!-- LEGEND -->
+        <div style="position:absolute; left:12px; bottom:12px; z-index:8; display:flex; flex-wrap:wrap; gap:5px 10px; max-width:70%; padding:9px 12px; border-radius:12px; background:var(--glass); backdrop-filter:blur(8px); border:1px solid var(--glassBorder);">
+          <sc-for list="{{ legend }}" as="l" hint-placeholder-count="6">
+            <span style="display:inline-flex; align-items:center; gap:5px; font-size:10.5px; font-weight:600; color:var(--ink);"><span style="width:9px; height:9px; border-radius:50%; background:{{ l.color }};"></span>{{ l.label }}</span>
+          </sc-for>
+        </div>
+      </div>
+
+      <!-- SIDE PANEL -->
+      <div style="display:flex; flex-direction:column; gap:14px; min-width:0;">
+        <!-- SELECTED DETAIL -->
+        <sc-if value="{{ hasSelected }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:20px; border-radius:20px; background:var(--surface); border:2px solid {{ sel.cat.color }}; box-shadow:var(--shadow); animation:softGlow 3s ease-in-out infinite;">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+              <span style="display:inline-flex; align-items:center; gap:5px; font-size:11px; font-weight:700; letter-spacing:.5px; padding:5px 11px; border-radius:999px; background:{{ sel.cat.soft }}; color:{{ sel.cat.color }};">{{ sel.cat.emoji }} {{ sel.cat.label }}</span>
+              <button onClick="{{ clearSelected }}" style="border:none; background:transparent; color:var(--ink3); font-size:18px; cursor:pointer; line-height:1;">✕</button>
+            </div>
+            <div style="font-family:'DM Serif Display'; font-size:24px; line-height:1.1; margin:12px 0 3px;">{{ sel.title }}</div>
+            <div style="font-size:13px; color:var(--ink3); margin-bottom:2px;">📍 {{ sel.place }}</div>
+            <div style="font-size:12px; color:var(--ink3);">pitched by {{ sel.requester }}</div>
+            <div style="font-size:14px; color:var(--ink2); line-height:1.55; margin:12px 0 4px; font-style:italic;">"{{ sel.note }}"</div>
+            <sc-if value="{{ sel.hasWho }}" hint-placeholder-val="{{ false }}">
+              <div style="font-size:12px; color:var(--ink3); margin-top:8px;">🙋 in: <span style="color:var(--ink);">{{ sel.whoStr }}</span></div>
+            </sc-if>
+            <span style="display:inline-block; margin-top:12px; font-size:11px; font-weight:700; letter-spacing:.5px; padding:4px 10px; border-radius:999px; background:{{ sel.badgeBg }}; color:{{ sel.badgeCol }};">{{ sel.badge }}</span>
+            <div style="display:flex; align-items:center; gap:10px; margin-top:14px;">
+              <button onClick="{{ sel.onVote }}" style="display:flex; align-items:center; gap:7px; padding:10px 16px; border-radius:12px; cursor:pointer; font-weight:700; font-size:14px; border:1px solid {{ sel.voteBorder }}; background:{{ sel.voteBg }}; color:{{ sel.voteCol }};">👍 {{ sel.votes }}</button>
+              <sc-if value="{{ sel.hasLink }}" hint-placeholder-val="{{ false }}">
+                <a href="{{ sel.link }}" target="_blank" style="font-size:13px; color:var(--c-teal); text-decoration:none; font-weight:600;">🔗 open link ↗</a>
+              </sc-if>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ noSelected }}" hint-placeholder-val="{{ true }}">
+          <div style="padding:18px 20px; border-radius:18px; background:var(--surface2); border:1px dashed var(--border); font-size:13px; color:var(--ink2); line-height:1.5;">👆 Tap a pin on the map or a place below to see the details.</div>
+        </sc-if>
+
+        <!-- PLACE LIST -->
+        <div style="border-radius:20px; background:var(--surface); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadowSm);">
+          <div style="padding:13px 18px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; letter-spacing:.5px; color:var(--ink2);">{{ listCount }} PLACES{{ filterLabel }}</div>
+          <div style="max-height:520px; overflow-y:auto;">
+            <sc-for list="{{ list }}" as="r" hint-placeholder-count="6">
+              <div onClick="{{ r.onSelect }}" style="display:flex; gap:12px; align-items:center; padding:13px 18px; border-bottom:1px solid var(--border); cursor:pointer; background:{{ r.rowBg }};">
+                <div style="width:34px; height:34px; border-radius:10px; flex:0 0 auto; background:{{ r.cat.soft }}; color:{{ r.cat.color }}; display:flex; align-items:center; justify-content:center; font-size:16px;">{{ r.cat.emoji }}</div>
+                <div style="flex:1; min-width:0;">
+                  <div style="font-size:14px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ r.title }}</div>
+                  <div style="font-size:11.5px; color:var(--ink3); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">📍 {{ r.place }} · {{ r.statusLabel }}</div>
+                </div>
+                <button onClick="{{ r.onVote }}" style="flex:0 0 auto; display:flex; align-items:center; gap:5px; padding:7px 11px; border-radius:10px; cursor:pointer; font-weight:700; font-size:13px; border:1px solid {{ r.voteBorder }}; background:{{ r.voteBg }}; color:{{ r.voteCol }};">👍 {{ r.votes }}</button>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GRAVEYARD -->
+    <sc-if value="{{ hasGraveyard }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top:26px; padding:24px; border-radius:20px; background:var(--surface2); border:1px dashed var(--border);">
+        <div style="font-family:'DM Serif Display'; font-size:22px; color:var(--ink2);">⚰️ The graveyard of denied dreams</div>
+        <p style="font-size:13px; color:var(--ink3); margin:6px 0 16px;">Rejected by management. Rest in pieces.</p>
+        <div style="display:flex; flex-wrap:wrap; gap:10px;">
+          <sc-for list="{{ graveyard }}" as="g" hint-placeholder-count="2">
+            <div style="padding:10px 15px; border-radius:12px; background:var(--surface); border:1px solid var(--border);">
+              <span style="text-decoration:line-through; color:var(--ink2); font-weight:600; font-size:14px;">{{ g.title }}</span>
+              <span style="font-size:12px; color:var(--ink3); margin-left:8px;">— {{ g.requester }} tried. Sia said no.</span>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+    </sc-if>
+  </section>
+
+  </sc-if>
+
+  <sc-if value="{{ isBudget }}" hint-placeholder-val="{{ false }}">
+  <!-- BUDGET -->
+  <section data-screen-label="Budget" style="max-width:1120px; margin:0 auto; padding:40px 22px 44px;">
+    <div style="display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:20px;">
+      <div>
+        <div style="font-size:12px; letter-spacing:2px; font-weight:700; color:var(--c-coral);">THE DAMAGE</div>
+        <h1 style="font-family:'DM Serif Display'; font-size:clamp(30px,5vw,44px); margin:6px 0 0; line-height:1.05;">Budget &amp; split</h1>
+        <div style="font-size:14px; color:var(--ink2); margin-top:6px; max-width:560px;">Everything we've fronted, who paid, and who's in on it — so we can settle up later without anyone holding a grudge.</div>
+      </div>
+      <button onClick="{{ toggleExpense }}" style="padding:13px 22px; border:none; border-radius:14px; cursor:pointer; font-weight:600; font-size:15px; color:#fff; background:var(--c-coral); box-shadow:var(--shadowSm);">＋ Add expense</button>
+    </div>
+
+    <!-- STAT TILES -->
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(158px,1fr)); gap:12px; margin-bottom:16px;">
+      <sc-for list="{{ budgetStats }}" as="s" hint-placeholder-count="4">
+        <div style="padding:18px 18px 16px; border-radius:18px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+          <div style="display:flex; align-items:center; gap:7px;"><span style="font-size:15px;">{{ s.emoji }}</span><span style="font-size:12px; color:var(--ink2); font-weight:600;">{{ s.label }}</span></div>
+          <div style="font-family:'DM Serif Display'; font-size:29px; line-height:1.05; margin-top:8px; color:{{ s.color }};">{{ s.value }}</div>
+          <div style="font-size:11.5px; color:var(--ink3); margin-top:3px;">{{ s.sub }}</div>
+        </div>
+      </sc-for>
+    </div>
+
+    <!-- ADD FORM -->
+    <sc-if value="{{ showExpense }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-bottom:16px; padding:24px; border-radius:20px; background:var(--surface); border:1px solid var(--c-coral); box-shadow:var(--shadowSm);">
+        <div style="font-weight:700; font-size:18px; margin-bottom:16px;">Log an expense 🧾</div>
+        <div style="display:grid; grid-template-columns:2fr 1fr; gap:14px;">
+          <label style="display:block;"><span style="font-size:12px; color:var(--ink2); font-weight:600;">WHAT WAS IT? *</span><input value="{{ expForm.desc }}" onChange="{{ onExpDesc }}" placeholder="e.g. Airbnb deposit" style="width:100%; margin-top:6px; padding:11px 13px; border-radius:11px; border:1px solid var(--border); background:var(--surface2); color:var(--ink); font-size:14px;"></label>
+          <label style="display:block;"><span style="font-size:12px; color:var(--ink2); font-weight:600;">AMOUNT ($) *</span><input value="{{ expForm.amount }}" onChange="{{ onExpAmount }}" inputmode="decimal" placeholder="0.00" style="width:100%; margin-top:6px; padding:11px 13px; border-radius:11px; border:1px solid var(--border); background:var(--surface2); color:var(--ink); font-size:14px;"></label>
+        </div>
+        <div style="margin-top:14px;">
+          <span style="font-size:12px; color:var(--ink2); font-weight:600;">WHO PAID?</span>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+            <sc-for list="{{ payerChips }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.onPick }}" style="padding:8px 15px; border-radius:999px; cursor:pointer; font-size:13px; font-weight:600; border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.col }};">{{ c.name }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="margin-top:14px;">
+          <span style="font-size:12px; color:var(--ink2); font-weight:600;">SPLIT BETWEEN <span style="color:var(--ink3); font-weight:500;">(tap to toggle)</span></span>
+          <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+            <sc-for list="{{ partChips }}" as="c" hint-placeholder-count="4">
+              <button onClick="{{ c.onPick }}" style="padding:8px 15px; border-radius:999px; cursor:pointer; font-size:13px; font-weight:600; border:1px solid {{ c.border }}; background:{{ c.bg }}; color:{{ c.col }};">{{ c.check }} {{ c.name }}</button>
+            </sc-for>
+          </div>
+        </div>
+        <div style="display:flex; gap:12px; margin-top:18px;">
+          <button onClick="{{ addExpense }}" style="padding:12px 24px; border:none; border-radius:12px; cursor:pointer; font-weight:700; font-size:15px; color:#fff; background:var(--c-mint);">Add to the tab</button>
+          <button onClick="{{ toggleExpense }}" style="padding:12px 20px; border:1px solid var(--border); border-radius:12px; cursor:pointer; font-size:14px; color:var(--ink2); background:transparent;">nvm</button>
+        </div>
+      </div>
+    </sc-if>
+
+    <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:18px; align-items:start;">
+      <!-- LEFT: balances + settle -->
+      <div style="display:flex; flex-direction:column; gap:16px;">
+        <div style="border-radius:20px; background:var(--surface); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadowSm);">
+          <div style="padding:14px 18px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; letter-spacing:.5px; color:var(--ink2);">WHO'S UP, WHO'S DOWN</div>
+          <sc-for list="{{ balances }}" as="p" hint-placeholder-count="4">
+            <div style="display:flex; align-items:center; gap:12px; padding:13px 18px; border-bottom:1px solid var(--border);">
+              <div style="width:34px; height:34px; border-radius:50%; flex:0 0 auto; background:{{ p.color }}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;">{{ p.initial }}</div>
+              <div style="flex:1; min-width:0;">
+                <div style="font-size:14px; font-weight:600;">{{ p.name }}</div>
+                <div style="font-size:11.5px; color:var(--ink3);">paid {{ p.paidStr }} · owes {{ p.shareStr }}</div>
+              </div>
+              <div style="text-align:right;">
+                <div style="font-weight:700; font-size:15px; color:{{ p.netColor }};">{{ p.netStr }}</div>
+                <div style="font-size:10.5px; color:var(--ink3);">{{ p.netLabel }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="border-radius:20px; background:var(--surface); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadowSm);">
+          <div style="padding:14px 18px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; letter-spacing:.5px; color:var(--ink2);">💸 SETTLE UP</div>
+          <sc-if value="{{ hasSettle }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:6px 0;">
+              <sc-for list="{{ settle }}" as="t" hint-placeholder-count="2">
+                <div style="display:flex; align-items:center; gap:8px; padding:11px 18px; font-size:14px;">
+                  <span style="font-weight:600; color:{{ t.fromColor }};">{{ t.from }}</span>
+                  <span style="color:var(--ink3);">pays</span>
+                  <span style="font-weight:600; color:{{ t.toColor }};">{{ t.to }}</span>
+                  <span style="flex:1;"></span>
+                  <span style="font-weight:700; color:var(--ink);">{{ t.amountStr }}</span>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+          <sc-if value="{{ noSettle }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:22px 18px; text-align:center; font-size:14px; color:var(--ink2);">🎉 All square. Nobody owes anybody. Miracle.</div>
+          </sc-if>
+        </div>
+      </div>
+
+      <!-- RIGHT: expense list -->
+      <div style="border-radius:20px; background:var(--surface); border:1px solid var(--border); overflow:hidden; box-shadow:var(--shadowSm);">
+        <div style="padding:14px 18px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; letter-spacing:.5px; color:var(--ink2);">{{ expenseCount }} EXPENSES</div>
+        <sc-for list="{{ expenseList }}" as="e" hint-placeholder-count="5">
+          <div style="display:flex; gap:12px; padding:15px 18px; border-bottom:1px solid var(--border);">
+            <div style="width:36px; height:36px; border-radius:10px; flex:0 0 auto; background:{{ e.payerColor }}; color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px;">{{ e.payerInitial }}</div>
+            <div style="flex:1; min-width:0;">
+              <div style="display:flex; justify-content:space-between; gap:10px;">
+                <div style="font-size:14.5px; font-weight:600;">{{ e.desc }}</div>
+                <div style="font-family:'DM Serif Display'; font-size:17px; white-space:nowrap;">{{ e.amountStr }}</div>
+              </div>
+              <div style="font-size:12px; color:var(--ink3); margin-top:2px;">{{ e.payer }} paid · split {{ e.splitCount }} ways · {{ e.perStr }} each</div>
+              <div style="display:flex; flex-wrap:wrap; gap:5px; margin-top:8px; align-items:center;">
+                <sc-for list="{{ e.parts }}" as="pp" hint-placeholder-count="3">
+                  <span style="font-size:11px; font-weight:600; padding:3px 9px; border-radius:999px; background:{{ pp.soft }}; color:{{ pp.color }};">{{ pp.name }}</span>
+                </sc-for>
+                <span style="flex:1;"></span>
+                <button onClick="{{ e.onDelete }}" style="border:none; background:transparent; color:var(--ink3); font-size:13px; cursor:pointer;">delete</button>
+              </div>
+            </div>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noExpenses }}" hint-placeholder-val="{{ false }}">
+          <div style="padding:30px 18px; text-align:center; font-size:14px; color:var(--ink2);">No expenses logged yet. Someone's gotta pay for something eventually.</div>
+        </sc-if>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ isWeather }}" hint-placeholder-val="{{ false }}">
+  <!-- WEATHER -->
+  <section data-screen-label="Weather" style="max-width:1120px; margin:0 auto; padding:40px 22px 44px;">
+    <div style="margin-bottom:22px;">
+      <div style="font-size:12px; letter-spacing:2px; font-weight:700; color:var(--c-coral);">THE FORECAST</div>
+      <h1 style="font-family:'DM Serif Display'; font-size:clamp(30px,5vw,44px); margin:6px 0 0; line-height:1.05;">Weather</h1>
+      <p style="font-size:14px; color:var(--ink2); margin:6px 0 0; max-width:580px;">Trip-week outlook for both cities. It's July in South Florida — assume sun, a violent 20-minute afternoon storm, then sun again.</p>
+    </div>
+
+    <div style="display:flex; flex-direction:column; gap:18px;">
+      <sc-for list="{{ weather }}" as="w" hint-placeholder-count="2">
+        <div style="border-radius:22px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm); overflow:hidden;">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:18px 22px; background:{{ w.soft }};">
+            <div><div style="font-size:12px; letter-spacing:1.5px; font-weight:700; color:{{ w.accent }};">{{ w.label }}</div><div style="font-size:13px; color:var(--ink2); margin-top:2px;">{{ w.note }}</div></div>
+            <div style="text-align:right;"><div style="font-family:'DM Serif Display'; font-size:34px; line-height:1;">{{ w.now }}</div><div style="font-size:11.5px; color:var(--ink3);">right now</div></div>
+          </div>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(128px,1fr)); gap:12px; padding:18px 22px;">
+            <sc-for list="{{ w.days }}" as="d" hint-placeholder-count="4">
+              <div style="padding:16px 12px; border-radius:16px; background:var(--surface2); border:1px solid var(--border); text-align:center;">
+                <div style="font-size:12px; font-weight:700; letter-spacing:1px; color:var(--ink2);">{{ d.day }}</div>
+                <div style="font-size:11px; color:var(--ink3);">{{ d.date }}</div>
+                <div style="font-size:34px; margin:8px 0 4px;">{{ d.icon }}</div>
+                <div style="font-family:'DM Serif Display'; font-size:20px;">{{ d.hi }}<span style="color:var(--ink3); font-size:15px;"> / {{ d.lo }}</span></div>
+                <div style="font-size:12px; color:var(--ink2); margin-top:4px;">{{ d.cond }}</div>
+                <div style="font-size:11.5px; color:var(--c-teal); margin-top:3px;">💧 {{ d.rain }}</div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+      </sc-for>
+
+      <div style="padding:22px; border-radius:20px; background:var(--c-gold-s); border:1px solid var(--border);">
+        <div style="font-weight:700; font-size:16px; margin-bottom:6px;">🧳 What to actually pack</div>
+        <div style="font-size:14px; color:var(--ink2); line-height:1.6;">SPF 30+ (reef-safe — we're better than that), one dry shirt per day because you <i>will</i> sweat through the first, a rain layer you'll pretend you don't need, and sunglasses you can afford to lose at Space.</div>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <!-- FOOTER -->
+  <footer style="text-align:center; padding:44px 22px 58px; border-top:1px solid var(--border); background:var(--bg2);">
+    <div style="font-family:'DM Serif Display'; font-size:22px;">Miami <span style="color:var(--c-coral); font-style:italic;">&amp;</span> Ftl. '26</div>
+    <p style="font-size:13px; color:var(--ink2); margin:12px auto 0; max-width:440px; line-height:1.65;">Built for the boys. All requests subject to the whims, mood, and blood-alcohol level of <a href="#admin" onClick="{{ goAdmin }}" style="color:var(--ink2); font-weight:600; cursor:pointer;">management</a>. Do not @ Sia about your yacht.</p>
+    <p style="font-size:11px; color:var(--ink3); margin-top:16px;">no refunds · no crying · SPF 30 minimum</p>
+  </footer>
+
+  <!-- ADMIN THRONE ROOM -->
+  <sc-if value="{{ admin }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed; inset:0; z-index:200; background:var(--bg); overflow-y:auto; padding:20px;">
+      <div style="position:absolute; top:-25%; left:0; right:0; height:70%; background:radial-gradient(closest-side, var(--c-gold-s), transparent 72%); animation:spotlight 7s ease-in-out infinite; pointer-events:none;"></div>
+      <div style="position:relative; max-width:820px; margin:0 auto; text-align:center;">
+        <div style="display:flex; justify-content:space-between; align-items:center; gap:12px; padding-top:6px;">
+          <div style="font-weight:700; font-size:15px; color:var(--c-gold);">👑 The throne room</div>
+          <button onClick="{{ exitAdmin }}" style="padding:8px 16px; border:1px solid var(--border); border-radius:10px; cursor:pointer; font-size:13px; color:var(--ink2); background:var(--surface);">✕ back to site</button>
+        </div>
+        <div style="font-family:'DM Serif Display'; font-size:clamp(32px,7vw,60px); margin:20px 0 4px;">Judgment day</div>
+        <div style="font-size:15px; color:var(--ink2); margin-bottom:8px;">{{ pendingCount }} peasant(s) await your royal verdict, Sia.</div>
+
+        <sc-if value="{{ hasPending }}" hint-placeholder-val="{{ false }}">
+          <div style="position:relative; margin:22px auto 0; max-width:600px; padding:34px 30px 30px; border-radius:26px; background:var(--surface); border:2px solid {{ cur.cat.color }}; box-shadow:var(--shadow);">
+            <div style="display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:700; letter-spacing:.5px; padding:6px 14px; border-radius:999px; background:{{ cur.cat.soft }}; color:{{ cur.cat.color }};">{{ cur.cat.emoji }} {{ cur.cat.label }} · 📍 {{ cur.place }}</div>
+            <div style="font-family:'DM Serif Display'; font-size:clamp(28px,5.5vw,44px); line-height:1.08; margin:18px 0 6px;">{{ cur.title }}</div>
+            <div style="font-size:15px; color:var(--c-gold); font-weight:600;">pitched by {{ cur.requester }}{{ cur.whoTail }}</div>
+            <div style="margin:22px auto 0; max-width:460px; padding:18px 22px; border-radius:16px; background:var(--surface2); border-left:4px solid {{ cur.cat.color }}; text-align:left;">
+              <div style="font-size:11px; letter-spacing:1.5px; color:var(--ink3); margin-bottom:6px;">THEIR DEFENSE:</div>
+              <div style="font-size:19px; font-style:italic; line-height:1.4;">"{{ cur.note }}"</div>
+            </div>
+            <div style="display:flex; align-items:center; justify-content:center; gap:18px; margin-top:20px;">
+              <div style="font-size:14px; color:var(--ink2);">👍 {{ cur.votes }} votes from the peanut gallery</div>
+              <sc-if value="{{ cur.hasLink }}" hint-placeholder-val="{{ false }}"><a href="{{ cur.link }}" target="_blank" style="font-size:14px; color:var(--c-teal); text-decoration:none; font-weight:600;">🔗 evidence ↗</a></sc-if>
+            </div>
+            <div style="display:flex; gap:16px; margin-top:28px;">
+              <button onClick="{{ deny }}" style="flex:1; padding:20px; border:none; border-radius:16px; cursor:pointer; font-family:'DM Serif Display'; font-size:clamp(20px,4vw,28px); color:#fff; background:var(--c-coral); box-shadow:var(--shadowSm);">👎 Denied</button>
+              <button onClick="{{ approve }}" style="flex:1; padding:20px; border:none; border-radius:16px; cursor:pointer; font-family:'DM Serif Display'; font-size:clamp(20px,4vw,28px); color:#fff; background:var(--c-mint); box-shadow:var(--shadowSm);">👑 Approved</button>
+            </div>
+            <button onClick="{{ later }}" style="margin-top:14px; padding:9px 18px; border:1px solid var(--border); border-radius:10px; cursor:pointer; font-size:13px; color:var(--ink2); background:transparent;">🤔 ugh, decide later (send to back)</button>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ noPending }}" hint-placeholder-val="{{ false }}">
+          <div style="margin:40px auto 0; max-width:520px; padding:44px 30px; border-radius:24px; background:var(--surface); border:1px solid var(--border); box-shadow:var(--shadowSm);">
+            <div style="font-size:56px;">🍸</div>
+            <div style="font-family:'DM Serif Display'; font-size:30px; margin-top:12px;">The court is adjourned</div>
+            <p style="font-size:15px; color:var(--ink2); margin:10px 0 0;">No peasants await judgment. You've ruled with a gentle but firm hand. Go get a drink, your majesty.</p>
+            <button onClick="{{ exitAdmin }}" style="margin-top:22px; padding:12px 26px; border:none; border-radius:12px; cursor:pointer; font-weight:700; color:#fff; background:var(--c-gold);">← Back to the site</button>
+          </div>
+        </sc-if>
+      </div>
+
+      <sc-if value="{{ hasVerdict }}" hint-placeholder-val="{{ false }}">
+        <div style="position:fixed; inset:0; z-index:300; pointer-events:none;">
+          <div style="position:absolute; inset:0; background:{{ verdict.flash }}; animation:flashFade 1.9s ease-out forwards;"></div>
+          <div style="position:absolute; top:50%; left:50%; font-family:'DM Serif Display'; font-size:clamp(46px,12vw,140px); color:{{ verdict.stampCol }}; text-shadow:0 6px 30px {{ verdict.glow }}; border:7px solid {{ verdict.stampCol }}; padding:12px 40px; border-radius:20px; animation:stampSlam .7s cubic-bezier(.2,1.4,.4,1) forwards; background:var(--glass);">{{ verdict.label }}</div>
+          <sc-for list="{{ burst }}" as="p" hint-placeholder-count="0">
+            <span style="{{ p.style }}">{{ p.emoji }}</span>
+          </sc-for>
+        </div>
+      </sc-if>
+    </div>
+  </sc-if>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+class Component extends DCLogic {
+  state = {
+    now: Date.now(),
+    admin: false,
+    view: 'home',
+    theme: 'light',
+    requests: null,
+    myVotes: {},
+    myBnb: null,
+    showForm: false,
+    form: { title:'', category:'eats', link:'', note:'', who:'' },
+    verdict: null,
+    selected: null,
+    mapFilter: 'all',
+    expenses: null,
+    showExpense: false,
+    expForm: { desc:'', amount:'', payer:'Sia', participants:['Sia','Joseph','Marcus','Devon'] },
+  };
+
+  SQUAD = [
+    { name:'Sia',    color:'var(--c-coral)', soft:'var(--c-coral-s)' },
+    { name:'Joseph', color:'var(--c-teal)',  soft:'var(--c-teal-s)' },
+    { name:'Marcus', color:'var(--c-lav)',   soft:'var(--c-lav-s)' },
+    { name:'Devon',  color:'var(--c-mint)',  soft:'var(--c-mint-s)' },
+  ];
+
+  SEED_EXPENSES = [
+    { id:'e1', desc:'Airbnb deposit', amount:400, payer:'Sia', participants:['Sia','Joseph','Marcus','Devon'] },
+    { id:'e2', desc:'Rental car (Lockheed rate)', amount:286, payer:'Sia', participants:['Sia','Joseph','Marcus','Devon'] },
+    { id:'e3', desc:'First-night bar tab, Las Olas', amount:214, payer:'Joseph', participants:['Sia','Joseph','Marcus','Devon'] },
+    { id:'e4', desc:'Jet ski deposit @ Haulover', amount:120, payer:'Marcus', participants:['Marcus','Joseph'] },
+    { id:'e5', desc:'Groceries + booze run', amount:98, payer:'Devon', participants:['Sia','Joseph','Marcus','Devon'] },
+  ];
+
+  WEATHER = [
+    { label:'FORT LAUDERDALE', accent:'var(--c-coral)', soft:'var(--c-coral-s)', now:'89°', note:'Humidity: soup. Feels like 104°.', days:[
+      { day:'THU', date:'Jul 23', icon:'☀️', hi:'89°', lo:'79°', cond:'Hot & sunny', rain:'10%' },
+      { day:'FRI', date:'Jul 24', icon:'⛅', hi:'88°', lo:'78°', cond:'Partly cloudy', rain:'30%' },
+      { day:'SAT', date:'Jul 25', icon:'🌦️', hi:'87°', lo:'78°', cond:'PM storms', rain:'55%' },
+      { day:'SUN', date:'Jul 26', icon:'☀️', hi:'90°', lo:'79°', cond:'Hot & clear', rain:'20%' },
+    ]},
+    { label:'MIAMI', accent:'var(--c-teal)', soft:'var(--c-teal-s)', now:'91°', note:'Daily 3pm downpour, then instantly sunny.', days:[
+      { day:'THU', date:'Jul 23', icon:'⛅', hi:'90°', lo:'80°', cond:'Humid', rain:'20%' },
+      { day:'FRI', date:'Jul 24', icon:'🌦️', hi:'89°', lo:'79°', cond:'Scattered storms', rain:'45%' },
+      { day:'SAT', date:'Jul 25', icon:'⛈️', hi:'88°', lo:'79°', cond:'PM thunder', rain:'60%' },
+      { day:'SUN', date:'Jul 26', icon:'☀️', hi:'91°', lo:'80°', cond:'Sunny', rain:'25%' },
+    ]},
+  ];
+
+  CATS = {
+    eats:    { label:'EATS',      emoji:'🍽️', color:'var(--c-coral)', soft:'var(--c-coral-s)' },
+    water:   { label:'WATER',     emoji:'🌊', color:'var(--c-teal)',  soft:'var(--c-teal-s)' },
+    beach:   { label:'BEACH',     emoji:'🏖️', color:'var(--c-gold)',  soft:'var(--c-gold-s)' },
+    night:   { label:'NIGHTLIFE', emoji:'🕺', color:'var(--c-lav)',   soft:'var(--c-lav-s)' },
+    culture: { label:'CULTURE',   emoji:'🎨', color:'var(--c-mint)',  soft:'var(--c-mint-s)' },
+    chaos:   { label:'CHAOS',     emoji:'🎲', color:'var(--c-pink)',  soft:'var(--c-pink-s)' },
+  };
+
+  ANCHORS = [
+    { emoji:'⭐', label:'Home base', mx:56, my:15, tint:'var(--c-gold)' },
+    { emoji:'✈️', label:'FLL airport', mx:44, my:26, tint:'var(--c-teal)' },
+  ];
+
+  SEED = [
+    { id:'s3', title:'Jet Ski @ Haulover', category:'water', place:'Haulover Sandbar', mx:76, my:50, link:'', note:'Because nothing says vacation like almost dying at 45mph next to a nude beach.', who:['Marcus','Joseph'], requester:'Marcus', votes:7, status:'approved' },
+    { id:'s1', title:"Joe's Stone Crab", category:'eats', place:'South Beach', mx:73, my:92, link:'https://www.joesstonecrab.com', note:"A Miami institution. I refuse to fly home without cracking a claw the size of my forearm.", who:['Joseph'], requester:'Joseph', votes:6, status:'approved' },
+    { id:'s7', title:'Las Olas Beach Day', category:'beach', place:'Fort Lauderdale', mx:73, my:15, link:'', note:"FLL's home beach. Free, close, and we're cheap. The math checks out.", who:['Everyone'], requester:'Sia', votes:6, status:'approved' },
+    { id:'s6', title:'Versailles', category:'eats', place:'Little Havana', mx:38, my:83, link:'https://www.versaillesrestaurant.com', note:'Best Cuban in Miami. The cortadito alone justifies the drive to Calle Ocho.', who:['Sia'], requester:'Sia', votes:5, status:'approved' },
+    { id:'s2', title:'Wynwood Walls', category:'culture', place:'Wynwood', mx:44, my:74, link:'https://thewynwoodwalls.com', note:"Culture, allegedly. Mostly for the photos, let's be honest with ourselves.", who:['Sia','Devon'], requester:'Sia', votes:4, status:'approved' },
+    { id:'s4', title:'LIV Nightclub', category:'night', place:'Miami Beach', mx:74, my:78, link:'https://livnightclub.com', note:"$1,200 table minimum but we'll 'figure it out' (translation: Sia's paying).", who:['Everyone'], requester:'Devon', votes:5, status:'pending' },
+    { id:'s5', title:'Yacht Day (full send)', category:'water', place:'Bahia Mar Marina', mx:63, my:24, link:'', note:'hookers and blow', who:['Joseph'], requester:'Joseph', votes:3, status:'pending' },
+    { id:'s8', title:"Rocco's Tacos", category:'eats', place:'Las Olas', mx:57, my:22, link:'https://www.roccostacos.com', note:'Tequila bar on Las Olas where they pour it dancing on the bar. Chaotic. Correct.', who:['Devon'], requester:'Devon', votes:4, status:'pending' },
+    { id:'s9', title:'Space Miami', category:'night', place:'Downtown Miami', mx:50, my:80, link:'https://www.clubspace.com', note:"Techno til 10am on the rooftop. We are far too old for this. Let's do it anyway.", who:['Marcus'], requester:'Marcus', votes:4, status:'pending' },
+    { id:'s10', title:'Museum of Ice Cream', category:'culture', place:'Miami', mx:0, my:0, link:'', note:"It's a giant sprinkle pool. I want to be in the sprinkle pool. Sue me.", who:['Devon'], requester:'Devon', votes:1, status:'denied' },
+    { id:'s11', title:'Rent a Lambo for the day', category:'chaos', place:'FTL', mx:0, my:0, link:'', note:"$1,500 for 4 hours. We'll look ridiculous. That is entirely the point.", who:['Joseph'], requester:'Joseph', votes:2, status:'denied' },
+  ];
+
+  BNBS = [
+    { name:'Canal House + Tiki Bar', price:'$338/n', beds:'3 bd · 2 ba · sleeps 6', blurb:'Private dock, heated pool, tiki bar out back. We would never leave. Probably the move.', icon:'🏝️', bg:'linear-gradient(135deg,#A8DDC5,#9FC7E8)', base:3 },
+    { name:'Las Olas Palace', price:'$412/n', beds:'4 bd · 3 ba · sleeps 8', blurb:'Rooftop pool, walk to the Las Olas bars. A little bougie. Sia-approved pricing? Debatable.', icon:'🏙️', bg:'linear-gradient(135deg,#F5C6D3,#F5D9A8)', base:2 },
+    { name:'Beachfront Bro Cave', price:'$521/n', beds:'5 bd · 4 ba · sleeps 10', blurb:'Steps from the sand, sleeps the whole crew. Expensive. Worth it? You decide.', icon:'🌊', bg:'linear-gradient(135deg,#9FD3E0,#C4B4E4)', base:1 },
+    { name:'The Budget Bungalow', price:'$189/n', beds:'2 bd · 1 ba · sleeps 4', blurb:"Someone's on the floor. Character-building. Extremely cheap. For the fiscally responsible king.", icon:'🛖', bg:'linear-gradient(135deg,#F5D9A8,#EBB59A)', base:0 },
+  ];
+
+  DAYS = [
+    { label:'THURSDAY', title:'Wheels up', date:'Jul 23 · leave ATL', accent:'var(--c-coral)', bg:'var(--c-coral-s)', items:[
+      { time:'4:00p', title:'Uber to ATL', note:"Leave stupid early. It's ATL. It's a warzone." },
+      { time:'6:40p', title:'Flight ATL → FLL', note:'Aisle seats for the tall ones or there will be words.' },
+      { time:'8:45p', title:'Land + grab the rental', note:'Sia works the Lockheed magic at the counter.' },
+      { time:'9:30p', title:'Drop bags at the house', note:'Whichever one you clowns voted for.' },
+      { time:'10:00p', title:'First-night drinks on Las Olas', note:'Pace yourself. Nobody does.' },
+    ]},
+    { label:'FRIDAY', title:'Beach & bad decisions', date:'Jul 24', accent:'var(--c-teal)', bg:'var(--c-teal-s)', items:[
+      { time:'10:00a', title:'Recovery breakfast', note:'Grease. Electrolytes. Regret.' },
+      { time:'12:00p', title:'Las Olas Beach', note:'Umbrella rental is a scam we will pay for anyway.' },
+      { time:'3:00p', title:'Jet skis @ Haulover', note:'Marcus is signing the waivers.' },
+      { time:'8:00p', title:'Dinner — TBD', note:'Vote it out on the map ↓' },
+      { time:'11:00p', title:'Miami nightlife', note:'Uber. Do not drive. Do not.' },
+    ]},
+    { label:'SATURDAY', title:'Full send', date:'Jul 25', accent:'var(--c-mint)', bg:'var(--c-mint-s)', items:[
+      { time:'11:00a', title:'Little Havana + Versailles', note:'Cuban coffee that could raise the dead.' },
+      { time:'2:00p', title:'Wynwood Walls', note:'Take the photo. Post the photo. Move on.' },
+      { time:'5:00p', title:'Pool / regroup', note:'Mandatory nap for the elders.' },
+      { time:'8:00p', title:"Joe's Stone Crab", note:'The big-boy dinner. Wear the good shirt.' },
+      { time:'11:00p', title:'LIV / Space (RIP)', note:'Someone is losing a phone tonight.' },
+    ]},
+    { label:'SUNDAY', title:'The long goodbye', date:'Jul 26 · fly home', accent:'var(--c-gold)', bg:'var(--c-gold-s)', items:[
+      { time:'11:00a', title:'Checkout', note:"Find your other shoe. It's in the pool." },
+      { time:'12:00p', title:'Last beach hang', note:'One final aggressive tan.' },
+      { time:'3:00p', title:'Return the rental', note:'Gas it up or Sia files a formal complaint.' },
+      { time:'6:30–8p', title:'Flights home (scattered)', note:"You're on your own out there. Godspeed." },
+    ]},
+  ];
+
+  componentDidMount() {
+    this.load();
+    this.timer = setInterval(() => this.setState({ now: Date.now() }), 1000);
+    this.syncRoute();
+    this._hc = () => this.syncRoute();
+    window.addEventListener('hashchange', this._hc);
+    const t = document.documentElement.getAttribute('data-theme') || 'light';
+    this.setState({ theme: t });
+  }
+  componentWillUnmount() { clearInterval(this.timer); window.removeEventListener('hashchange', this._hc); }
+
+  toggleTheme() {
+    const t = this.state.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', t);
+    try { localStorage.setItem('miami_theme', t); } catch(e) {}
+    this.setState({ theme: t });
+  }
+
+  syncRoute() {
+    const h = (location.hash || '').replace('#', '').toLowerCase();
+    if (h === 'admin') { this.setState({ admin: true }); return; }
+    const views = ['home', 'stay', 'plan', 'map', 'weather', 'budget'];
+    this.setState({ admin: false, view: views.includes(h) ? h : 'home' });
+  }
+  setView(v) {
+    this.setState({ view: v, admin: false, selected: null });
+    if ((location.hash || '').replace('#', '') !== v) location.hash = v;
+    window.scrollTo(0, 0);
+  }
+  goHome() { this.setView('home'); }
+
+  load() {
+    let requests, myVotes = {}, myBnb = null;
+    try { const r = JSON.parse(localStorage.getItem('miami_requests_v2')); if (Array.isArray(r)) requests = r; } catch(e) {}
+    if (!requests) requests = this.SEED.map(x => ({ ...x }));
+    try { myVotes = JSON.parse(localStorage.getItem('miami_myvotes_v1')) || {}; } catch(e) {}
+    try { myBnb = localStorage.getItem('miami_bnb_v1') || null; } catch(e) {}
+    let expenses;
+    try { const ex = JSON.parse(localStorage.getItem('miami_expenses_v1')); if (Array.isArray(ex)) expenses = ex; } catch(e) {}
+    if (!expenses) expenses = this.SEED_EXPENSES.map(x => ({ ...x }));
+    this.setState({ requests, myVotes, myBnb, expenses });
+  }
+  persist(requests) { try { localStorage.setItem('miami_requests_v2', JSON.stringify(requests)); } catch(e) {} }
+  persistExpenses(expenses) { try { localStorage.setItem('miami_expenses_v1', JSON.stringify(expenses)); } catch(e) {} }
+
+  toggleExpense() { this.setState(s => ({ showExpense: !s.showExpense })); }
+  onExpDesc(e) { const v = e.target.value; this.setState(s => ({ expForm: { ...s.expForm, desc: v } })); }
+  onExpAmount(e) { const v = e.target.value; this.setState(s => ({ expForm: { ...s.expForm, amount: v } })); }
+  pickPayer(name) { this.setState(s => ({ expForm: { ...s.expForm, payer: name } })); }
+  toggleParticipant(name) {
+    this.setState(s => {
+      const has = s.expForm.participants.includes(name);
+      const participants = has ? s.expForm.participants.filter(p => p !== name) : [...s.expForm.participants, name];
+      return { expForm: { ...s.expForm, participants } };
+    });
+  }
+  addExpense() {
+    const f = this.state.expForm;
+    const amt = parseFloat(f.amount);
+    if (!f.desc.trim()) { alert('What did you buy, exactly?'); return; }
+    if (!(amt > 0)) { alert('Enter a real dollar amount.'); return; }
+    if (!f.participants.length) { alert('Split it between at least one person.'); return; }
+    const exp = { id: 'e' + Date.now(), desc: f.desc.trim(), amount: Math.round(amt * 100) / 100, payer: f.payer, participants: [...f.participants] };
+    const expenses = [exp, ...this.state.expenses];
+    this.persistExpenses(expenses);
+    this.setState({ expenses, showExpense: false, expForm: { desc:'', amount:'', payer:'Sia', participants: this.SQUAD.map(s => s.name) } });
+  }
+  deleteExpense(id) {
+    const expenses = this.state.expenses.filter(e => e.id !== id);
+    this.persistExpenses(expenses);
+    this.setState({ expenses });
+  }
+
+  computeBudget() {
+    const squad = this.SQUAD;
+    const expenses = this.state.expenses || [];
+    const paid = {}, share = {};
+    squad.forEach(s => { paid[s.name] = 0; share[s.name] = 0; });
+    let total = 0;
+    expenses.forEach(e => {
+      total += e.amount;
+      if (paid[e.payer] === undefined) paid[e.payer] = 0;
+      paid[e.payer] += e.amount;
+      const parts = (e.participants && e.participants.length) ? e.participants : squad.map(s => s.name);
+      const per = e.amount / parts.length;
+      parts.forEach(p => { if (share[p] === undefined) share[p] = 0; share[p] += per; });
+    });
+    const net = {};
+    Object.keys(paid).forEach(n => { net[n] = paid[n] - share[n]; });
+    // settle up (greedy)
+    const creditors = [], debtors = [];
+    squad.forEach(s => { const v = Math.round(net[s.name] * 100) / 100; if (v > 0.01) creditors.push({ name: s.name, amt: v }); else if (v < -0.01) debtors.push({ name: s.name, amt: -v }); });
+    creditors.sort((a, b) => b.amt - a.amt); debtors.sort((a, b) => b.amt - a.amt);
+    const settle = []; let ci = 0, di = 0;
+    while (ci < creditors.length && di < debtors.length) {
+      const c = creditors[ci], d = debtors[di];
+      const pay = Math.min(c.amt, d.amt);
+      settle.push({ from: d.name, to: c.name, amount: Math.round(pay * 100) / 100 });
+      c.amt -= pay; d.amt -= pay;
+      if (c.amt < 0.01) ci++; if (d.amt < 0.01) di++;
+    }
+    return { total, paid, share, net, settle };
+  }
+
+  toggleForm() { this.setState(s => ({ showForm: !s.showForm })); }
+  onTitle(e) { const v = e.target.value; this.setState(s => ({ form: { ...s.form, title: v } })); }
+  onWho(e) { const v = e.target.value; this.setState(s => ({ form: { ...s.form, who: v } })); }
+  onLink(e) { const v = e.target.value; this.setState(s => ({ form: { ...s.form, link: v } })); }
+  onNote(e) { const v = e.target.value; this.setState(s => ({ form: { ...s.form, note: v } })); }
+  pickCat(k) { this.setState(s => ({ form: { ...s.form, category: k } })); }
+  setFilter(k) { this.setState({ mapFilter: k }); }
+  selectPlace(id) { this.setState({ selected: id }); }
+  clearSelected() { this.setState({ selected: null }); }
+
+  submitForm() {
+    const f = this.state.form;
+    if (!f.title.trim()) { alert('At least name the thing, champ.'); return; }
+    const who = f.who.split(',').map(x => x.trim()).filter(Boolean);
+    const req = {
+      id: 'u' + Date.now(), title: f.title.trim(), category: f.category, place: 'Spot TBD',
+      mx: 0, my: 0, link: f.link.trim(), note: f.note.trim() || 'No reason given. Bold strategy.',
+      who, requester: who[0] || 'Anonymous Coward', votes: 1, status: 'pending',
+    };
+    const requests = [req, ...this.state.requests];
+    this.persist(requests);
+    this.setState({ requests, showForm: false, form: { title:'', category:'eats', link:'', note:'', who:'' } });
+  }
+
+  toggleVote(id) {
+    const myVotes = { ...this.state.myVotes };
+    const voted = !!myVotes[id];
+    myVotes[id] = !voted;
+    const requests = this.state.requests.map(r => r.id === id ? { ...r, votes: Math.max(0, r.votes + (voted ? -1 : 1)) } : r);
+    try { localStorage.setItem('miami_myvotes_v1', JSON.stringify(myVotes)); } catch(e) {}
+    this.persist(requests);
+    this.setState({ requests, myVotes });
+  }
+
+  voteBnb(name) {
+    const myBnb = this.state.myBnb === name ? null : name;
+    try { if (myBnb) localStorage.setItem('miami_bnb_v1', myBnb); else localStorage.removeItem('miami_bnb_v1'); } catch(e) {}
+    this.setState({ myBnb });
+  }
+
+  goAdmin(e) { if (e) e.preventDefault(); location.hash = 'admin'; this.setState({ admin: true }); window.scrollTo(0, 0); }
+  exitAdmin() { location.hash = this.state.view; this.setState({ admin: false }); }
+
+  pending() { return (this.state.requests || []).filter(r => r.status === 'pending'); }
+
+  verdict(decision) {
+    if (this.state.verdict) return;
+    const cur = this.pending()[0];
+    if (!cur) return;
+    this.setState({ verdict: { decision, id: cur.id } });
+    setTimeout(() => {
+      const requests = this.state.requests.map(r => r.id === cur.id ? { ...r, status: decision } : r);
+      this.persist(requests);
+      this.setState({ requests, verdict: null });
+    }, 1900);
+  }
+  later() {
+    const p = this.pending();
+    if (p.length < 2) return;
+    const first = p[0];
+    const requests = [...this.state.requests.filter(r => r.id !== first.id), first];
+    this.persist(requests);
+    this.setState({ requests });
+  }
+
+  makeBurst(decision) {
+    const good = ['💸','🛥️','🎉','🍹','🌴','✅','🤑','👑','🥂'];
+    const bad = ['❌','🚫','💀','😂','👎','🗑️','🙅','💔'];
+    const set = decision === 'approved' ? good : bad;
+    const out = [];
+    for (let i = 0; i < 22; i++) {
+      out.push({
+        emoji: set[i % set.length],
+        style: {
+          position:'fixed', left:'50%', top:'48%', fontSize:(26 + Math.random()*32)+'px',
+          '--tx':((Math.random()*2-1)*600)+'px', '--ty':((Math.random()*2-1)*430)+'px', '--r':((Math.random()*2-1)*360)+'deg',
+          animation:'fling 1.7s cubic-bezier(.15,.7,.3,1) forwards', animationDelay:(Math.random()*260)+'ms',
+        },
+      });
+    }
+    return out;
+  }
+
+  renderVals() {
+    const CATS = this.CATS;
+    const target = new Date('2026-07-23T18:40:00-04:00').getTime();
+    let diff = Math.max(0, target - this.state.now);
+    const days = Math.floor(diff / 86400000); diff -= days * 86400000;
+    const hours = Math.floor(diff / 3600000); diff -= hours * 3600000;
+    const mins = Math.floor(diff / 60000); diff -= mins * 60000;
+    const secs = Math.floor(diff / 1000);
+    const pad = n => String(n).padStart(2, '0');
+    const cd = { days, hours: pad(hours), mins: pad(mins), secs: pad(secs) };
+
+    const requests = this.state.requests || [];
+    const myVotes = this.state.myVotes || {};
+    const filter = this.state.mapFilter;
+
+    const decorate = r => {
+      const cat = CATS[r.category] || CATS.chaos;
+      const pending = r.status === 'pending';
+      const voted = !!myVotes[r.id];
+      const who = (r.who || []).filter(w => w && w !== r.requester);
+      return {
+        ...r, cat,
+        badge: pending ? "⏳ AWAITING SIA'S BLESSING" : '✅ LOCKED IN',
+        badgeBg: pending ? 'var(--c-gold-s)' : 'var(--c-mint-s)',
+        badgeCol: pending ? 'var(--c-gold)' : 'var(--c-mint)',
+        statusLabel: pending ? 'pending' : 'locked in',
+        hasLink: !!r.link, hasWho: who.length > 0, whoStr: who.join(', '),
+        voted, voteBg: voted ? 'var(--c-coral)' : 'var(--surface2)',
+        voteCol: voted ? '#fff' : 'var(--ink)',
+        voteBorder: voted ? 'var(--c-coral)' : 'var(--border)',
+        onVote: (e) => { if (e) e.stopPropagation(); this.toggleVote(r.id); },
+        onSelect: () => this.selectPlace(r.id),
+      };
+    };
+
+    const visible = requests.filter(r => r.status !== 'denied');
+    const filtered = filter === 'all' ? visible : visible.filter(r => r.category === filter);
+    const list = filtered.map(decorate)
+      .sort((a, b) => (a.status === b.status) ? b.votes - a.votes : (a.status === 'pending' ? -1 : 1))
+      .map(r => ({ ...r, rowBg: this.state.selected === r.id ? r.cat.soft : 'transparent' }));
+
+    const mapPins = visible.filter(r => r.mx > 0 && (filter === 'all' || r.category === filter)).map(r => {
+      const d = decorate(r);
+      const isSel = this.state.selected === r.id;
+      return { ...d, z: isSel ? 20 : 5, size: isSel ? '40px' : '30px', fs: isSel ? '19px' : '15px',
+        glow: isSel ? '0 0 0 5px ' + d.cat.soft + ', var(--shadow)' : 'var(--shadowSm)',
+        onClick: () => this.selectPlace(r.id) };
+    });
+
+    const graveyard = requests.filter(r => r.status === 'denied');
+
+    const selRaw = requests.find(r => r.id === this.state.selected);
+    const sel = selRaw ? decorate(selRaw) : { cat: CATS.chaos, title:'', place:'', requester:'', note:'', votes:0, hasLink:false, hasWho:false, link:'', whoStr:'', badge:'', badgeBg:'transparent', badgeCol:'var(--ink)', voteBg:'var(--surface2)', voteCol:'var(--ink)', voteBorder:'var(--border)', onVote:()=>{} };
+
+    const bnbs = this.BNBS.map(b => {
+      const mine = this.state.myBnb === b.name;
+      return { ...b, count: b.base + (mine ? 1 : 0),
+        borderCol: mine ? 'var(--c-teal)' : 'var(--border)',
+        btnBg: mine ? 'var(--c-teal)' : 'var(--surface2)',
+        btnCol: mine ? '#fff' : 'var(--ink)',
+        btnLabel: mine ? '✓ This is my pick' : 'Vote for this one',
+        onVote: () => this.voteBnb(b.name) };
+    });
+
+    const catList = Object.keys(CATS).map(k => {
+      const c = CATS[k]; const active = this.state.form.category === k;
+      return { key: k, label: c.label, emoji: c.emoji,
+        chipBg: active ? c.color : 'var(--surface2)',
+        chipCol: active ? '#fff' : 'var(--ink2)',
+        chipBorder: active ? c.color : 'var(--border)',
+        onPick: () => this.pickCat(k) };
+    });
+
+    const filterTabs = [{ key:'all', label:'All' }].concat(Object.keys(CATS).map(k => ({ key:k, label:CATS[k].emoji+' '+CATS[k].label[0]+CATS[k].label.slice(1).toLowerCase() })))
+      .map(t => { const active = filter === t.key;
+        return { ...t, onPick: () => this.setFilter(t.key),
+          bg: active ? 'var(--c-coral)' : 'var(--surface)',
+          col: active ? '#fff' : 'var(--ink2)',
+          border: active ? 'var(--c-coral)' : 'var(--border)' }; });
+
+    const legend = Object.keys(CATS).map(k => ({ label: CATS[k].label[0] + CATS[k].label.slice(1).toLowerCase(), color: CATS[k].color }));
+
+    const view = this.state.view;
+    const tabDefs = [
+      { k:'home', label:'Home', emoji:'🏠' },
+      { k:'stay', label:'Stay', emoji:'🏝️' },
+      { k:'plan', label:'Plan', emoji:'🗓️' },
+      { k:'map', label:'Map', emoji:'📍' },
+      { k:'weather', label:'Weather', emoji:'🌤️' },
+      { k:'budget', label:'Budget', emoji:'💸' },
+    ];
+    const tabs = tabDefs.map(t => { const active = view === t.k;
+      return { ...t, active, onClick: () => this.setView(t.k), weight: active ? '700' : '500',
+        bg: active ? 'var(--surface)' : 'transparent', col: active ? 'var(--c-coral)' : 'var(--ink2)' }; });
+
+    const pending = this.pending();
+    const curRaw = pending[0];
+    let cur = null;
+    if (curRaw) { const c = decorate(curRaw); const others = (curRaw.who || []).filter(w => w && w !== curRaw.requester); c.whoTail = others.length ? ' + ' + others.join(', ') : ''; cur = c; }
+
+    // ---- budget + dashboard ----
+    const squad = this.SQUAD;
+    const squadMeta = {}; squad.forEach(s => squadMeta[s.name] = s);
+    const money = n => { const r = Math.round(Math.abs(n) * 100) / 100; return '$' + (r % 1 === 0 ? r.toLocaleString('en-US') : r.toLocaleString('en-US', { minimumFractionDigits:2, maximumFractionDigits:2 })); };
+    const bud = this.computeBudget();
+    const expensesRaw = this.state.expenses || [];
+    const perPerson = bud.total / squad.length;
+
+    let topSpender = squad[0] ? squad[0].name : '—', topAmt = -1;
+    squad.forEach(s => { if ((bud.paid[s.name] || 0) > topAmt) { topAmt = bud.paid[s.name] || 0; topSpender = s.name; } });
+
+    const budgetStats = [
+      { emoji:'💰', label:'Total spent', value: money(bud.total), sub: expensesRaw.length + ' expenses', color:'var(--ink)' },
+      { emoji:'👤', label:'Per person', value: money(perPerson), sub:'split ' + squad.length + ' ways', color:'var(--c-gold)' },
+      { emoji:'🧾', label:'Expenses', value: String(expensesRaw.length), sub:'logged so far', color:'var(--c-teal)' },
+      { emoji:'🏆', label:'Biggest spender', value: topSpender, sub: money(topAmt) + ' fronted', color:'var(--c-coral)' },
+    ];
+
+    const balances = squad.map(s => {
+      const net = Math.round((bud.net[s.name] || 0) * 100) / 100;
+      const owed = net > 0.01, owes = net < -0.01;
+      return { name:s.name, color:s.color, initial:s.name[0],
+        paidStr: money(bud.paid[s.name] || 0), shareStr: money(bud.share[s.name] || 0),
+        netStr: (owed ? '+' : owes ? '−' : '') + money(net),
+        netColor: owed ? 'var(--c-mint)' : owes ? 'var(--c-coral)' : 'var(--ink3)',
+        netLabel: owed ? 'is owed' : owes ? 'owes' : 'all square' };
+    });
+
+    const settle = bud.settle.map(t => ({ from:t.from, to:t.to, amountStr: money(t.amount),
+      fromColor: (squadMeta[t.from] || {}).color || 'var(--ink)', toColor: (squadMeta[t.to] || {}).color || 'var(--ink)' }));
+
+    const expenseList = expensesRaw.map(e => {
+      const parts = (e.participants && e.participants.length) ? e.participants : squad.map(x => x.name);
+      const pm = squadMeta[e.payer] || { color:'var(--ink3)' };
+      return { ...e, amountStr: money(e.amount), perStr: money(e.amount / parts.length),
+        splitCount: parts.length, payerColor: pm.color, payerInitial: e.payer[0],
+        parts: parts.map(p => { const m = squadMeta[p] || { color:'var(--ink)', soft:'var(--surface2)' }; return { name:p, color:m.color, soft:m.soft }; }),
+        onDelete: () => this.deleteExpense(e.id) };
+    });
+
+    const payerChips = squad.map(s => { const active = this.state.expForm.payer === s.name;
+      return { name:s.name, onPick: () => this.pickPayer(s.name),
+        bg: active ? s.color : 'var(--surface2)', col: active ? '#fff' : 'var(--ink2)', border: active ? s.color : 'var(--border)' }; });
+    const partChips = squad.map(s => { const active = this.state.expForm.participants.includes(s.name);
+      return { name:s.name, check: active ? '✓' : '＋', onPick: () => this.toggleParticipant(s.name),
+        bg: active ? s.soft : 'var(--surface2)', col: active ? s.color : 'var(--ink3)', border: active ? s.color : 'var(--border)' }; });
+
+    const approvedAll = visible.filter(r => r.status === 'approved');
+    const approvedPlans = approvedAll.map(decorate).sort((a, b) => b.votes - a.votes).slice(0, 5);
+    const approvedCount = approvedAll.length;
+    const leadRaw = [...bnbs].sort((a, b) => b.count - a.count)[0] || { name:'—', price:'', count:0 };
+    const leadingBnb = { name: leadRaw.name, price: leadRaw.price, count: leadRaw.count };
+    const budgetTop = expensesRaw.slice().sort((a, b) => b.amount - a.amount).slice(0, 3).map(e => ({ desc:e.desc, payer:e.payer, amountStr: money(e.amount) }));
+    const homeStats = [
+      { emoji:'🗓️', label:'Trip length', value:'4 days', sub:'3 nights in FTL', color:'var(--c-coral)' },
+      { emoji:'💰', label:'Total spent', value: money(bud.total), sub: expensesRaw.length + ' expenses', color:'var(--ink)' },
+      { emoji:'👤', label:'Per person', value: money(perPerson), sub:'so far', color:'var(--c-gold)' },
+      { emoji:'✅', label:'Plans locked', value: String(approvedCount), sub:'approved by Sia', color:'var(--c-mint)' },
+      { emoji:'⏳', label:'Awaiting Sia', value: String(pending.length), sub:'pending ideas', color:'var(--c-lav)' },
+      { emoji:'🕶️', label:'The squad', value: String(squad.length), sub:'confirmed', color:'var(--c-teal)' },
+    ];
+
+    const v = this.state.verdict;
+    let verdict = null, burst = [];
+    if (v) { const good = v.decision === 'approved';
+      verdict = { label: good ? 'Approved' : 'Denied', stampCol: good ? 'var(--c-mint)' : 'var(--c-coral)',
+        glow: good ? 'rgba(90,165,126,.5)' : 'rgba(227,140,116,.5)',
+        flash: good ? 'radial-gradient(circle at center, var(--c-mint-s), transparent 70%)' : 'radial-gradient(circle at center, var(--c-coral-s), transparent 70%)' };
+      burst = this.makeBurst(v.decision);
+    }
+
+    return {
+      cd, days: this.DAYS, bnbs, catList, filterTabs, legend, anchors: this.ANCHORS,
+      tabs, isHome: view === 'home', isStay: view === 'stay', isPlan: view === 'plan', isMap: view === 'map', isBudget: view === 'budget', isWeather: view === 'weather', weather: this.WEATHER,
+      goHome: () => this.goHome(), setView: v2 => this.setView(v2),
+      stats: homeStats, squadCount: squad.length, leadingBnb,
+      budget: { totalStr: money(bud.total), perStr: money(perPerson), top: budgetTop },
+      approvedPlans, approvedCount,
+      budgetStats, balances, settle, hasSettle: settle.length > 0, noSettle: settle.length === 0,
+      expenseList, expenseCount: expensesRaw.length, noExpenses: expensesRaw.length === 0,
+      payerChips, partChips, expForm: this.state.expForm, showExpense: this.state.showExpense,
+      toggleExpense: () => this.toggleExpense(), onExpDesc: e => this.onExpDesc(e), onExpAmount: e => this.onExpAmount(e), addExpense: () => this.addExpense(),
+      themeIcon: this.state.theme === 'dark' ? '☀️' : '🌙',
+      mapPins, list, listCount: list.length,
+      filterLabel: filter === 'all' ? '' : ' · ' + (CATS[filter] ? CATS[filter].label.toLowerCase() : ''),
+      graveyard, hasGraveyard: graveyard.length > 0,
+      hasSelected: !!selRaw, noSelected: !selRaw, sel, clearSelected: () => this.clearSelected(),
+      showForm: this.state.showForm, form: this.state.form, admin: this.state.admin,
+      pendingCount: pending.length, hasPending: pending.length > 0, noPending: pending.length === 0,
+      cur: cur || { cat: CATS.chaos, title:'', place:'', requester:'', note:'', votes:0, hasLink:false, link:'', whoTail:'' },
+      hasVerdict: !!v, verdict: verdict || { label:'', stampCol:'var(--ink)', glow:'transparent', flash:'transparent' }, burst,
+      toggleTheme: () => this.toggleTheme(),
+      toggleForm: () => this.toggleForm(),
+      onTitle: e => this.onTitle(e), onWho: e => this.onWho(e), onLink: e => this.onLink(e), onNote: e => this.onNote(e),
+      submitForm: () => this.submitForm(),
+      goAdmin: e => this.goAdmin(e), exitAdmin: () => this.exitAdmin(),
+      approve: () => this.verdict('approved'), deny: () => this.verdict('denied'), later: () => this.later(),
+    };
+  }
+}
+</script>
+</body>
+</html>

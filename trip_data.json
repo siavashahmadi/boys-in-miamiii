@@ -1,0 +1,321 @@
+{
+  "meta": {
+    "source_chat": "Boys in Miamiii call me zestyyy",
+    "chat_period_covered": "2026-06-29 to 2026-07-03T13:10",
+    "extracted_at": "2026-07-03",
+    "identity_note": "Names and flight times confirmed by Sia on 2026-07-03.",
+    "caveats": [
+      "Lodging decision was still open at extraction time."
+    ]
+  },
+  "participants": [
+    { "name": "Sia", "full_name": "Siavash", "handle": "Me", "notes": "You" },
+    { "name": "Pete", "full_name": "Peter", "handle": "+14045193313", "notes": "Organizer; found most lodging options; will book" },
+    { "name": "Lucas", "full_name": "Lucas", "handle": "+16784694136", "notes": "Aka Luke; later return flight; cleared 07/26 work shift; penthouse fan" },
+    { "name": "Joe", "full_name": "Joseph", "handle": "+14046187352", "notes": "Casino is his one requirement; willing to pay extra" },
+    { "name": "Kia", "full_name": "Kiarash", "handle": "+16785490790", "notes": "Pool and grill advocate; flight-time analysis; LMco rental benefit" },
+    { "name": "Tom", "full_name": "Tommy (legal name Alex Haile)", "handle": "+16788952250", "notes": "Needs good wifi; $80 subsidy from flight booking mishap" }
+  ],
+  "dates": {
+    "start": "2026-07-23",
+    "end": "2026-07-26",
+    "nights": 3,
+    "arrival": "All six depart ATL together ~6:40 PM Thursday 2026-07-23, arriving FLL that evening",
+    "departure": "Sunday 2026-07-26 from FLL; four on the 6:55 PM JetBlue, Lucas and Tom on the ~8:40 PM flight (land ATL ~10 PM)",
+    "conflicts": [
+      "Lucas and Tom return on a later flight than the other four"
+    ]
+  },
+  "flights": {
+    "status": "booked",
+    "booked_on": "2026-06-29",
+    "route": "ATL -> FLL",
+    "airline": "JetBlue",
+    "outbound": "Thu 2026-07-23, ~6:40 PM departure from ATL, all six together",
+    "return": "Sun 2026-07-26 from FLL: four on the 6:55 PM JetBlue; Lucas and Tom on the ~8:40 PM flight, landing ATL ~10 PM",
+    "price_per_person_usd": 208,
+    "notes": [
+      "Booked during/after a 7:30 PM group call on Jun 29",
+      "Next day the later return dropped to the earlier flight's price; under-24h change window noted; no rebooking confirmed",
+      "Tom 'moved the markers' during booking, costing everyone $80-100 extra; he offered $80 toward Airbnb or dinner",
+      "Times confirmed by Sia 2026-07-03"
+    ]
+  },
+  "lodging": {
+    "requirements": {
+      "location": "Fort Lauderdale area (Miami considered early, dropped as pricier/smaller)",
+      "budget_original_usd_total": 1600,
+      "budget_original_rule": "max $100/night/person",
+      "budget_current_reality": "finalists run $1602-$2073 total for 3 nights",
+      "beds_min": 5,
+      "people": 6,
+      "bathrooms": "2 tolerated, 3 preferred (Joe and Lucas will pay extra for 3rd)",
+      "must_haves": ["sleeps 6"],
+      "strong_preferences": ["private pool", "walkable beach", "grill", "good wifi (Tom)"],
+      "vibe": "chill 'unc' trip: pool, grill, casino; not South Beach clubbing"
+    },
+    "options": [
+      {
+        "id": 1,
+        "title": "South Beach 2BD 2.5BTH Townhouse",
+        "platform": "airbnb",
+        "url": "https://www.airbnb.com/rooms/1188500176490051154",
+        "location": "Miami Beach",
+        "rating": 4.78,
+        "bedrooms": 2, "beds": 3, "baths": 1,
+        "price_total_usd": null,
+        "shared_by": "Sia", "shared_on": "2026-06-29",
+        "pros": [], "cons": ["only 3 beds for 6 people"],
+        "reactions": [],
+        "status": "dropped"
+      },
+      {
+        "id": 2,
+        "title": "Private Villa Cabana Pool Home",
+        "platform": "airbnb",
+        "url": "https://www.airbnb.com/rooms/46125831",
+        "location": "Fort Lauderdale",
+        "rating": 4.98,
+        "bedrooms": 3, "beds": 4, "baths": 2,
+        "price_total_usd": null,
+        "price_notes": "Kia's '279' likely nightly rate",
+        "shared_by": "Sia", "shared_on": "2026-06-29",
+        "pros": ["pool", "original group favorite"],
+        "cons": ["only 4 beds for 6"],
+        "reactions": [
+          { "by": "Kia", "comment": "This was good (re-shared it Jun 30)" },
+          { "by": "Sia", "comment": "OG option (re-shared Jul 2); Shiiiiiii yes it was" }
+        ],
+        "status": "faded"
+      },
+      {
+        "id": 3,
+        "title": "Home in Fort Lauderdale (6 beds)",
+        "platform": "airbnb",
+        "url": "https://www.airbnb.com/rooms/610665737849508057",
+        "location": "Fort Lauderdale",
+        "rating": 4.81,
+        "bedrooms": 3, "beds": 6, "baths": 2,
+        "price_total_usd": null,
+        "price_notes": "described as 'pretty cheap'",
+        "shared_by": "Pete", "shared_on": "2026-07-02",
+        "pros": ["cheap", "6 beds", "has what we need"],
+        "cons": [],
+        "reactions": [
+          { "by": "Sia", "comment": "Yo this is nice. I like" },
+          { "by": "Joe", "comment": "Looks siccc. Thx pete I appreciate u" },
+          { "by": "Kia", "comment": "Book it? Or naw?" }
+        ],
+        "status": "lost_to_other_bookers",
+        "status_note": "Booked by someone else evening of Jul 2 while group deliberated; Pete lost 2 other finds the same morning"
+      },
+      {
+        "id": 4,
+        "title": "Rental unit in Hollywood (beachfront-ish)",
+        "platform": "airbnb",
+        "url": "https://www.airbnb.com/rooms/690698285811990145",
+        "location": "Hollywood",
+        "rating": 4.77,
+        "bedrooms": 3, "beds": 5, "baths": 2.5,
+        "price_total_usd": 1900,
+        "shared_by": "Pete", "shared_on": "2026-07-02",
+        "pros": ["right next to the beach"],
+        "cons": ["~$1900", "5 beds", "no private pool"],
+        "reactions": [
+          { "by": "Sia", "comment": "That's really nice. But no private pool :(" },
+          { "by": "Joe", "comment": "Private pool would be nice" }
+        ],
+        "status": "dropped"
+      },
+      {
+        "id": 5,
+        "title": "Home in Lauderdale-by-the-Sea",
+        "platform": "airbnb",
+        "url": "https://www.airbnb.com/rooms/38513885",
+        "location": "Lauderdale-by-the-Sea",
+        "rating": 4.9,
+        "bedrooms": 3, "beds": 7, "baths": 2,
+        "price_total_usd": 1828,
+        "shared_by": "Pete", "shared_on": "2026-07-02",
+        "pros": ["walkable to beach", "private pool", "7 beds", "grill plan (Kia)", "'normal ass house' (Sia)"],
+        "cons": ["~30 min drive to casino", "only 2 bathrooms", "Kia wants to confirm neighborhood"],
+        "reactions": [
+          { "by": "Kia", "comment": "Ok let's do it. Pool and beach in walking distance. We can throw something on the grill" },
+          { "by": "Pete", "comment": "Okay I guess this is the one; was ready to book Jul 2 night unless someone opposed" },
+          { "by": "Sia", "comment": "I'm 100% down for this one! Later: Yeah I still like this one the most; You know my vote!" },
+          { "by": "Kia", "comment": "If this isn't in the ghetto I'm down. Lucas 2 bathrooms only so be mindful" }
+        ],
+        "status": "final_four",
+        "is_frontrunner": true
+      },
+      {
+        "id": 6,
+        "title": "Home in Fort Lauderdale (8 beds, 'chickamauga')",
+        "platform": "airbnb",
+        "url": "https://www.airbnb.com/rooms/1247189288339012983",
+        "location": "Fort Lauderdale",
+        "rating": 4.96,
+        "bedrooms": 4, "beds": 8, "baths": 2,
+        "price_total_usd": null,
+        "shared_by": "Sia", "shared_on": "2026-07-02",
+        "pros": ["8 beds"], "cons": [],
+        "reactions": [],
+        "status": "no_traction"
+      },
+      {
+        "id": 7,
+        "title": "Home in Fort Lauderdale (pricey)",
+        "platform": "airbnb",
+        "url": "https://www.airbnb.com/rooms/837267826607413391",
+        "location": "Fort Lauderdale",
+        "rating": 4.95,
+        "bedrooms": 4, "beds": 6, "baths": 3.5,
+        "price_total_usd": null,
+        "shared_by": "Sia", "shared_on": "2026-07-02",
+        "pros": ["6 beds", "3.5 baths"],
+        "cons": ["too expensive (group reaction: HOW MUCH?!?)"],
+        "reactions": [
+          { "by": "Pete", "comment": "HOW MUCH?!? Sia is that rookie that gets his first paycheck and buys a nice ass car" },
+          { "by": "Joe", "comment": "Yeah he don't know he can go to the casino and double it" }
+        ],
+        "status": "dropped"
+      },
+      {
+        "id": 8,
+        "title": "Villa Aura Heated Pool 4 Bedrooms 6 mins to Ocean",
+        "platform": "airbnb",
+        "url": "https://www.airbnb.com/rooms/53833185",
+        "location": "Fort Lauderdale",
+        "rating": 4.96,
+        "bedrooms": 4, "beds": 6, "baths": 3,
+        "price_total_usd": null,
+        "shared_by": "Lucas", "shared_on": "2026-07-03",
+        "pros": ["heated pool", "3 private baths", "6 min to ocean"],
+        "cons": ["uneven sleeping split (half kings, half small shared room)"],
+        "reactions": [],
+        "status": "no_traction"
+      },
+      {
+        "id": 9,
+        "title": "Home in Fort Lauderdale (extra bathroom)",
+        "platform": "airbnb",
+        "url": "https://www.airbnb.com/rooms/613636449757891426",
+        "location": "Fort Lauderdale",
+        "rating": 4.85,
+        "bedrooms": 4, "beds": 7, "baths": 3,
+        "price_total_usd": 2073,
+        "price_notes": "Pete typo'd $2703 first, corrected to $2073",
+        "shared_by": "Pete", "shared_on": "2026-07-03",
+        "pros": ["3 bathrooms", "heated pool", "pool table", "7 beds", "same area as option 5"],
+        "cons": ["most expensive finalist", "~30 min drive to casino"],
+        "reactions": [
+          { "by": "Lucas", "comment": "I like this one looks nice. Down to pay for extra bathroom (his #2 overall)" },
+          { "by": "Sia", "comment": "this is nice. Heated pool and pool table lol. Later: Damn that's kinda high for this actually" },
+          { "by": "Joe", "comment": "This one looks nice I can pay extra (his pick)" }
+        ],
+        "status": "final_four"
+      },
+      {
+        "id": 10,
+        "title": "Penthouse in Hallandale Beach City Center",
+        "platform": "airbnb",
+        "url": "https://www.airbnb.com/rooms/1639960090219590758",
+        "location": "Hallandale Beach (between Fort Lauderdale and Miami)",
+        "rating": 5.0,
+        "bedrooms": 3, "beds": 8, "baths": 3,
+        "price_total_usd": 1808,
+        "price_notes": "$1576 + $30/day resort fees + $28/day valet = ~$1808 all-in",
+        "shared_by": "Pete", "shared_on": "2026-07-03",
+        "pros": ["penthouse / vacation vibes", "8 beds", "3 baths", "closest to casino"],
+        "cons": ["no private pool", "resort fees + valet inflate real price"],
+        "reactions": [
+          { "by": "Lucas", "comment": "I WANT THIS SHIT TOO. South FL penthouse goes hard. True vacation vibes (his #1)" }
+        ],
+        "status": "final_four"
+      },
+      {
+        "id": 11,
+        "title": "Vrbo near the beach (older property)",
+        "platform": "vrbo",
+        "url": "https://www.vrbo.com/9682046ha",
+        "location": "Fort Lauderdale (near option 5's area)",
+        "rating": null,
+        "bedrooms": null, "beds": 6, "baths": null,
+        "price_total_usd": 1602,
+        "shared_by": "Pete", "shared_on": "2026-07-03",
+        "pros": ["cheapest finalist", "closest to the beach", "walkable to stores"],
+        "cons": ["looks old and janky (Pete's words)"],
+        "reactions": [
+          { "by": "Tom", "comment": "I like the cheapest one (his pick)" }
+        ],
+        "status": "final_four"
+      }
+    ],
+    "final_four_ids": [5, 9, 10, 11],
+    "frontrunner_id": 5,
+    "votes": {
+      "Sia": 5,
+      "Tom": 11,
+      "Joe": 9,
+      "Lucas": "10 first, 9 second",
+      "Kia": "no final vote yet (backed 5 strongly the night before)",
+      "Pete": "no final vote yet (was ready to book 5)"
+    },
+    "decision_status": "open as of 2026-07-03 13:10; Pete asked everyone to pick from the final four ASAP"
+  },
+  "budget": {
+    "lodging_cap_original_usd": 1600,
+    "lodging_cap_rule": "max $100/night/person",
+    "lodging_finalist_range_usd": [1602, 2073],
+    "per_person_lodging_estimate_usd": [267, 346],
+    "flights_per_person_usd": 208,
+    "extra_payers": ["Joe and Lucas fine paying extra for nicer place / 3rd bathroom"],
+    "subsidies": [{ "from": "Tom", "amount_usd": 80, "toward": "Airbnb or dinner", "reason": "flight booking mishap cost everyone $80-100 extra" }],
+    "splitting": "no Venmo or cost-split mechanics discussed yet"
+  },
+  "transportation": {
+    "rental_car": {
+      "status": "not booked",
+      "requirement": "seats 6",
+      "quotes": [
+        { "vehicle": "Nissan Altima", "price_usd": 215, "source": "budget company, off-airport shuttle", "by": "Sia" },
+        { "vehicle": "Nissan Altima", "price_usd": 165, "source": "Avis", "by": "Sia", "note": "too small for 6" },
+        { "vehicle": "Ford Explorer", "price_usd": 206, "by": "Sia" },
+        { "vehicle": "Minivan", "price_usd": 156, "by": "Sia" },
+        { "vehicle": "Sprinter van", "price_usd": 315, "by": "Sia", "note": "half joke" }
+      ],
+      "discounts": [
+        { "by": "Kia", "what": "LMco employee rental benefit, 'can't beat those prices / insurance'", "status": "waiting on manager approval since Jun 29" },
+        { "by": "Pete", "what": "small rental discount, offered to book" }
+      ]
+    },
+    "other": "No Uber/driver-assignment discussion"
+  },
+  "activities": [
+    { "what": "Hard Rock Casino (Hollywood FL)", "champion": "Joe", "notes": "The anchor activity; Joe: 'as long as I have my casino'. Casino distance became a lodging factor. Tom skeptical about gambling heavily." },
+    { "what": "Drake concert in Miami", "champion": "Pete", "notes": "Pitched Jun 29; Lucas cleared his 07/26 shift for it; tickets not confirmed. Screenshot with details not recoverable." },
+    { "what": "Beach", "champion": "group", "notes": "Walkable beach was a lodging priority" },
+    { "what": "Pool time", "champion": "Sia", "notes": "Private pool = top amenity ask" },
+    { "what": "Grill / cookout", "champion": "Kia", "notes": "'Gimme a pool and a grill'" },
+    { "what": "See Neon (streamer)", "champion": "Lucas", "notes": "Loved by Sia" },
+    { "what": "Soccer", "champion": "Sia", "notes": "'lil soccer ball action' at the house" },
+    { "what": "REJECTED: Thursday-night casino hotel plan", "champion": "Pete", "notes": "2 cheap rooms by casino Thu night + Airbnb Fri-Sun; Tom: 'Nah wtf too much'; dropped" }
+  ],
+  "misc_logistics": [
+    "Vibe consensus: chill 'unc' trip (pool, grill, casino), not South Beach clubbing",
+    "Sleeping: 5-6+ beds; possible share was 'lucas and kia'; Sia volunteered floor (vetoed)",
+    "Bathrooms: 2 tolerated for 6 people, 3rd worth paying for (Joe, Lucas)",
+    "Wifi: Tom's only hard requirement",
+    "Thursday evening arrival: confirm same-night check-in with lodging host",
+    "Urgency: 3 listings lost to other bookers within hours; book ASAP",
+    "Tom's $80 to apply to Airbnb or dinner"
+  ],
+  "open_items": [
+    "Final lodging vote (Kia, Pete outstanding), then book immediately",
+    "Rental car: resolve LMco benefit vs Pete's discount vs ~$156-206 quotes, book 6-seater",
+    "Drake concert tickets: decide and buy or drop",
+    "Confirm first-night check-in logistics for the Thursday evening arrival",
+    "Apply Tom's $80 subsidy",
+    "Set up cost splitting"
+  ]
+}
