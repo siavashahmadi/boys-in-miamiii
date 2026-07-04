@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import type { CatKey, Pitch } from '../../shared/seeds';
-import { AREA_MAPS_URL, CATS } from '../data/trip';
+import { AREA_MAPS_URL, CATS, CAT_HEX, MAP_PINS } from '../data/trip';
 import { Graveyard } from '../components/Graveyard';
-import { RealMap } from '../components/RealMap';
+import { RealMap, type MapMarker } from '../components/RealMap';
 
 type Filter = 'all' | CatKey;
 
@@ -41,6 +41,20 @@ export function MapView({ pitches, whoami, onVote, onAdd }: {
   });
   const graveyard = pitches.filter((p) => p.status === 'denied');
   const sel = pitches.find((p) => p.id === selected) ?? null;
+
+  const mapMarkers: MapMarker[] = visible
+    .filter((p) => MAP_PINS[p.id])
+    .map((p) => {
+      const cat = CATS[p.category] ?? CATS.chaos;
+      return {
+        id: p.id,
+        lat: MAP_PINS[p.id].lat,
+        lng: MAP_PINS[p.id].lng,
+        emoji: cat.emoji,
+        color: CAT_HEX[p.category] ?? CAT_HEX.chaos,
+        title: p.title,
+      };
+    });
 
   const filterTabs: { key: Filter; label: string }[] = [
     { key: 'all', label: 'All' },
@@ -113,7 +127,7 @@ export function MapView({ pitches, whoami, onVote, onAdd }: {
 
       <div className="grid-2col">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 0 }}>
-          <RealMap pitches={visible} selected={selected} onSelect={setSelected} />
+          <RealMap markers={mapMarkers} selected={selected} onSelect={setSelected} legend />
           <a href={AREA_MAPS_URL} target="_blank" rel="noreferrer" style={{ alignSelf: 'flex-start', fontSize: 13, color: 'var(--c-teal)', textDecoration: 'none', fontWeight: 600 }}>
             need real directions? open google maps ↗
           </a>

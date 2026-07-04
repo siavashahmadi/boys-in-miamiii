@@ -1,8 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import * as L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
-import type { CatKey, Pitch } from '../../shared/seeds';
-import { CATS, CAT_HEX, MAP_PINS } from '../data/trip';
+import type { CatKey } from '../../shared/seeds';
+import { CATS } from '../data/trip';
+
+export interface MapMarker {
+  id: string;
+  lat: number;
+  lng: number;
+  emoji: string;
+  color: string;
+  title?: string;
+}
 
 function makeIcon(emoji: string, color: string, selected: boolean): L.DivIcon {
   const size = selected ? 40 : 30;
@@ -15,20 +24,21 @@ function makeIcon(emoji: string, color: string, selected: boolean): L.DivIcon {
   });
 }
 
-// Real interactive street map of the Fort Lauderdale → Miami area via
-// OpenStreetMap tiles. Free, no API key. Our six spots are the markers.
-export function RealMap({ pitches, selected, onSelect }: {
-  pitches: Pitch[];
-  selected: string | null;
-  onSelect: (id: string) => void;
+// Real interactive street map (OpenStreetMap tiles via Leaflet — free, no key).
+// Shared by the Map tab (the six spots) and the Stay tab (one house pin).
+export function RealMap({ markers, selected, onSelect, legend, singleZoom }: {
+  markers: MapMarker[];
+  selected?: string | null;
+  onSelect?: (id: string) => void;
+  legend?: boolean;
+  singleZoom?: number; // when set (single marker), center at this zoom instead of fitBounds
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
   const [ready, setReady] = useState(false);
 
-  const pinned = pitches.filter((p) => MAP_PINS[p.id]);
-  const pinnedSig = pinned.map((p) => p.id).sort().join(',');
+  const sig = markers.map((m) => `${m.id}:${m.lat}:${m.lng}`).join('|');
 
   // create the map once
   useEffect(() => {
@@ -43,44 +53,40 @@ export function RealMap({ pitches, selected, onSelect }: {
     return () => { map.remove(); mapRef.current = null; setReady(false); };
   }, []);
 
-  // (re)build markers when the pinned set changes or map becomes ready
+  // (re)build markers when the set changes or the map becomes ready
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     Object.values(markersRef.current).forEach((m) => m.remove());
     markersRef.current = {};
     const latlngs: L.LatLngExpression[] = [];
-    pinned.forEach((p) => {
-      const c = MAP_PINS[p.id];
-      const cat = CATS[p.category as CatKey] ?? CATS.chaos;
-      const color = CAT_HEX[p.category as CatKey] ?? CAT_HEX.chaos;
-      const marker = L.marker([c.lat, c.lng], {
-        icon: makeIcon(cat.emoji, color, selected === p.id),
-        title: p.title,
+    markers.forEach((mk) => {
+      const marker = L.marker([mk.lat, mk.lng], {
+        icon: makeIcon(mk.emoji, mk.color, selected === mk.id),
+        title: mk.title,
       }).addTo(map);
-      marker.on('click', () => onSelect(p.id));
-      markersRef.current[p.id] = marker;
-      latlngs.push([c.lat, c.lng]);
+      if (onSelect) marker.on('click', () => onSelect(mk.id));
+      markersRef.current[mk.id] = marker;
+      latlngs.push([mk.lat, mk.lng]);
     });
-    if (latlngs.length) map.fitBounds(L.latLngBounds(latlngs), { padding: [48, 48] });
+    if (latlngs.length === 1 && singleZoom) {
+      map.setView(latlngs[0], singleZoom);
+    } else if (latlngs.length) {
+      map.fitBounds(L.latLngBounds(latlngs), { padding: [48, 48] });
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pinnedSig, ready]);
+  }, [sig, ready]);
 
   // reflect selection: swap icons + pan to the chosen marker
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    pinned.forEach((p) => {
-      const m = markersRef.current[p.id];
-      if (!m) return;
-      const cat = CATS[p.category as CatKey] ?? CATS.chaos;
-      const color = CAT_HEX[p.category as CatKey] ?? CAT_HEX.chaos;
-      m.setIcon(makeIcon(cat.emoji, color, selected === p.id));
+    markers.forEach((mk) => {
+      const m = markersRef.current[mk.id];
+      if (m) m.setIcon(makeIcon(mk.emoji, mk.color, selected === mk.id));
     });
-    if (selected && MAP_PINS[selected]) {
-      const c = MAP_PINS[selected];
-      map.panTo([c.lat, c.lng]);
-    }
+    const s = markers.find((mk) => mk.id === selected);
+    if (s) map.panTo([s.lat, s.lng]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selected]);
 
@@ -90,14 +96,16 @@ export function RealMap({ pitches, selected, onSelect }: {
         ref={ref}
         style={{ height: 520, borderRadius: 22, overflow: 'hidden', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', background: 'var(--surface2)' }}
       />
-      <div style={{ position: 'absolute', left: 12, bottom: 12, zIndex: 500, display: 'flex', flexWrap: 'wrap', gap: '5px 10px', maxWidth: '70%', padding: '9px 12px', borderRadius: 12, background: 'var(--glass)', backdropFilter: 'blur(8px)', border: '1px solid var(--glassBorder)' }}>
-        {(Object.keys(CATS) as CatKey[]).map((k) => (
-          <span key={k} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 10.5, fontWeight: 600, color: 'var(--ink)' }}>
-            <span style={{ width: 9, height: 9, borderRadius: '50%', background: CATS[k].color }} />
-            {CATS[k].label[0] + CATS[k].label.slice(1).toLowerCase()}
-          </span>
-        ))}
-      </div>
+      {legend && (
+        <div style={{ position: 'absolute', left: 12, bottom: 12, zIndex: 500, display: 'flex', flexWrap: 'wrap', gap: '5px 10px', maxWidth: '70%', padding: '9px 12px', borderRadius: 12, background: 'var(--glass)', backdropFilter: 'blur(8px)', border: '1px solid var(--glassBorder)' }}>
+          {(Object.keys(CATS) as CatKey[]).map((k) => (
+            <span key={k} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 10.5, fontWeight: 600, color: 'var(--ink)' }}>
+              <span style={{ width: 9, height: 9, borderRadius: '50%', background: CATS[k].color }} />
+              {CATS[k].label[0] + CATS[k].label.slice(1).toLowerCase()}
+            </span>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

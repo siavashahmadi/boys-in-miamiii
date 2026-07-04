@@ -1,4 +1,5 @@
-import { HOUSE, HOUSE_MAPS_URL, HOUSE_MAP_EMBED } from '../data/trip';
+import { CAT_HEX, HOUSE, HOUSE_MAPS_URL } from '../data/trip';
+import { RealMap } from '../components/RealMap';
 
 export function Stay() {
   return (
@@ -45,17 +46,10 @@ export function Stay() {
             open in google maps ↗
           </a>
         </div>
-        <div style={{ borderRadius: 20, overflow: 'hidden', border: '1px solid var(--border)', boxShadow: 'var(--shadowSm)', lineHeight: 0 }}>
-          <iframe
-            title="Casa de los Uncs on the map"
-            src={HOUSE_MAP_EMBED}
-            width="100%"
-            height="360"
-            style={{ border: 0, display: 'block' }}
-            loading="lazy"
-            referrerPolicy="no-referrer-when-downgrade"
-          />
-        </div>
+        <RealMap
+          markers={[{ id: 'house', lat: HOUSE.lat, lng: HOUSE.lng, emoji: '🏠', color: CAT_HEX.culture, title: HOUSE.name }]}
+          singleZoom={14}
+        />
         <p style={{ fontSize: 12, color: 'var(--ink3)', marginTop: 8 }}>
           centered on fort lauderdale for now. exact pin drops once we've got the street address.
         </p>

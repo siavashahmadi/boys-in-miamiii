@@ -43,6 +43,8 @@ export interface House {
   blurb: string;
   amenities: { emoji: string; label: string }[];
   mapQuery: string; // swap for the exact street address once we have it
+  lat: number;
+  lng: number;
 }
 export const HOUSE: House = {
   name: 'Casa de los Uncs',
@@ -61,9 +63,10 @@ export const HOUSE: House = {
     { emoji: '🏖️', label: 'near the beach' },
   ],
   mapQuery: 'Fort Lauderdale, FL',
+  lat: 26.175, // approx (matches "the crib" on the map tab) until we have the street address
+  lng: -80.11,
 };
 export const HOUSE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(HOUSE.mapQuery)}`;
-export const HOUSE_MAP_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(HOUSE.mapQuery)}&z=13&output=embed`;
 
 // Convenience link (opens the phone's maps app to the area for directions).
 export const AREA_MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=Fort+Lauderdale%2C+FL';
