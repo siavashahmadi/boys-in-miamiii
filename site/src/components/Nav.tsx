@@ -16,12 +16,12 @@ export function Nav({ view, setView, theme, toggleTheme }: {
   toggleTheme: () => void;
 }) {
   return (
-    <nav style={{ position: 'sticky', top: 0, zIndex: 50, display: 'flex', alignItems: 'center', gap: 10, padding: '11px 14px', background: 'var(--navBg)', backdropFilter: 'blur(16px)', borderBottom: '1px solid var(--border)' }}>
-      <button onClick={() => setView('home')} style={{ flex: '0 0 auto', fontFamily: "'DM Serif Display',serif", fontSize: 19, letterSpacing: '.3px', color: 'var(--ink)', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>
+    <nav className="nav">
+      <button className="nav-brand" onClick={() => setView('home')}>
         Miami <span className="amp">&amp;</span> Ftl.
       </button>
-      <div style={{ flex: '1 1 auto', minWidth: 0, display: 'flex', justifyContent: 'flex-end' }}>
-        <div style={{ display: 'flex', gap: 3, alignItems: 'center', padding: 4, borderRadius: 13, background: 'var(--surface2)', border: '1px solid var(--border)', overflowX: 'auto', maxWidth: '100%' }}>
+      <div className="nav-tabs-wrap">
+        <div className="nav-tabs">
           {TABS.map((t) => {
             const active = view === t.k;
             return (
@@ -32,7 +32,7 @@ export function Nav({ view, setView, theme, toggleTheme }: {
           })}
         </div>
       </div>
-      <button onClick={toggleTheme} title="Toggle theme" style={{ flex: '0 0 auto', width: 36, height: 36, display: 'flex', alignItems: 'center', justifyContent: 'center', border: '1px solid var(--border)', borderRadius: 10, background: 'var(--surface)', color: 'var(--ink)', cursor: 'pointer', fontSize: 15 }}>
+      <button className="nav-toggle" onClick={toggleTheme} title="Toggle theme">
         {theme === 'dark' ? '☀️' : '🌙'}
       </button>
     </nav>
