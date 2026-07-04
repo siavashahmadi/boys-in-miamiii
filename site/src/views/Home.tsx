@@ -14,16 +14,14 @@ export function Home({ pitches, expenses, weather }: {
   const bud = computeBudget(SQUAD.map((s) => s.name), expenses);
   const perPerson = bud.total / SQUAD.length;
   const visible = pitches.filter((p) => p.status !== 'denied');
-  const approved = visible.filter((p) => p.status === 'approved');
-  const pending = visible.filter((p) => p.status === 'pending');
-  const approvedTop = [...approved].sort((a, b) => b.voters.length - a.voters.length).slice(0, 5);
+  const boardTop = visible.slice(0, 5);
   const budgetTop = [...expenses].sort((a, b) => b.amount - a.amount).slice(0, 3);
 
   const stats = [
     { emoji: '🕶️', label: 'The squad', value: String(SQUAD.length), sub: 'locked in', color: 'var(--c-teal)' },
-    { emoji: '✅', label: 'Plans locked', value: String(approved.length), sub: 'approved', color: 'var(--c-mint)' },
-    { emoji: '⏳', label: 'Awaiting approval', value: String(pending.length), sub: 'pending pitches', color: 'var(--c-lav)' },
-    { emoji: '🗓️', label: 'Trip length', value: '4 days', sub: '3 nights. zero plans after 2am', color: 'var(--c-coral)' },
+    { emoji: '🗓️', label: 'Trip length', value: '4 days', sub: '3 nights, zero plans after 2am', color: 'var(--c-coral)' },
+    { emoji: '🏠', label: 'The crib', value: '✅', sub: 'casa de los uncs', color: 'var(--c-mint)' },
+    { emoji: '🚗', label: 'The whip', value: 'TBD', sub: 'someone book it', color: 'var(--c-lav)' },
     { emoji: '💰', label: 'Total spent', value: money(bud.total), sub: `${expenses.length} expense${expenses.length === 1 ? '' : 's'}`, color: 'var(--ink)' },
     { emoji: '👤', label: 'Per person', value: money(perPerson), sub: 'so far', color: 'var(--c-gold)' },
   ];
@@ -124,14 +122,14 @@ export function Home({ pitches, expenses, weather }: {
 
           <div className="card" style={{ padding: 22 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
-              <div style={{ fontWeight: 700, fontSize: 16 }}>📍 The plan</div>
+              <div style={{ fontWeight: 700, fontSize: 16 }}>📍 The board</div>
               <a href="#map" style={{ fontSize: 12.5, color: 'var(--c-teal)', fontWeight: 600, textDecoration: 'none' }}>Map →</a>
             </div>
             <div style={{ fontSize: 13, color: 'var(--ink2)', margin: '12px 0 10px' }}>
-              <b style={{ color: 'var(--c-mint)' }}>{approved.length} locked in</b> · <b style={{ color: 'var(--c-gold)' }}>{pending.length} awaiting approval</b>
+              spots on the map. some real, some deeply unserious. pitch your own.
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-              {approvedTop.map((p) => (
+              {boardTop.map((p) => (
                 <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
                   <span style={{ fontSize: 14 }}>{CATS[p.category].emoji}</span>
                   <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{p.title}</span>

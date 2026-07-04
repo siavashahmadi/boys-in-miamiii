@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { CatKey, Pitch } from '../../shared/seeds';
-import { AREA_MAP_EMBED, AREA_MAPS_URL, CATS } from '../data/trip';
+import { AREA_MAPS_URL, CATS } from '../data/trip';
 import { Graveyard } from '../components/Graveyard';
+import { MapCanvas } from '../components/MapCanvas';
 
 type Filter = 'all' | CatKey;
 
@@ -112,17 +113,7 @@ export function MapView({ pitches, whoami, onVote, onAdd }: {
 
       <div className="grid-2col">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 0 }}>
-          <div style={{ borderRadius: 22, overflow: 'hidden', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', lineHeight: 0 }}>
-            <iframe
-              title="Fort Lauderdale to Miami"
-              src={AREA_MAP_EMBED}
-              width="100%"
-              height="520"
-              style={{ border: 0, display: 'block' }}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-            />
-          </div>
+          <MapCanvas pitches={visible} selected={selected} onSelect={setSelected} />
           <a href={AREA_MAPS_URL} target="_blank" rel="noreferrer" style={{ alignSelf: 'flex-start', fontSize: 13, color: 'var(--c-teal)', textDecoration: 'none', fontWeight: 600 }}>
             open in google maps ↗
           </a>
