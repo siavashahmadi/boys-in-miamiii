@@ -2,7 +2,7 @@ import { useState } from 'react';
 import type { CatKey, Pitch } from '../../shared/seeds';
 import { AREA_MAPS_URL, CATS } from '../data/trip';
 import { Graveyard } from '../components/Graveyard';
-import { MapCanvas } from '../components/MapCanvas';
+import { IllustratedMap } from '../components/IllustratedMap';
 
 type Filter = 'all' | CatKey;
 
@@ -113,9 +113,9 @@ export function MapView({ pitches, whoami, onVote, onAdd }: {
 
       <div className="grid-2col">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 0 }}>
-          <MapCanvas pitches={visible} selected={selected} onSelect={setSelected} />
+          <IllustratedMap pitches={visible} selected={selected} onSelect={setSelected} />
           <a href={AREA_MAPS_URL} target="_blank" rel="noreferrer" style={{ alignSelf: 'flex-start', fontSize: 13, color: 'var(--c-teal)', textDecoration: 'none', fontWeight: 600 }}>
-            open in google maps ↗
+            need real directions? open google maps ↗
           </a>
         </div>
 

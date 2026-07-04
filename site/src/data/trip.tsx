@@ -65,25 +65,18 @@ export const HOUSE: House = {
 export const HOUSE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(HOUSE.mapQuery)}`;
 export const HOUSE_MAP_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(HOUSE.mapQuery)}&z=13&output=embed`;
 
-// Region map for the Map page — the Fort Lauderdale → Miami corridor.
-export const AREA_MAP_EMBED = 'https://www.google.com/maps?q=Fort+Lauderdale,+FL&z=10&output=embed';
+// Convenience link (opens the phone's maps app to the area for directions).
 export const AREA_MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=Fort+Lauderdale%2C+FL';
 
-// Hex versions of the category colors, for Google Maps marker icons.
-export const CAT_HEX: Record<CatKey, string> = {
-  eats: '#E38C74', water: '#3FA5B2', beach: '#D6A94E',
-  night: '#987FCF', culture: '#5AA57E', chaos: '#CE86A6',
-};
-
-// Real lat/lng for the six seeded spots. Some are real places, some are
-// jokes dropped roughly where they'd happen. Keyed by pitch id (shared/seeds).
-export const PIN_COORDS: Record<string, { lat: number; lng: number }> = {
-  p_hardrock: { lat: 26.0512, lng: -80.2103 }, // Seminole Hard Rock, Hollywood
-  p_drake: { lat: 25.7814, lng: -80.187 },     // Kaseya Center, downtown Miami
-  p_beach: { lat: 26.192, lng: -80.0955 },     // Lauderdale-by-the-Sea beach
-  p_grill: { lat: 26.175, lng: -80.11 },       // the crib (approx)
-  p_neon: { lat: 25.801, lng: -80.199 },       // Wynwood, Miami (find neon lol)
-  p_soccer: { lat: 26.188, lng: -80.098 },     // beach / backyard
+// Positions for the six seeded spots on our hand-drawn map (viewBox 0 0 100 130,
+// Fort Lauderdale up top → Miami down bottom). Keyed by pitch id (shared/seeds).
+export const MAP_PINS: Record<string, { x: number; y: number }> = {
+  p_beach: { x: 54, y: 13 },     // Lauderdale-by-the-Sea beach
+  p_soccer: { x: 49, y: 19 },    // beach / backyard
+  p_grill: { x: 33, y: 31 },     // the crib, Fort Lauderdale
+  p_hardrock: { x: 21, y: 57 },  // Seminole Hard Rock, Hollywood
+  p_neon: { x: 34, y: 92 },      // Wynwood, Miami (find neon lol)
+  p_drake: { x: 46, y: 110 },    // downtown Miami
 };
 
 // ---------- itinerary ----------
