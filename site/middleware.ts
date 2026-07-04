@@ -6,7 +6,13 @@ export const config = { matcher: '/(.*)' };
 
 export default function middleware(req: Request): Response | undefined {
   const password = process.env.SITE_PASSWORD;
-  if (!password) return undefined; // gate unset: fail open rather than lock everyone out
+  if (!password) {
+    // Fail closed: never serve the site without the gate configured.
+    return new Response('site locked: SITE_PASSWORD is not configured yet.', {
+      status: 503,
+      headers: { 'X-Robots-Tag': 'noindex, nofollow', 'content-type': 'text/plain; charset=utf-8' },
+    });
+  }
 
   const auth = req.headers.get('authorization') || '';
   if (auth.startsWith('Basic ')) {
