@@ -65,6 +65,10 @@ export const HOUSE: House = {
 export const HOUSE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(HOUSE.mapQuery)}`;
 export const HOUSE_MAP_EMBED = `https://www.google.com/maps?q=${encodeURIComponent(HOUSE.mapQuery)}&z=13&output=embed`;
 
+// Region map for the Map page — the Fort Lauderdale → Miami corridor.
+export const AREA_MAP_EMBED = 'https://www.google.com/maps?q=Fort+Lauderdale,+FL&z=10&output=embed';
+export const AREA_MAPS_URL = 'https://www.google.com/maps/search/?api=1&query=Fort+Lauderdale%2C+FL';
+
 // ---------- itinerary ----------
 export interface DayItem { time: string; title: string; note: string }
 export interface Day { label: string; title: string; date: string; accent: string; bg: string; items: DayItem[] }
