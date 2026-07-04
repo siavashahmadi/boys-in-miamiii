@@ -46,7 +46,7 @@ async function fetchCity(c: WxCity): Promise<CityWx> {
             hi: `${Math.round(d.temperature_2m_max[i])}°`,
             lo: `${Math.round(d.temperature_2m_min[i])}°`,
             cond,
-            rain: `${d.precipitation_probability_max[i] ?? '—'}%`,
+            rain: `${d.precipitation_probability_max[i] ?? '?'}%`,
           } as WxDay;
         });
       }

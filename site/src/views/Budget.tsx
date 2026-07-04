@@ -15,14 +15,14 @@ export function Budget({ expenses, whoami, onAdd, onDelete }: {
 
   const bud = computeBudget(names, expenses);
   const perPerson = bud.total / names.length;
-  let topSpender = '—', topAmt = -1;
+  let topSpender = 'nobody', topAmt = -1;
   names.forEach((n) => { if ((bud.paid[n] || 0) > topAmt) { topAmt = bud.paid[n] || 0; topSpender = n; } });
 
   const stats = [
     { emoji: '💰', label: 'Total spent', value: money(bud.total), sub: `${expenses.length} expense${expenses.length === 1 ? '' : 's'}`, color: 'var(--ink)' },
     { emoji: '👤', label: 'Per person', value: money(perPerson), sub: `split ${names.length} ways`, color: 'var(--c-gold)' },
     { emoji: '🧾', label: 'Expenses', value: String(expenses.length), sub: 'logged so far', color: 'var(--c-teal)' },
-    { emoji: '🏆', label: 'Biggest spender', value: expenses.length ? topSpender : '—', sub: expenses.length ? `${money(topAmt)} fronted` : 'the throne is empty', color: 'var(--c-coral)' },
+    { emoji: '🏆', label: 'Biggest spender', value: expenses.length ? topSpender : 'nobody', sub: expenses.length ? `${money(topAmt)} fronted` : 'the throne is empty', color: 'var(--c-coral)' },
   ];
 
   const submit = () => {

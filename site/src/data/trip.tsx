@@ -211,7 +211,7 @@ export const INFO_CARDS: InfoCard[] = [
     body: (
       <>
         <b style={{ color: 'var(--ink)' }}>Out:</b> thu 7/23, 6:40p ATL → FLL, jetblue. all six of us.<br />
-        <b style={{ color: 'var(--ink)' }}>Back:</b> sun 7/26, 6:55p — except <b style={{ color: 'var(--c-lav)' }}>lucas &amp; tom on the 8:40</b> like it's a residency. ~$208 a head, paid.
+        <b style={{ color: 'var(--ink)' }}>Back:</b> sun 7/26, 6:55p. <b style={{ color: 'var(--c-lav)' }}>lucas &amp; tom on the 8:40</b> like it's a residency. ~$208 a head, paid.
       </>
     ),
   },
@@ -227,7 +227,7 @@ export const INFO_CARDS: InfoCard[] = [
     emoji: '🏠', iconBg: 'var(--c-mint-s)', title: 'Home base',
     body: (
       <>
-        fort lauderdale. which house? nobody voted — democracy is dead. <b style={{ color: 'var(--c-mint)' }}>pete's picking one that works and isn't too pricey.</b> <a href="#stay" style={{ color: 'var(--c-mint)', fontWeight: 600 }}>the final four →</a>
+        fort lauderdale. which house? nobody voted, democracy is dead. <b style={{ color: 'var(--c-mint)' }}>pete's picking one that works and isn't too pricey.</b> <a href="#stay" style={{ color: 'var(--c-mint)', fontWeight: 600 }}>the final four →</a>
       </>
     ),
   },

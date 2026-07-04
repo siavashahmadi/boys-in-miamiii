@@ -10,7 +10,7 @@ export function Graveyard({ heading, sub, items }: { heading: string; sub: strin
         {items.map((g) => (
           <div key={g.title} style={{ padding: '10px 15px', borderRadius: 12, background: 'var(--surface)', border: '1px solid var(--border)' }}>
             <span style={{ textDecoration: 'line-through', color: 'var(--ink2)', fontWeight: 600, fontSize: 14 }}>{g.title}</span>
-            <span style={{ fontSize: 12, color: 'var(--ink3)', marginLeft: 8 }}>— {g.epitaph}</span>
+            <span style={{ fontSize: 12, color: 'var(--ink3)', marginLeft: 8 }}>· {g.epitaph}</span>
           </div>
         ))}
       </div>
