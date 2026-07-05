@@ -110,6 +110,32 @@ export const SEED_PITCHES: Pitch[] = [
     voters: ['Sia', 'Kia'],
     status: 'approved',
   },
+  {
+    id: 'p_sesh',
+    title: 'The Backyard Summit (nightly)',
+    category: 'culture',
+    place: 'the backyard, casa de los uncs',
+    mx: 0, my: 0,
+    link: '',
+    note: "something light. something botanical. quorum is sia, kia, lucas, pete. joe's annual guest appearance ends the moment he falls asleep mid-sentence. we love him.",
+    who: ['Kia', 'Sia', 'Lucas', 'Pete'],
+    requester: 'Kia',
+    voters: ['Kia', 'Sia', 'Lucas', 'Pete'],
+    status: 'approved',
+  },
+  {
+    id: 'p_tommy',
+    title: "Tommy's First Time (year 4)",
+    category: 'chaos',
+    place: 'the atlantic ocean (see pin)',
+    mx: 0, my: 0,
+    link: '',
+    note: "he said 'maybe on a trip' once and we never let it go. the pin is in the ocean because that's where the odds are. this is the year. it is not the year.",
+    who: ['Tom'],
+    requester: 'Lucas',
+    voters: ['Lucas', 'Sia', 'Kia', 'Pete', 'Joe'],
+    status: 'pending',
+  },
 ];
 
 // Real ideas that already died in the chat, pre-denied for the graveyard.

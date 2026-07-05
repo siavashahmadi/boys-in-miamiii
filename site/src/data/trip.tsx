@@ -53,7 +53,7 @@ export const HOUSE: House = {
   specs: '4 bedrooms · 7 beds · 3 baths · ★4.85',
   url: 'https://www.airbnb.com/rooms/613636449757891426',
   blurb:
-    "home base. tucked in fort lauderdale, the quieter stretch up by lauderdale-by-the-sea, old-florida low-rise, flip-flops-and-a-tee kind of block, beach a short hop away. heated pool for the unc lifestyle, a pool table for the 2am tournaments nobody remembers, and three full bathrooms so nobody's fighting for the shower before the casino. we paid a little extra for that third bathroom and we'd do it again.",
+    "home base. tucked in fort lauderdale, the quieter stretch up by lauderdale-by-the-sea, old-florida low-rise, flip-flops-and-a-tee kind of block, beach a short hop away. heated pool for the unc lifestyle, a pool table for the 2am tournaments nobody remembers, and three full bathrooms so nobody's fighting for the shower before the casino. we paid a little extra for that third bathroom and we'd do it again. the backyard hosts the nightly summit: four regulars, joe once a year, and tommy on lookout duty until further notice.",
   amenities: [
     { emoji: '🏊', label: 'heated pool' },
     { emoji: '🎱', label: 'pool table' },
@@ -61,6 +61,7 @@ export const HOUSE: House = {
     { emoji: '🛏️', label: '7 beds' },
     { emoji: '🎰', label: '~30 min to the casino' },
     { emoji: '🏖️', label: 'near the beach' },
+    { emoji: '🌿', label: 'summit-ready backyard' },
   ],
   mapQuery: 'Fort Lauderdale, FL',
   lat: 26.175, // approx (matches "the crib" on the map tab) until we have the street address
@@ -86,6 +87,8 @@ export const MAP_PINS: Record<string, { lat: number; lng: number }> = {
   p_hardrock: { lat: 26.0512, lng: -80.2103 }, // Seminole Hard Rock, Hollywood
   p_neon: { lat: 25.801, lng: -80.199 },       // Wynwood, Miami (find neon lol)
   p_drake: { lat: 25.7814, lng: -80.187 },     // downtown Miami (Kaseya Center)
+  p_sesh: { lat: 26.1757, lng: -80.1093 },     // the backyard, casa de los uncs
+  p_tommy: { lat: 26.05, lng: -80.02 },        // the middle of the atlantic, where tommy's odds live
 };
 
 // ---------- itinerary ----------
@@ -100,6 +103,7 @@ export const DAYS: Day[] = [
       { time: '~9:00p', title: 'Land + grab the whip', note: "sia's working the LMco rate at the rental counter. still gotta actually book it." },
       { time: '10:00p', title: 'Check into Casa de los Uncs', note: 'heated pool, pool table, three bathrooms. we made it.' },
       { time: '11:00p', title: 'Hard rock recon?', note: 'joe has been waiting his whole life. something light.' },
+      { time: '1:00a', title: 'Backyard summit, session one', note: "quorum convenes: sia, kia, lucas, pete. joe's annual invite stands. tom is welcome to watch and judge." },
     ],
   },
   {
@@ -110,6 +114,7 @@ export const DAYS: Day[] = [
       { time: '4:00p', title: 'Pool', note: 'unc status activates. wife beaters optional but encouraged.' },
       { time: '7:00p', title: 'Kia on the grill', note: "'gimme a pool and a grill.' dinner: solved." },
       { time: '11:00p', title: 'Night moves TBD', note: 'pitch it on the map ↓ sia is judging.' },
+      { time: '1:00a', title: 'Summit, session two', note: "same four. joe went to bed at 10:15. tommy says he's 'thinking about it.' he is not." },
     ],
   },
   {
@@ -125,7 +130,7 @@ export const DAYS: Day[] = [
   {
     label: 'SUNDAY', title: 'The long goodbye', date: 'Jul 26 · fly home', accent: 'var(--c-gold)', bg: 'var(--c-gold-s)',
     items: [
-      { time: '10:00a', title: 'Checkout', note: "find your other shoe. it's in the pool." },
+      { time: '10:00a', title: 'Checkout', note: "find your other shoe (it's in the pool), open every window, febreze the whole crib. deposit protection protocol." },
       { time: '11:00a', title: 'Last beach hang', note: 'one final aggressive tan.' },
       { time: '4:00p', title: 'Return the whip + airport', note: 'gas it up or pete files a formal complaint.' },
       { time: '6:55p', title: 'Flight home ×4', note: 'sia, pete, joe, kia. jetblue back to reality.' },
@@ -165,7 +170,7 @@ export const WEATHER_SUB = "it's july in south florida. sun, one violent 20-minu
 export const WEATHER_FALLBACK_NOTE = 'real forecast unlocks ~jul 10 when the trip enters the 16-day window. until then: educated guesses.';
 export const PACKING = {
   title: '🧳 what to actually pack',
-  body: 'SPF 50 minimum (it’s literally in the footer), one dry shirt per day because you WILL sweat through the first, a wife beater for kia, the soccer ball, and sunglasses you can afford to lose at the casino.',
+  body: 'SPF 50 minimum (it’s literally in the footer), one dry shirt per day because you WILL sweat through the first, a wife beater for kia, the soccer ball, sunglasses you can afford to lose at the casino, eye drops for four of us, a blanket for joe’s annual 10pm curtain call, and a lighter for tommy (manifesting).',
 };
 
 // ---------- budget ----------

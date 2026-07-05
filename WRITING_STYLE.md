@@ -49,6 +49,7 @@ Six ATL friends in their mid-20s planning a "chill unc trip", not a rager: priva
 - **Neon / kick streaming**: "We gonna see Neon", "Start streaming on kick" (get-rich-quick joke).
 - **Rookie paycheck**: Pete on Sia sharing an expensive listing: "Sia is that rookie that gets his first paycheck and buys a nice ass car."
 - **Casino doubles it**: Joe's financial advice: "he can go to the casino and double it."
+- **The smokers' caucus**: Sia, Kia, Lucas, and Pete smoke regularly and it's a standing trip activity ("the backyard summit"). Joe partakes roughly once a year and immediately passes out, so his appearances are "annual" and end promptly when he falls asleep mid-sentence. Tommy has never smoked and never will, which is exactly why the group writes jokes announcing he's about to ("this is the year. it is not the year."). Calibrate all weed jokes to those three tiers: casual for the four, sleepy-cameo for Joe, perpetual manifesting for Tom.
 - **Scammer airlines**: price drops after booking = "Yo these mfers are actual scammers."
 - **Soccer**: they watch matches together (PKs, "sudden death"), "lil soccer ball action" planned at the house. Suwanee / T-Mac is the local meetup.
 
