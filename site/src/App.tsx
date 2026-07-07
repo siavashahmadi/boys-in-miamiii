@@ -17,14 +17,16 @@ import { Admin } from './views/Admin';
 export type View = 'home' | 'stay' | 'plan' | 'map' | 'weather' | 'budget';
 const VIEWS: View[] = ['home', 'stay', 'plan', 'map', 'weather', 'budget'];
 
-function readHash(): { view: View; admin: boolean } {
-  const h = (location.hash || '').replace('#', '').toLowerCase();
-  if (h === 'admin') return { view: 'home', admin: true };
-  return { view: (VIEWS as string[]).includes(h) ? (h as View) : 'home', admin: false };
+function readHash(): { view: View; admin: boolean; pinId: string | null } {
+  const raw = (location.hash || '').replace('#', '');
+  const [seg, pinId] = raw.split('/');
+  const h = seg.toLowerCase();
+  if (h === 'admin') return { view: 'home', admin: true, pinId: null };
+  return { view: (VIEWS as string[]).includes(h) ? (h as View) : 'home', admin: false, pinId: pinId || null };
 }
 
 export default function App() {
-  const [{ view, admin }, setRoute] = useState(readHash());
+  const [{ view, admin, pinId }, setRoute] = useState(readHash());
   const [theme, setTheme] = useState(document.documentElement.getAttribute('data-theme') || 'light');
   const [who, setWho] = useState<string | null>(getWhoami());
   const [state, setState] = useState<api.SharedState | null>(null);
@@ -41,13 +43,13 @@ export default function App() {
 
   const setView = useCallback((v: View) => {
     if ((location.hash || '').replace('#', '') !== v) location.hash = v;
-    setRoute({ view: v, admin: false });
+    setRoute({ view: v, admin: false, pinId: null });
     window.scrollTo(0, 0);
   }, []);
 
   const exitAdmin = useCallback(() => {
     location.hash = view;
-    setRoute({ view, admin: false });
+    setRoute({ view, admin: false, pinId: null });
   }, [view]);
 
   const toggleTheme = () => {
@@ -103,7 +105,7 @@ export default function App() {
         {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} />}
         {view === 'stay' && <Stay />}
         {view === 'plan' && <Plan />}
-        {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} />}
+        {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} initialSelected={pinId} />}
         {view === 'weather' && <Weather weather={weather} />}
         {view === 'budget' && <Budget expenses={expenses} whoami={who} onAdd={addExpense} onDelete={removeExpense} />}
       </main>

@@ -22,14 +22,15 @@ function decorate(p: Pitch, whoami: string | null) {
   };
 }
 
-export function MapView({ pitches, whoami, onVote, onAdd }: {
+export function MapView({ pitches, whoami, onVote, onAdd, initialSelected }: {
   pitches: Pitch[];
   whoami: string | null;
   onVote: (id: string) => void;
   onAdd: (p: { title: string; category: CatKey; link: string; note: string; who: string[]; requester: string }) => void;
+  initialSelected?: string | null;
 }) {
   const [filter, setFilter] = useState<Filter>('all');
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, setSelected] = useState<string | null>(initialSelected ?? null);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ title: '', link: '', note: '' });
 
