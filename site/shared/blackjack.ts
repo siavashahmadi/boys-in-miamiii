@@ -5,8 +5,9 @@
 export const BJ_MIN_BET = 25;
 export const BJ_MAX_BET = 500;
 export const BJ_BUYIN = 1000;
-// Table closes at wheels-up. After this, deals are rejected and the leader is crowned.
-export const BJ_CUTOFF_MS = Date.parse('2026-07-23T18:40:00-04:00');
+// Table closes when we land in FLL (~9:00p, jetblue wifi permitting). After
+// this, deals are rejected and the leader is crowned.
+export const BJ_CUTOFF_MS = Date.parse('2026-07-23T21:00:00-04:00');
 
 export type Card = string; // rank+suit, e.g. 'AS', 'TH', '9D' (T = 10)
 const RANKS = ['A', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K'];

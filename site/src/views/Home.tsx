@@ -162,7 +162,7 @@ export function Home({ pitches, expenses, weather, casino }: {
             ) : (
               <div style={{ fontSize: 13, color: 'var(--ink2)', margin: '12px 0 0' }}>blackjack with $1,000 house money. nobody's sat down yet.</div>
             )}
-            <div style={{ fontSize: 12.5, color: 'var(--c-gold)', marginTop: 10, fontWeight: 600 }}>most earnings by wheels-up picks the big dinner. or their bed.</div>
+            <div style={{ fontSize: 12.5, color: 'var(--c-gold)', marginTop: 10, fontWeight: 600 }}>most winnings when we land in FLL: dinner paid by the rest of the group.</div>
           </div>
 
           <div className="card" style={{ padding: 22 }}>

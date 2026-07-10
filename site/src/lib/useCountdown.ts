@@ -5,13 +5,13 @@ export interface Countdown { days: number; hours: string; mins: string; secs: st
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-export function useCountdown(): Countdown {
+export function useCountdown(target: number = WHEELS_UP): Countdown {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
-  let diff = Math.max(0, WHEELS_UP - now);
+  let diff = Math.max(0, target - now);
   const days = Math.floor(diff / 86400000); diff -= days * 86400000;
   const hours = Math.floor(diff / 3600000); diff -= hours * 3600000;
   const mins = Math.floor(diff / 60000); diff -= mins * 60000;

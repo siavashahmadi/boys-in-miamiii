@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BJ_MAX_BET, BJ_MIN_BET, cardValue, handValue, type BoardRow, type SanitizedRound } from '../../shared/blackjack';
+import { BJ_CUTOFF_MS, BJ_MAX_BET, BJ_MIN_BET, cardValue, handValue, type BoardRow, type SanitizedRound } from '../../shared/blackjack';
 import { CASINO, SQUAD, squadMeta } from '../data/trip';
 import { bj, type BJResponse } from '../lib/api';
 import { money } from '../lib/settle';
@@ -79,7 +79,7 @@ export function Casino({ whoami }: { whoami: string | null }) {
   const [stamp, setStamp] = useState<{ label: string; color: string; glow: string; burst: BurstParticle[] } | null>(null);
   const stampTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const busyRef = useRef(false);
-  const cd = useCountdown();
+  const cd = useCountdown(BJ_CUTOFF_MS);
 
   const who = whoami;
 
