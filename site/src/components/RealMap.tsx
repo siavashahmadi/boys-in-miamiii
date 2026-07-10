@@ -24,7 +24,7 @@ function makeIcon(emoji: string, color: string, selected: boolean): L.DivIcon {
   });
 }
 
-// Real interactive street map (OpenStreetMap tiles via Leaflet — free, no key).
+// Real interactive street map (OpenStreetMap tiles via Leaflet: free, no key).
 // Shared by the Map tab (the six spots) and the Stay tab (one house pin).
 export function RealMap({ markers, selected, onSelect, legend, singleZoom }: {
   markers: MapMarker[];

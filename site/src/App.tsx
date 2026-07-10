@@ -13,9 +13,10 @@ import { MapView } from './views/MapView';
 import { Weather } from './views/Weather';
 import { Budget } from './views/Budget';
 import { Admin } from './views/Admin';
+import { Casino } from './views/Casino';
 
-export type View = 'home' | 'stay' | 'plan' | 'map' | 'weather' | 'budget';
-const VIEWS: View[] = ['home', 'stay', 'plan', 'map', 'weather', 'budget'];
+export type View = 'home' | 'stay' | 'plan' | 'map' | 'casino' | 'weather' | 'budget';
+const VIEWS: View[] = ['home', 'stay', 'plan', 'map', 'casino', 'weather', 'budget'];
 
 function readHash(): { view: View; admin: boolean; pinId: string | null } {
   const raw = (location.hash || '').replace('#', '');
@@ -102,10 +103,11 @@ export default function App() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Nav view={view} setView={setView} theme={theme} toggleTheme={toggleTheme} />
       <main style={{ flex: 1 }}>
-        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} />}
+        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} casino={state?.casino} />}
         {view === 'stay' && <Stay />}
         {view === 'plan' && <Plan />}
         {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} initialSelected={pinId} />}
+        {view === 'casino' && <Casino whoami={who} />}
         {view === 'weather' && <Weather weather={weather} />}
         {view === 'budget' && <Budget expenses={expenses} whoami={who} onAdd={addExpense} onDelete={removeExpense} />}
       </main>

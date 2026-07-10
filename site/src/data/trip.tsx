@@ -219,6 +219,38 @@ export const INFO_CARDS: InfoCard[] = [
   },
 ];
 
+// ---------- the practice table ----------
+export const CASINO = {
+  eyebrow: 'THE DEGEN OLYMPICS',
+  h1: 'The practice table',
+  sub: "warm up before the real church. everyone starts with a grand of house money. dealer's a machine and shows no mercy.",
+  stakesTitle: '🏆 the stakes',
+  stakes: 'most earnings when the table closes at wheels-up picks the fancy dinner spot. or first pick of beds. winner’s choice, loser’s couch.',
+  closesPrefix: 'table closes in',
+  feltCaption: 'CASA DE LOS UNCS · BLACKJACK PAYS 3:2',
+  dealBtn: 'run it.',
+  clearBtn: 'clear',
+  markerBtn: 'take a marker (+$1,000. everyone will know.)',
+  brokeLine: "you're broke. the table doesn't do sympathy.",
+  closedTitle: "table's closed.",
+  closedSub: 'the real church is 30 minutes from the crib. bring your practice numbers.',
+  winnerPrefix: '👑 biggest earner:',
+  winnerSuffix: 'dinner (or the good bed) is their call.',
+  rulesTitle: '🃏 house rules',
+  rules: [
+    'blackjack pays 3:2',
+    'dealer stands on all 17s',
+    'double any first two cards',
+    'split once (aces get one card each)',
+    '$25 min · $500 max',
+    'continuous shuffle. no counting. this is a family casino.',
+    'markers are $1,000 and the count is public. the shame is the interest.',
+  ],
+  boardTitle: 'THE BOARD',
+  boardEmpty: "nobody's sat down yet. $1,000 house money waiting.",
+  localNote: 'the table needs the real backend. open the live site to play.',
+};
+
 export const FOOTER = {
   tagline: (
     <>

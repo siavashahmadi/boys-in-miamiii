@@ -1,6 +1,7 @@
 // Minimal Upstash Redis REST client + shared state helpers for the api routes.
 // Env vars are injected by the Vercel + Upstash marketplace integration.
-import { ALL_SEED_PITCHES, SEED_EXPENSES, type Expense, type Pitch } from '../shared/seeds.js';
+import { ALL_SEED_PITCHES, SEED_EXPENSES, SQUAD_NAMES, type Expense, type Pitch } from '../shared/seeds.js';
+import { freshRecord, netOf, type BoardRow, type PlayerRecord } from '../shared/blackjack.js';
 
 const URL_ = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || '';
 const TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || '';
@@ -17,26 +18,47 @@ async function redis(cmd: (string | number)[]): Promise<unknown> {
   return j.result;
 }
 
-async function getJson<T>(key: string): Promise<T | null> {
+export async function getJson<T>(key: string): Promise<T | null> {
   const raw = (await redis(['GET', key])) as string | null;
   if (!raw) return null;
   try { return JSON.parse(raw) as T; } catch { return null; }
 }
 
-async function setJson(key: string, value: unknown): Promise<void> {
+export async function setJson(key: string, value: unknown): Promise<void> {
   await redis(['SET', key, JSON.stringify(value)]);
 }
 
-export interface SharedState { pitches: Pitch[]; expenses: Expense[] }
+export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino: BoardRow[] }
+
+export async function loadBoard(): Promise<BoardRow[]> {
+  const raws = (await redis(['MGET', ...SQUAD_NAMES.map((n) => `bj:${n}`)])) as (string | null)[];
+  return SQUAD_NAMES.map((name, i) => {
+    let rec: PlayerRecord = freshRecord();
+    try { if (raws[i]) rec = JSON.parse(raws[i] as string) as PlayerRecord; } catch { /* fresh */ }
+    return {
+      name,
+      net: netOf(rec),
+      bankroll: rec.bankroll,
+      markers: rec.markers,
+      rounds: rec.rounds,
+      wins: rec.wins,
+      blackjacks: rec.blackjacks,
+      biggestWin: rec.biggestWin,
+      playing: !!(rec.round && rec.round.phase === 'player'),
+    };
+  }).sort((a, b) => b.net - a.net);
+}
 
 export async function loadState(): Promise<SharedState> {
-  const [pitches, expenses] = await Promise.all([
+  const [pitches, expenses, casino] = await Promise.all([
     getJson<Pitch[]>('pitches'),
     getJson<Expense[]>('expenses'),
+    loadBoard(),
   ]);
   return {
     pitches: pitches ?? ALL_SEED_PITCHES,
     expenses: expenses ?? SEED_EXPENSES,
+    casino,
   };
 }
 

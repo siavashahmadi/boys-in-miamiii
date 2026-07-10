@@ -1,10 +1,18 @@
 import { ALL_SEED_PITCHES, SEED_EXPENSES, type Expense, type Pitch } from '../../shared/seeds';
+import type { BoardRow, SanitizedPlayer } from '../../shared/blackjack';
 
 // Client for the shared state. Talks to /api/* (Vercel functions + Upstash).
 // If the API is unreachable (plain `npm run dev`), falls back to localStorage
 // so the whole app still works, just per-browser.
 
-export interface SharedState { pitches: Pitch[]; expenses: Expense[] }
+export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[] }
+
+export interface BJResponse {
+  me: SanitizedPlayer;
+  board: BoardRow[];
+  cutoff: number;
+  closed: boolean;
+}
 
 const LS_PITCHES = 'miami_pitches_v1';
 const LS_EXPENSES = 'miami_expenses_v1';
@@ -112,4 +120,22 @@ export async function deleteExpense(id: string): Promise<SharedState> {
     return s;
   }
   return (await post('/api/expense', { action: 'delete', id }))!;
+}
+
+// Blackjack runs server-side only (the deck must never exist in a browser),
+// so there's no localStorage fallback: the Casino view shows a notice instead.
+export async function bj(
+  action: 'state' | 'deal' | 'hit' | 'stand' | 'double' | 'split' | 'marker',
+  name: string,
+  bet?: number,
+): Promise<BJResponse> {
+  const r = await fetch('/api/blackjack', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ action, name, bet }),
+  });
+  if (r.status === 401) throw new ApiAuthError();
+  const j = await r.json().catch(() => null);
+  if (!r.ok) throw new Error((j as { error?: string } | null)?.error || `table error ${r.status}`);
+  return j as BJResponse;
 }

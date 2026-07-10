@@ -2,26 +2,7 @@ import { useMemo, useRef, useState } from 'react';
 import type { Pitch } from '../../shared/seeds';
 import { CATS } from '../data/trip';
 import { getAdminKey, setAdminKey } from '../lib/whoami';
-
-interface BurstParticle { emoji: string; style: React.CSSProperties }
-
-function makeBurst(decision: 'approved' | 'denied'): BurstParticle[] {
-  const good = ['💸', '🛥️', '🎉', '🍹', '🌴', '✅', '🤑', '👑', '🥂'];
-  const bad = ['❌', '🚫', '💀', '😂', '👎', '🗑️', '🙅', '💔'];
-  const set = decision === 'approved' ? good : bad;
-  return Array.from({ length: 22 }, (_, i) => ({
-    emoji: set[i % set.length],
-    style: {
-      position: 'fixed', left: '50%', top: '48%',
-      fontSize: `${26 + Math.random() * 32}px`,
-      ['--tx' as string]: `${(Math.random() * 2 - 1) * 600}px`,
-      ['--ty' as string]: `${(Math.random() * 2 - 1) * 430}px`,
-      ['--r' as string]: `${(Math.random() * 2 - 1) * 360}deg`,
-      animation: 'fling 1.7s cubic-bezier(.15,.7,.3,1) forwards',
-      animationDelay: `${Math.random() * 260}ms`,
-    },
-  }));
-}
+import { BAD_BURST, GOOD_BURST, makeBurst } from '../lib/burst';
 
 export function Admin({ pitches, onVerdict, onExit }: {
   pitches: Pitch[];
@@ -37,7 +18,7 @@ export function Admin({ pitches, onVerdict, onExit }: {
   const pending = pitches.filter((p) => p.status === 'pending');
   const queue = [...pending.filter((p) => !skipped.includes(p.id)), ...pending.filter((p) => skipped.includes(p.id))];
   const cur = queue[0] ?? null;
-  const burst = useMemo(() => (verdict ? makeBurst(verdict.decision) : []), [verdict]);
+  const burst = useMemo(() => (verdict ? makeBurst(verdict.decision === 'approved' ? GOOD_BURST : BAD_BURST) : []), [verdict]);
 
   const judge = async (decision: 'approved' | 'denied') => {
     if (!cur || busy.current) return;

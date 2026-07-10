@@ -5,6 +5,7 @@ const TABS: { k: View; label: string; emoji: string }[] = [
   { k: 'stay', label: 'Stay', emoji: '🏝️' },
   { k: 'plan', label: 'Plan', emoji: '🗓️' },
   { k: 'map', label: 'Map', emoji: '📍' },
+  { k: 'casino', label: 'Casino', emoji: '🃏' },
   { k: 'weather', label: 'Weather', emoji: '🌤️' },
   { k: 'budget', label: 'Budget', emoji: '💸' },
 ];

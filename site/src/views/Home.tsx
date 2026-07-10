@@ -1,14 +1,16 @@
 import type { Expense, Pitch } from '../../shared/seeds';
-import { CATS, HOUSE, INFO_CARDS, SQUAD, TRIP_META } from '../data/trip';
+import type { BoardRow } from '../../shared/blackjack';
+import { CATS, HOUSE, INFO_CARDS, SQUAD, squadMeta, TRIP_META } from '../data/trip';
 import { useCountdown } from '../lib/useCountdown';
 import { computeBudget, money } from '../lib/settle';
 import type { CityWx } from '../lib/weather';
 import { WEATHER_CITIES } from '../data/trip';
 
-export function Home({ pitches, expenses, weather }: {
+export function Home({ pitches, expenses, weather, casino }: {
   pitches: Pitch[];
   expenses: Expense[];
   weather: Record<string, CityWx> | null;
+  casino?: BoardRow[];
 }) {
   const cd = useCountdown();
   const bud = computeBudget(SQUAD.map((s) => s.name), expenses);
@@ -136,6 +138,31 @@ export function Home({ pitches, expenses, weather }: {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div className="card" style={{ padding: 22 }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
+              <div style={{ fontWeight: 700, fontSize: 16 }}>🃏 The practice table</div>
+              <a href="#casino" style={{ fontSize: 12.5, color: 'var(--c-teal)', fontWeight: 600, textDecoration: 'none' }}>Play →</a>
+            </div>
+            {casino && casino.some((b) => b.rounds > 0) ? (
+              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 7 }}>
+                {casino.slice(0, 3).map((b, i) => {
+                  const up = b.net > 0.005;
+                  const down = b.net < -0.005;
+                  return (
+                    <div key={b.name} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
+                      <span style={{ width: 20, height: 20, borderRadius: '50%', background: squadMeta[b.name]?.color ?? 'var(--ink3)', color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{b.name[0]}</span>
+                      <span style={{ flex: 1 }}>{b.name} {i === 0 && up ? '👑' : ''}</span>
+                      <b style={{ color: up ? 'var(--c-mint)' : down ? 'var(--c-coral)' : 'var(--ink3)' }}>{up ? '+' : down ? '-' : ''}{money(b.net)}</b>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div style={{ fontSize: 13, color: 'var(--ink2)', margin: '12px 0 0' }}>blackjack with $1,000 house money. nobody's sat down yet.</div>
+            )}
+            <div style={{ fontSize: 12.5, color: 'var(--c-gold)', marginTop: 10, fontWeight: 600 }}>most earnings by wheels-up picks the big dinner. or their bed.</div>
           </div>
 
           <div className="card" style={{ padding: 22 }}>
