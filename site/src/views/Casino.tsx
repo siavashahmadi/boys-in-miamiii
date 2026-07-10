@@ -331,6 +331,11 @@ export function Casino({ whoami }: { whoami: string | null }) {
               <div key={r} style={{ fontSize: 12, color: 'var(--ink3)', lineHeight: 1.7 }}>· {r}</div>
             ))}
           </div>
+
+          <div style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--c-pink-s)', border: '1px solid var(--border)' }}>
+            <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 6 }}>{CASINO.memorialTitle}</div>
+            <div style={{ fontSize: 12.5, color: 'var(--ink2)', lineHeight: 1.6, fontStyle: 'italic' }}>{CASINO.memorialBody}</div>
+          </div>
         </div>
       </div>
     </section>
