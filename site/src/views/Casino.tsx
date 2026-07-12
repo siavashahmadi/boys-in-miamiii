@@ -172,7 +172,7 @@ export function Casino({ whoami }: { whoami: string | null }) {
   const leader = board[0];
 
   const feltBtn = (label: string, onClick: () => void, color: string, disabled = false, actionKey?: string) => (
-    <button key={label} onClick={onClick} disabled={disabled || busy} style={{ padding: '12px 20px', border: 'none', borderRadius: 12, cursor: disabled || busy ? 'default' : 'pointer', fontWeight: 700, fontSize: 15, color: '#fff', background: color, opacity: disabled || busy ? 0.45 : 1, boxShadow: '0 2px 10px rgba(0,0,0,.25)' }}>
+    <button key={label} className="felt-btn" onClick={onClick} disabled={disabled || busy} style={{ cursor: disabled || busy ? 'default' : 'pointer', background: color, opacity: disabled || busy ? 0.45 : 1 }}>
       {busy && actionKey && pending === actionKey ? '. . .' : label}
     </button>
   );
@@ -252,29 +252,29 @@ export function Casino({ whoami }: { whoami: string | null }) {
 
                 {/* both rows always render in the same spot, so fast fingers
                     hit a disabled button instead of the wrong action */}
-                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                <div className="felt-actions">
                   {feltBtn('HIT', () => act('hit'), 'var(--c-mint)', !playing, 'hit')}
                   {feltBtn('STAND', () => act('stand'), 'var(--c-coral)', !playing, 'stand')}
                   {feltBtn('DOUBLE', () => act('double'), 'var(--c-gold)', !playing || !canDouble, 'double')}
                   {feltBtn('SPLIT', () => act('split'), 'var(--c-lav)', !playing || !canSplit, 'split')}
                 </div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                <div className="bj-chips">
                   {CHIPS.map((c) => {
                     const off = busy || playing || c.v > maxStage;
                     return (
-                      <button key={c.v} onClick={() => setBet((b) => Math.min(b + c.v, maxStage))} disabled={off} style={{ width: 52, height: 52, borderRadius: '50%', border: '3px dashed rgba(255,255,255,.85)', background: c.color, color: '#fff', fontWeight: 800, fontSize: 13, cursor: off ? 'default' : 'pointer', opacity: off ? 0.35 : 1, boxShadow: '0 2px 8px rgba(0,0,0,.3)' }}>
+                      <button key={c.v} className="bj-chip" onClick={() => setBet((b) => Math.min(b + c.v, maxStage))} disabled={off} style={{ background: c.color, cursor: off ? 'default' : 'pointer', opacity: off ? 0.35 : 1 }}>
                         {chipLabel(c.v)}
                       </button>
                     );
                   })}
                 </div>
-                <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', minWidth: 90 }}>bet: {money(bet)}</span>
+                <div className="bj-betrow">
+                  <span className="bj-bet-label">bet: {money(bet)}</span>
                   {feltBtn(CASINO.dealBtn, () => { act('deal', bet); }, 'var(--c-coral)', playing || bet < BJ_MIN_BET || bet > maxStage, 'deal')}
-                  <button onClick={() => setBet(maxStage)} disabled={busy || playing || maxStage < BJ_MIN_BET} style={{ padding: '10px 16px', border: '2px dashed rgba(255,255,255,.8)', borderRadius: 12, background: 'rgba(0,0,0,.25)', color: '#fff', fontWeight: 800, fontSize: 13, letterSpacing: 1, cursor: busy || playing || maxStage < BJ_MIN_BET ? 'default' : 'pointer', opacity: busy || playing || maxStage < BJ_MIN_BET ? 0.45 : 1 }}>
+                  <button className="bj-allin" onClick={() => setBet(maxStage)} disabled={busy || playing || maxStage < BJ_MIN_BET} style={{ cursor: busy || playing || maxStage < BJ_MIN_BET ? 'default' : 'pointer', opacity: busy || playing || maxStage < BJ_MIN_BET ? 0.45 : 1 }}>
                     ALL IN
                   </button>
-                  <button onClick={() => setBet(0)} disabled={busy || playing || bet === 0} style={{ border: 'none', background: 'transparent', color: 'rgba(255,255,255,.7)', fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}>
+                  <button className="bj-clear" onClick={() => setBet(0)} disabled={busy || playing || bet === 0} style={{ cursor: 'pointer' }}>
                     {CASINO.clearBtn}
                   </button>
                 </div>

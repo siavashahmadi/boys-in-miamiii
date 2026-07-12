@@ -64,6 +64,30 @@ a { color:inherit; }
 .label-sm { font-size:12px; color:var(--ink2); font-weight:600; }
 .list-head { padding:14px 18px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; letter-spacing:.5px; color:var(--ink2); }
 
+/* casino felt controls: sizes live here so the phone override below can
+   squeeze every row onto one line (colors stay inline in Casino.tsx) */
+.felt-actions { display:flex; gap:10px; flex-wrap:wrap; }
+.felt-btn { padding:12px 20px; border:none; border-radius:12px; font-weight:700; font-size:15px; color:#fff; box-shadow:0 2px 10px rgba(0,0,0,.25); }
+.bj-chips { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+.bj-chip { --chip:52px; width:var(--chip); height:var(--chip); border-radius:50%; border:3px dashed rgba(255,255,255,.85); color:#fff; font-weight:800; font-size:13px; box-shadow:0 2px 8px rgba(0,0,0,.3); flex:0 0 auto; padding:0; }
+.bj-betrow { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
+.bj-bet-label { font-size:14px; font-weight:700; color:#fff; min-width:90px; }
+.bj-allin { padding:10px 16px; border:2px dashed rgba(255,255,255,.8); border-radius:12px; background:rgba(0,0,0,.25); color:#fff; font-weight:800; font-size:13px; letter-spacing:1px; }
+.bj-clear { border:none; background:transparent; color:rgba(255,255,255,.7); font-size:13px; text-decoration:underline; }
+
+@media (max-width: 520px) {
+  .felt-actions { gap:6px; flex-wrap:nowrap; }
+  .felt-actions .felt-btn { flex:1 1 0; min-width:0; padding:11px 2px; font-size:12.5px; }
+  .bj-chips { gap:6px; flex-wrap:nowrap; }
+  /* 100vw minus section padding (44) + felt padding (44) + 6 gaps (36), split 7 ways */
+  .bj-chip { --chip:clamp(26px, calc((100vw - 124px) / 7), 52px); font-size:11px; border-width:2px; }
+  .bj-betrow { gap:8px; }
+  .bj-bet-label { min-width:0; font-size:13px; }
+  .bj-betrow .felt-btn { padding:11px 14px; font-size:13px; }
+  .bj-allin { padding:10px 10px; font-size:11.5px; letter-spacing:.5px; }
+  .bj-clear { font-size:12px; }
+}
+
 /* nav */
 .nav { position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:10px; padding:11px 14px; background:var(--navBg); backdrop-filter:blur(16px); border-bottom:1px solid var(--border); }
 .nav-brand { flex:0 0 auto; font-family:'DM Serif Display',serif; font-size:19px; letter-spacing:.3px; color:var(--ink); background:transparent; border:none; cursor:pointer; padding:0; }
