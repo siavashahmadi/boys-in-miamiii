@@ -3,7 +3,7 @@
 // The deck NEVER leaves the server (see sanitize), so the client can't peek.
 
 export const BJ_MIN_BET = 25;
-export const BJ_MAX_BET = 500;
+// There is no table max since jul 12. Your bankroll is the max. Godspeed.
 export const BJ_BUYIN = 1000;
 // Table closes when we land in FLL (~9:00p, jetblue wifi permitting). After
 // this, deals are rejected and the leader is crowned.
@@ -165,7 +165,6 @@ export function startRound(rec: PlayerRecord, bet: number, deck: Card[], now: nu
   if (rec.round && rec.round.phase === 'player') throw new Error('finish the hand you have.');
   if (!Number.isFinite(bet) || bet !== Math.round(bet)) throw new Error('whole dollars only.');
   if (bet < BJ_MIN_BET) throw new Error(`table minimum is $${BJ_MIN_BET}.`);
-  if (bet > BJ_MAX_BET) throw new Error(`table max is $${BJ_MAX_BET}. this is a family casino.`);
   if (bet > rec.bankroll) throw new Error("you don't have it. take a marker.");
 
   rec.bankroll = round2(rec.bankroll - bet);

@@ -242,8 +242,8 @@ export const CASINO = {
     'dealer stands on all 17s',
     'double any first two cards',
     'split once (aces get one card each)',
-    '$25 min · $500 max',
-    'continuous shuffle. no counting. this is a family casino.',
+    '$25 min · no max as of jul 12. joe asked, the house listened.',
+    'continuous shuffle. no counting. this WAS a family casino.',
     'markers are $1,000 and the count is public. the shame is the interest.',
     'the goal is to WIN the money. this rule was added jul 10 for one specific person.',
   ],
@@ -252,6 +252,20 @@ export const CASINO = {
   boardTitle: 'THE BOARD',
   boardEmpty: "nobody's sat down yet. $1,000 house money waiting.",
   localNote: 'the table needs the real backend. open the live site to play.',
+};
+
+// ---------- the pouring of tommy ----------
+export const POUR = {
+  title: '🫗 The pouring of tommy',
+  lore: "tommy lost fantasy football. the sentence, chosen by the man himself: each of us gets to pour one (1) thing on his head in florida. his only rule, quote, \"no poop, piss, or nut doe.\" he announced this like it was a ridiculous request.",
+  statementLabel: 'official statement from the defendant:',
+  statement: '"nah let\'s just get this over with"',
+  worry: '"I\'m most worried about Joseph... this will be the hardest joseph ever laughs gurantee"',
+  undeclared: 'undeclared. cooking something.',
+  inputPlaceholder: 'declare your pour. 140 characters of malice.',
+  saveBtn: 'declare it',
+  editBtn: 'revise',
+  tomLine: "you're the pouree. sit down.",
 };
 
 export const FOOTER = {

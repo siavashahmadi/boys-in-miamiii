@@ -88,6 +88,11 @@ export default function App() {
     try { setState(await api.deleteExpense(id)); } catch { setState(await api.fetchState()); }
   };
 
+  const declarePour = async (text: string) => {
+    if (!who) return;
+    try { setState(await api.savePour(who, text)); } catch { alert("that didn't send. try again."); }
+  };
+
   const verdict = async (id: string, decision: 'approved' | 'denied', adminKey: string): Promise<boolean> => {
     try {
       setState(await api.verdictPitch(id, decision, adminKey));
@@ -103,7 +108,7 @@ export default function App() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Nav view={view} setView={setView} theme={theme} toggleTheme={toggleTheme} />
       <main style={{ flex: 1 }}>
-        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} casino={state?.casino} />}
+        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} casino={state?.casino} pours={state?.pours} whoami={who} onDeclarePour={declarePour} />}
         {view === 'stay' && <Stay />}
         {view === 'plan' && <Plan />}
         {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} initialSelected={pinId} />}

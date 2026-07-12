@@ -1,21 +1,22 @@
-import { ALL_SEED_PITCHES, SEED_EXPENSES, type Expense, type Pitch } from '../../shared/seeds';
+import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_POURS, type Expense, type Pitch, type Pour } from '../../shared/seeds';
 import type { BoardRow, SanitizedPlayer } from '../../shared/blackjack';
 
 // Client for the shared state. Talks to /api/* (Vercel functions + Upstash).
 // If the API is unreachable (plain `npm run dev`), falls back to localStorage
 // so the whole app still works, just per-browser.
 
-export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[] }
+export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[] }
 
 export interface BJResponse {
   me: SanitizedPlayer;
-  board: BoardRow[];
+  board: BoardRow[] | null; // null when the action couldn't have moved the board
   cutoff: number;
   closed: boolean;
 }
 
 const LS_PITCHES = 'miami_pitches_v1';
 const LS_EXPENSES = 'miami_expenses_v1';
+const LS_POURS = 'miami_pours_v1';
 
 let localMode = false;
 export const isLocalMode = () => localMode;
@@ -23,11 +24,14 @@ export const isLocalMode = () => localMode;
 function loadLocal(): SharedState {
   let pitches: Pitch[] | null = null;
   let expenses: Expense[] | null = null;
+  let pours: Pour[] | null = null;
   try { const p = JSON.parse(localStorage.getItem(LS_PITCHES) || 'null'); if (Array.isArray(p)) pitches = p; } catch { /* seed */ }
   try { const e = JSON.parse(localStorage.getItem(LS_EXPENSES) || 'null'); if (Array.isArray(e)) expenses = e; } catch { /* seed */ }
+  try { const o = JSON.parse(localStorage.getItem(LS_POURS) || 'null'); if (Array.isArray(o)) pours = o; } catch { /* seed */ }
   return {
     pitches: pitches ?? ALL_SEED_PITCHES.map((x) => ({ ...x })),
     expenses: expenses ?? SEED_EXPENSES.map((x) => ({ ...x })),
+    pours: pours ?? SEED_POURS.map((x) => ({ ...x })),
   };
 }
 
@@ -35,6 +39,7 @@ function saveLocal(s: SharedState) {
   try {
     localStorage.setItem(LS_PITCHES, JSON.stringify(s.pitches));
     localStorage.setItem(LS_EXPENSES, JSON.stringify(s.expenses));
+    localStorage.setItem(LS_POURS, JSON.stringify(s.pours ?? []));
   } catch { /* storage full or blocked; nothing to do */ }
 }
 
@@ -120,6 +125,16 @@ export async function deleteExpense(id: string): Promise<SharedState> {
     return s;
   }
   return (await post('/api/expense', { action: 'delete', id }))!;
+}
+
+export async function savePour(name: string, text: string): Promise<SharedState> {
+  if (localMode) {
+    const s = loadLocal();
+    s.pours = [...(s.pours ?? []).filter((p) => p.name !== name), { name, text, updatedAt: Date.now() }];
+    saveLocal(s);
+    return s;
+  }
+  return (await post('/api/pour', { name, text }))!;
 }
 
 // Blackjack runs server-side only (the deck must never exist in a browser),

@@ -30,6 +30,22 @@ export interface Expense {
 export const SQUAD_NAMES = ['Sia', 'Pete', 'Joe', 'Lucas', 'Kia', 'Tom'] as const;
 export type SquadName = (typeof SQUAD_NAMES)[number];
 
+// Tommy's fantasy football punishment: everyone pours one (1) thing on his
+// head in florida. He is the pouree, so he doesn't get a row.
+export interface Pour {
+  name: string;
+  text: string;
+  updatedAt: number;
+}
+
+export const POURERS = ['Sia', 'Pete', 'Joe', 'Lucas', 'Kia'] as const;
+
+// Declared in the chat before the registry existed, jul 12.
+export const SEED_POURS: Pour[] = [
+  { name: 'Joe', text: 'a whole durian, smashed directly on the head. pour is a loose term now.', updatedAt: 0 },
+  { name: 'Kia', text: 'a fruit smoothie with anchovies', updatedAt: 0 },
+];
+
 // The real plans, straight from the group chat.
 export const SEED_PITCHES: Pitch[] = [
   {

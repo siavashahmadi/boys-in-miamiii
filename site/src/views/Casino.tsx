@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { BJ_CUTOFF_MS, BJ_MAX_BET, BJ_MIN_BET, cardValue, handValue, type BoardRow, type SanitizedRound } from '../../shared/blackjack';
+import { BJ_CUTOFF_MS, BJ_MIN_BET, cardValue, handValue, type BoardRow, type SanitizedRound } from '../../shared/blackjack';
 import { CASINO, SQUAD, squadMeta } from '../data/trip';
 import { bj, type BJResponse } from '../lib/api';
 import { money } from '../lib/settle';
@@ -12,7 +12,11 @@ const CHIPS: { v: number; color: string }[] = [
   { v: 100, color: 'var(--c-gold)' },
   { v: 250, color: 'var(--c-lav)' },
   { v: 500, color: 'var(--c-pink)' },
+  { v: 1000, color: 'var(--c-coral)' },
+  { v: 5000, color: '#2E2840' },
 ];
+
+const chipLabel = (v: number) => (v >= 1000 ? `${v / 1000}k` : String(v));
 
 const SUIT_GLYPH: Record<string, string> = { S: '♠', H: '♥', D: '♦', C: '♣' };
 
@@ -21,7 +25,7 @@ function PlayingCard({ card, small }: { card: string; small?: boolean }) {
   const h = small ? 64 : 82;
   if (card === 'XX') {
     return (
-      <div style={{ width: w, height: h, borderRadius: 9, background: 'var(--heroGrad)', border: '2px solid rgba(255,255,255,.8)', boxShadow: '0 2px 8px rgba(0,0,0,.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: small ? 18 : 22, animation: 'pinPop .25s ease' }}>
+      <div style={{ width: w, height: h, borderRadius: 9, background: 'var(--heroGrad)', border: '2px solid rgba(255,255,255,.8)', boxShadow: '0 2px 8px rgba(0,0,0,.3)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: small ? 18 : 22, animation: 'cardPop .18s ease-out' }}>
         🌴
       </div>
     );
@@ -31,7 +35,7 @@ function PlayingCard({ card, small }: { card: string; small?: boolean }) {
   const red = card[1] === 'H' || card[1] === 'D';
   const col = red ? '#D96A4E' : '#2E2840';
   return (
-    <div style={{ width: w, height: h, borderRadius: 9, background: '#FFFDF8', border: '1px solid rgba(0,0,0,.12)', boxShadow: '0 2px 8px rgba(0,0,0,.28)', position: 'relative', animation: 'pinPop .25s ease', flex: '0 0 auto' }}>
+    <div style={{ width: w, height: h, borderRadius: 9, background: '#FFFDF8', border: '1px solid rgba(0,0,0,.12)', boxShadow: '0 2px 8px rgba(0,0,0,.28)', position: 'relative', animation: 'cardPop .18s ease-out', flex: '0 0 auto' }}>
       <div style={{ position: 'absolute', top: 4, left: 6, fontFamily: "'DM Serif Display',serif", fontSize: small ? 14 : 17, lineHeight: 1, color: col }}>
         {rank}
         <div style={{ fontSize: small ? 10 : 12 }}>{suit}</div>
@@ -75,6 +79,7 @@ export function Casino({ whoami }: { whoami: string | null }) {
   const [unavailable, setUnavailable] = useState(false);
   const [bet, setBet] = useState(0);
   const [busy, setBusy] = useState(false);
+  const [pending, setPending] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [stamp, setStamp] = useState<{ label: string; color: string; glow: string; burst: BurstParticle[] } | null>(null);
   const stampTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -112,24 +117,29 @@ export function Casino({ whoami }: { whoami: string | null }) {
           : { label: allBust ? 'BUST.' : 'dealer wins.', color: 'var(--c-coral)', glow: 'rgba(227,140,116,.5)', burst: [] };
     setStamp(s);
     if (stampTimer.current) clearTimeout(stampTimer.current);
-    stampTimer.current = setTimeout(() => setStamp(null), 1900);
+    stampTimer.current = setTimeout(() => setStamp(null), 1100);
   }, []);
 
   const act = useCallback(async (action: 'deal' | 'hit' | 'stand' | 'double' | 'split' | 'marker', betArg?: number) => {
     if (!who || busyRef.current) return;
     busyRef.current = true;
     setBusy(true);
+    setPending(action);
     setErr(null);
     try {
       const res = await bj(action, who, betArg);
-      setData(res);
+      // mid-hand actions skip the board rebuild server-side; keep the old one
+      setData((prev) => (res.board ? res : { ...res, board: prev?.board ?? null }));
       const r = res.me.round;
       if (r && r.phase === 'settled' && action !== 'marker') fireStamp(r);
+      // the standing bet persists round to round but never above the bankroll
+      if (!r || r.phase !== 'player') setBet((b) => Math.min(b, Math.floor(res.me.bankroll)));
     } catch (e) {
       setErr(e instanceof Error ? e.message : 'table says no');
     } finally {
       busyRef.current = false;
       setBusy(false);
+      setPending(null);
     }
   }, [who, fireStamp]);
 
@@ -154,16 +164,16 @@ export function Casino({ whoami }: { whoami: string | null }) {
   const hand = playing ? round.hands[round.active] : null;
   const bankroll = me?.bankroll ?? 0;
   const broke = !!me && !playing && bankroll < BJ_MIN_BET;
-  const maxStage = Math.min(BJ_MAX_BET, Math.floor(bankroll));
+  const maxStage = Math.floor(bankroll); // no table max. the bankroll is the max.
   const canDouble = !!hand && hand.cards.length === 2 && !hand.doubled && bankroll >= hand.bet;
   const canSplit = !!hand && !!round && !round.isSplit && round.hands.length === 1 && hand.cards.length === 2
     && cardValue(hand.cards[0]) === cardValue(hand.cards[1]) && bankroll >= hand.bet;
   const dealerRevealed = !!round && round.dealer.every((c) => c !== 'XX');
   const leader = board[0];
 
-  const feltBtn = (label: string, onClick: () => void, color: string, disabled = false) => (
+  const feltBtn = (label: string, onClick: () => void, color: string, disabled = false, actionKey?: string) => (
     <button key={label} onClick={onClick} disabled={disabled || busy} style={{ padding: '12px 20px', border: 'none', borderRadius: 12, cursor: disabled || busy ? 'default' : 'pointer', fontWeight: 700, fontSize: 15, color: '#fff', background: color, opacity: disabled || busy ? 0.45 : 1, boxShadow: '0 2px 10px rgba(0,0,0,.25)' }}>
-      {label}
+      {busy && actionKey && pending === actionKey ? '. . .' : label}
     </button>
   );
 
@@ -240,35 +250,39 @@ export function Casino({ whoami }: { whoami: string | null }) {
                   )}
                 </div>
 
-                {playing ? (
-                  <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
-                    {feltBtn('HIT', () => act('hit'), 'var(--c-mint)')}
-                    {feltBtn('STAND', () => act('stand'), 'var(--c-coral)')}
-                    {canDouble && feltBtn('DOUBLE', () => act('double'), 'var(--c-gold)')}
-                    {canSplit && feltBtn('SPLIT', () => act('split'), 'var(--c-lav)')}
-                  </div>
-                ) : broke ? (
+                {/* both rows always render in the same spot, so fast fingers
+                    hit a disabled button instead of the wrong action */}
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                  {feltBtn('HIT', () => act('hit'), 'var(--c-mint)', !playing, 'hit')}
+                  {feltBtn('STAND', () => act('stand'), 'var(--c-coral)', !playing, 'stand')}
+                  {feltBtn('DOUBLE', () => act('double'), 'var(--c-gold)', !playing || !canDouble, 'double')}
+                  {feltBtn('SPLIT', () => act('split'), 'var(--c-lav)', !playing || !canSplit, 'split')}
+                </div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
+                  {CHIPS.map((c) => {
+                    const off = busy || playing || c.v > maxStage;
+                    return (
+                      <button key={c.v} onClick={() => setBet((b) => Math.min(b + c.v, maxStage))} disabled={off} style={{ width: 52, height: 52, borderRadius: '50%', border: '3px dashed rgba(255,255,255,.85)', background: c.color, color: '#fff', fontWeight: 800, fontSize: 13, cursor: off ? 'default' : 'pointer', opacity: off ? 0.35 : 1, boxShadow: '0 2px 8px rgba(0,0,0,.3)' }}>
+                        {chipLabel(c.v)}
+                      </button>
+                    );
+                  })}
+                </div>
+                <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+                  <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', minWidth: 90 }}>bet: {money(bet)}</span>
+                  {feltBtn(CASINO.dealBtn, () => { act('deal', bet); }, 'var(--c-coral)', playing || bet < BJ_MIN_BET || bet > maxStage, 'deal')}
+                  <button onClick={() => setBet(maxStage)} disabled={busy || playing || maxStage < BJ_MIN_BET} style={{ padding: '10px 16px', border: '2px dashed rgba(255,255,255,.8)', borderRadius: 12, background: 'rgba(0,0,0,.25)', color: '#fff', fontWeight: 800, fontSize: 13, letterSpacing: 1, cursor: busy || playing || maxStage < BJ_MIN_BET ? 'default' : 'pointer', opacity: busy || playing || maxStage < BJ_MIN_BET ? 0.45 : 1 }}>
+                    ALL IN
+                  </button>
+                  <button onClick={() => setBet(0)} disabled={busy || playing || bet === 0} style={{ border: 'none', background: 'transparent', color: 'rgba(255,255,255,.7)', fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}>
+                    {CASINO.clearBtn}
+                  </button>
+                </div>
+                {broke && (
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                     <span style={{ fontSize: 13, color: 'rgba(255,255,255,.8)' }}>{CASINO.brokeLine}</span>
-                    {feltBtn(CASINO.markerBtn, () => act('marker'), 'var(--c-pink)')}
+                    {feltBtn(CASINO.markerBtn, () => act('marker'), 'var(--c-pink)', false, 'marker')}
                   </div>
-                ) : (
-                  <>
-                    <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
-                      {CHIPS.map((c) => (
-                        <button key={c.v} onClick={() => setBet((b) => Math.min(b + c.v, maxStage))} disabled={busy || c.v > maxStage} style={{ width: 52, height: 52, borderRadius: '50%', border: '3px dashed rgba(255,255,255,.85)', background: c.color, color: '#fff', fontWeight: 800, fontSize: 13, cursor: c.v > maxStage ? 'default' : 'pointer', opacity: c.v > maxStage ? 0.35 : 1, boxShadow: '0 2px 8px rgba(0,0,0,.3)' }}>
-                          {c.v}
-                        </button>
-                      ))}
-                    </div>
-                    <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 14, fontWeight: 700, color: '#fff', minWidth: 90 }}>bet: {money(bet)}</span>
-                      {feltBtn(CASINO.dealBtn, () => { act('deal', bet); }, 'var(--c-coral)', bet < BJ_MIN_BET || bet > maxStage)}
-                      <button onClick={() => setBet(0)} disabled={busy || bet === 0} style={{ border: 'none', background: 'transparent', color: 'rgba(255,255,255,.7)', fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}>
-                        {CASINO.clearBtn}
-                      </button>
-                    </div>
-                  </>
                 )}
                 {err && <div style={{ fontSize: 13, fontWeight: 600, color: '#FFD9CC' }}>{err}</div>}
               </div>

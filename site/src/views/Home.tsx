@@ -1,17 +1,39 @@
-import type { Expense, Pitch } from '../../shared/seeds';
+import { useState } from 'react';
+import { POURERS, type Expense, type Pitch, type Pour } from '../../shared/seeds';
 import type { BoardRow } from '../../shared/blackjack';
-import { CATS, HOUSE, INFO_CARDS, SQUAD, squadMeta, TRIP_META } from '../data/trip';
+import { CATS, HOUSE, INFO_CARDS, POUR, SQUAD, squadMeta, TRIP_META } from '../data/trip';
 import { useCountdown } from '../lib/useCountdown';
 import { computeBudget, money } from '../lib/settle';
 import type { CityWx } from '../lib/weather';
 import { WEATHER_CITIES } from '../data/trip';
 
-export function Home({ pitches, expenses, weather, casino }: {
+export function Home({ pitches, expenses, weather, casino, pours, whoami, onDeclarePour }: {
   pitches: Pitch[];
   expenses: Expense[];
   weather: Record<string, CityWx> | null;
   casino?: BoardRow[];
+  pours?: Pour[];
+  whoami: string | null;
+  onDeclarePour: (text: string) => Promise<void>;
 }) {
+  const [pourDraft, setPourDraft] = useState('');
+  const [pourEditing, setPourEditing] = useState(false);
+  const [pourSaving, setPourSaving] = useState(false);
+  const myPour = whoami ? pours?.find((p) => p.name === whoami) : undefined;
+  const canPour = !!whoami && (POURERS as readonly string[]).includes(whoami);
+
+  const submitPour = async () => {
+    const text = pourDraft.trim();
+    if (!text || pourSaving) return;
+    setPourSaving(true);
+    try {
+      await onDeclarePour(text);
+      setPourEditing(false);
+      setPourDraft('');
+    } finally {
+      setPourSaving(false);
+    }
+  };
   const cd = useCountdown();
   const bud = computeBudget(SQUAD.map((s) => s.name), expenses);
   const perPerson = bud.total / SQUAD.length;
@@ -164,6 +186,52 @@ export function Home({ pitches, expenses, weather, casino }: {
             )}
             <div style={{ fontSize: 12.5, color: 'var(--c-gold)', marginTop: 10, fontWeight: 600 }}>most winnings when we land in FLL: dinner paid by the rest of the group.</div>
             <div style={{ fontSize: 11, color: 'var(--ink3)', marginTop: 6 }}>record single-session loss: joe, -$15,500. pour one out.</div>
+          </div>
+
+          <div className="card" style={{ padding: 22 }}>
+            <div style={{ fontWeight: 700, fontSize: 16 }}>{POUR.title}</div>
+            <div style={{ fontSize: 12.5, color: 'var(--ink2)', lineHeight: 1.6, margin: '10px 0 12px' }}>{POUR.lore}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 7 }}>
+              {POURERS.map((name) => {
+                const p = pours?.find((x) => x.name === name);
+                return (
+                  <div key={name} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12.5 }}>
+                    <span style={{ width: 20, height: 20, borderRadius: '50%', flex: '0 0 auto', background: squadMeta[name]?.color ?? 'var(--ink3)', color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{name[0]}</span>
+                    <span style={{ lineHeight: 1.45 }}>
+                      <b>{name}:</b>{' '}
+                      {p ? <span style={{ color: 'var(--ink2)' }}>{p.text}</span> : <span style={{ color: 'var(--ink3)', fontStyle: 'italic' }}>{POUR.undeclared}</span>}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+            {canPour && (
+              pourEditing ? (
+                <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+                  <input
+                    value={pourDraft}
+                    onChange={(e) => setPourDraft(e.target.value)}
+                    maxLength={140}
+                    placeholder={POUR.inputPlaceholder}
+                    onKeyDown={(e) => { if (e.key === 'Enter') submitPour(); }}
+                    style={{ flex: 1, minWidth: 0, padding: '9px 12px', borderRadius: 10, border: '1px solid var(--border)', background: 'var(--surface2)', color: 'var(--ink)', fontSize: 12.5, fontFamily: 'inherit' }}
+                  />
+                  <button onClick={submitPour} disabled={pourSaving || !pourDraft.trim()} style={{ padding: '9px 14px', borderRadius: 10, border: 'none', background: 'var(--c-teal)', color: '#fff', fontWeight: 700, fontSize: 12.5, cursor: 'pointer', opacity: pourSaving || !pourDraft.trim() ? 0.5 : 1 }}>
+                    {pourSaving ? '...' : POUR.saveBtn}
+                  </button>
+                </div>
+              ) : (
+                <button onClick={() => { setPourDraft(myPour?.text ?? ''); setPourEditing(true); }} style={{ marginTop: 12, padding: '8px 14px', borderRadius: 10, border: '1px dashed var(--border)', background: 'transparent', color: 'var(--c-teal)', fontWeight: 700, fontSize: 12.5, cursor: 'pointer' }}>
+                  {myPour ? POUR.editBtn : POUR.saveBtn} →
+                </button>
+              )
+            )}
+            {whoami === 'Tom' && (
+              <div style={{ fontSize: 12.5, color: 'var(--c-coral)', fontWeight: 600, marginTop: 12 }}>{POUR.tomLine}</div>
+            )}
+            <div style={{ fontSize: 11, color: 'var(--ink3)', marginTop: 12, lineHeight: 1.5 }}>
+              {POUR.statementLabel} <i>{POUR.statement}</i>
+            </div>
           </div>
 
           <div className="card" style={{ padding: 22 }}>

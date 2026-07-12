@@ -53,7 +53,12 @@ export default async function handler(req: Req, res: Res) {
     }
 
     if (action !== 'state') await setJson(key, rec);
-    const board = await loadBoard();
+    // The board only moves on deal/marker/settle. Mid-hand hits and stands
+    // skip the rebuild so the hottest actions save a redis round trip; the
+    // client keeps its previous board when it sees null.
+    const settledNow = rec.round?.phase === 'settled';
+    const boardMoved = action === 'state' || action === 'deal' || action === 'marker' || settledNow;
+    const board = boardMoved ? await loadBoard() : null;
     res.setHeader('cache-control', 'no-store');
     res.status(200).json({
       me: sanitize(rec),
