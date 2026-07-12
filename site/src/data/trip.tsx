@@ -251,6 +251,8 @@ export const CASINO = {
   memorialBody: "joe's first era: -$15,500 in 120 hands. fifteen markers deep. eight blackjacks and none of them helped. he thought the goal was to lose the most. he was at -$12,400 when we started carving this plaque and lost another $3,100 before it was finished. the table believed in him. reset to $1,000 out of mercy, jul 10, 2026.",
   boardTitle: 'THE BOARD',
   boardEmpty: "nobody's sat down yet. $1,000 house money waiting.",
+  statsHint: 'tap a name for the full damage report',
+  statsSinceNote: '* the deeper stats started counting jul 13. everything before that is lost to history, which is probably for the best.',
   localNote: 'the table needs the real backend. open the live site to play.',
 };
 

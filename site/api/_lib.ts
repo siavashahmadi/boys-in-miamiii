@@ -34,7 +34,8 @@ export async function loadBoard(): Promise<BoardRow[]> {
   const raws = (await redis(['MGET', ...SQUAD_NAMES.map((n) => `bj:${n}`)])) as (string | null)[];
   return SQUAD_NAMES.map((name, i) => {
     let rec: PlayerRecord = freshRecord();
-    try { if (raws[i]) rec = JSON.parse(raws[i] as string) as PlayerRecord; } catch { /* fresh */ }
+    // Spread over fresh defaults so pre-jul-13 records get zeroed counters.
+    try { if (raws[i]) rec = { ...rec, ...(JSON.parse(raws[i] as string) as Partial<PlayerRecord>) }; } catch { /* fresh */ }
     return {
       name,
       net: netOf(rec),
@@ -44,6 +45,14 @@ export async function loadBoard(): Promise<BoardRow[]> {
       wins: rec.wins,
       blackjacks: rec.blackjacks,
       biggestWin: rec.biggestWin,
+      wonRounds: rec.wonRounds,
+      lostRounds: rec.lostRounds,
+      pushRounds: rec.pushRounds,
+      doubles: rec.doubles,
+      splits: rec.splits,
+      wagered: rec.wagered,
+      biggestLoss: rec.biggestLoss,
+      bestStreak: rec.bestStreak,
       playing: !!(rec.round && rec.round.phase === 'player'),
     };
   }).sort((a, b) => b.net - a.net);

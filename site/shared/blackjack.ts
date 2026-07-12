@@ -40,6 +40,18 @@ export interface PlayerRecord {
   wins: number;      // hands won (incl. blackjacks)
   blackjacks: number;
   biggestWin: number; // best single-round net
+  // Deeper counters, added jul 13. Records written before then lack these, so
+  // every load must normalize with { ...freshRecord(), ...stored }. When
+  // wonRounds+lostRounds+pushRounds < rounds, coverage is partial.
+  wonRounds: number;   // settled rounds with net > 0
+  lostRounds: number;  // net < 0
+  pushRounds: number;  // net === 0
+  doubles: number;
+  splits: number;
+  wagered: number;     // total staked across settled rounds
+  biggestLoss: number; // most negative single-round net (0 = none yet)
+  bestStreak: number;  // longest run of winning rounds (pushes don't break it)
+  curStreak: number;
   round: Round | null;
 }
 
@@ -52,6 +64,14 @@ export interface BoardRow {
   wins: number;
   blackjacks: number;
   biggestWin: number;
+  wonRounds: number;
+  lostRounds: number;
+  pushRounds: number;
+  doubles: number;
+  splits: number;
+  wagered: number;
+  biggestLoss: number;
+  bestStreak: number;
   playing: boolean;
 }
 
@@ -60,7 +80,12 @@ export type Rng = (n: number) => number; // returns int in [0, n)
 const round2 = (n: number) => Math.round(n * 100) / 100;
 
 export function freshRecord(): PlayerRecord {
-  return { bankroll: BJ_BUYIN, markers: 0, rounds: 0, wins: 0, blackjacks: 0, biggestWin: 0, round: null };
+  return {
+    bankroll: BJ_BUYIN, markers: 0, rounds: 0, wins: 0, blackjacks: 0, biggestWin: 0,
+    wonRounds: 0, lostRounds: 0, pushRounds: 0, doubles: 0, splits: 0,
+    wagered: 0, biggestLoss: 0, bestStreak: 0, curStreak: 0,
+    round: null,
+  };
 }
 
 export function cardValue(c: Card): number {
@@ -139,6 +164,18 @@ function settle(rec: PlayerRecord) {
   rec.wins += winsInc;
   const net = round2(payout - staked);
   if (net > rec.biggestWin) rec.biggestWin = net;
+  if (net < rec.biggestLoss) rec.biggestLoss = net;
+  rec.wagered = round2(rec.wagered + staked);
+  if (net > 0) {
+    rec.wonRounds += 1;
+    rec.curStreak += 1;
+    if (rec.curStreak > rec.bestStreak) rec.bestStreak = rec.curStreak;
+  } else if (net < 0) {
+    rec.lostRounds += 1;
+    rec.curStreak = 0;
+  } else {
+    rec.pushRounds += 1; // pushes leave the streak alone
+  }
   r.settledNet = net;
   r.phase = 'settled';
 }
@@ -217,6 +254,7 @@ export function doubleDown(rec: PlayerRecord) {
   rec.bankroll = round2(rec.bankroll - h.bet);
   h.bet = round2(h.bet * 2);
   h.doubled = true;
+  rec.doubles += 1;
   h.cards.push(draw(r));
   h.done = true;
   advance(rec);
@@ -235,6 +273,7 @@ export function split(rec: PlayerRecord) {
   const second: BJHand = { cards: [h.cards.pop()!], bet: h.bet, doubled: false, done: false };
   r.hands.push(second);
   r.isSplit = true;
+  rec.splits += 1;
   h.cards.push(draw(r));
   second.cards.push(draw(r));
   if (isAces) {
@@ -267,6 +306,14 @@ export function sanitize(rec: PlayerRecord) {
     wins: rec.wins,
     blackjacks: rec.blackjacks,
     biggestWin: rec.biggestWin,
+    wonRounds: rec.wonRounds,
+    lostRounds: rec.lostRounds,
+    pushRounds: rec.pushRounds,
+    doubles: rec.doubles,
+    splits: rec.splits,
+    wagered: rec.wagered,
+    biggestLoss: rec.biggestLoss,
+    bestStreak: rec.bestStreak,
     round: r
       ? {
           hands: r.hands.map((h) => ({ cards: h.cards, bet: h.bet, doubled: h.doubled, done: h.done, result: h.result })),

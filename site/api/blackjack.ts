@@ -26,7 +26,10 @@ export default async function handler(req: Req, res: Res) {
 
   try {
     const key = `bj:${name}`;
-    const rec: PlayerRecord = (await getJson<PlayerRecord>(key)) ?? freshRecord();
+    // Spread over fresh defaults: records written before jul 13 lack the
+    // deeper counters and would NaN on increment.
+    const stored = await getJson<Partial<PlayerRecord>>(key);
+    const rec: PlayerRecord = { ...freshRecord(), ...(stored ?? {}) };
     const now = Date.now();
 
     try {

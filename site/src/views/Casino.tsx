@@ -74,6 +74,47 @@ function HandRow({ label, cards, total, active, result, bet }: {
   );
 }
 
+// The full damage report. New counters only cover rounds since jul 13; when
+// they haven't caught up to the lifetime hand count, flag them with a *.
+function StatSheet({ b }: { b: BoardRow }) {
+  const counted = b.wonRounds + b.lostRounds + b.pushRounds;
+  const partial = counted < b.rounds;
+  const star = (label: string) => (partial ? `${label} *` : label);
+  const pct = (n: number, d: number) => (d > 0 ? ` (${Math.round((n / d) * 100)}%)` : '');
+  const avg = b.rounds > 0 ? b.net / b.rounds : 0;
+  const stats: { label: string; value: string }[] = [
+    { label: 'hands', value: String(b.rounds) },
+    { label: 'hands won', value: b.rounds > 0 ? `${b.wins}${pct(b.wins, b.rounds)}` : '-' },
+    { label: 'blackjacks', value: b.rounds > 0 ? `${b.blackjacks}${pct(b.blackjacks, b.rounds)}` : '-' },
+    { label: 'biggest win', value: b.biggestWin > 0 ? `+${money(b.biggestWin)}` : '-' },
+    { label: 'avg net / hand', value: b.rounds > 0 ? `${avg < -0.005 ? '-' : avg > 0.005 ? '+' : ''}${money(Math.abs(avg))}` : '-' },
+    { label: 'markers', value: String(b.markers) },
+    { label: 'house money drawn', value: money(1000 * (1 + b.markers)) },
+    { label: star('record'), value: counted > 0 ? `${b.wonRounds}W ${b.lostRounds}L ${b.pushRounds}P` : '-' },
+    { label: star('best streak'), value: b.bestStreak > 0 ? `${b.bestStreak}W` : '-' },
+    { label: star('biggest L'), value: b.biggestLoss < 0 ? `-${money(Math.abs(b.biggestLoss))}` : '-' },
+    { label: star('wagered'), value: counted > 0 ? money(b.wagered) : '-' },
+    { label: star('avg bet'), value: counted > 0 ? money(b.wagered / counted) : '-' },
+    { label: star('doubles'), value: counted > 0 ? String(b.doubles) : '-' },
+    { label: star('splits'), value: counted > 0 ? String(b.splits) : '-' },
+  ];
+  return (
+    <div style={{ padding: '2px 18px 14px 44px' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(104px, 1fr))', gap: 10 }}>
+        {stats.map((s) => (
+          <div key={s.label}>
+            <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: 0.5, color: 'var(--ink3)', textTransform: 'uppercase' }}>{s.label}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, marginTop: 2 }}>{s.value}</div>
+          </div>
+        ))}
+      </div>
+      {partial && (
+        <div style={{ fontSize: 10.5, color: 'var(--ink3)', marginTop: 10, fontStyle: 'italic', lineHeight: 1.5 }}>{CASINO.statsSinceNote}</div>
+      )}
+    </div>
+  );
+}
+
 export function Casino({ whoami }: { whoami: string | null }) {
   const [data, setData] = useState<BJResponse | null>(null);
   const [unavailable, setUnavailable] = useState(false);
@@ -82,6 +123,7 @@ export function Casino({ whoami }: { whoami: string | null }) {
   const [pending, setPending] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [stamp, setStamp] = useState<{ label: string; color: string; glow: string; burst: BurstParticle[] } | null>(null);
+  const [expanded, setExpanded] = useState<string | null>(null);
   const stampTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const busyRef = useRef(false);
   const cd = useCountdown(BJ_CUTOFF_MS);
@@ -312,6 +354,7 @@ export function Casino({ whoami }: { whoami: string | null }) {
 
           <div style={{ borderRadius: 20, background: 'var(--surface)', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: 'var(--shadowSm)' }}>
             <div className="list-head">{CASINO.boardTitle}</div>
+            <div style={{ padding: '8px 18px 0', fontSize: 11, color: 'var(--ink3)' }}>{CASINO.statsHint}</div>
             {board.every((b) => b.rounds === 0) && (
               <div style={{ padding: '18px', fontSize: 13, color: 'var(--ink2)' }}>{CASINO.boardEmpty}</div>
             )}
@@ -319,21 +362,26 @@ export function Casino({ whoami }: { whoami: string | null }) {
               const m = squadMeta[b.name] ?? SQUAD[0];
               const up = b.net > 0.005;
               const down = b.net < -0.005;
+              const open = expanded === b.name;
               return (
-                <div key={b.name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 18px', borderBottom: '1px solid var(--border)', background: b.name === who ? 'var(--surface2)' : 'transparent' }}>
-                  <span style={{ fontSize: 12, color: 'var(--ink3)', width: 14, fontWeight: 700 }}>{i + 1}</span>
-                  <div style={{ width: 32, height: 32, borderRadius: '50%', flex: '0 0 auto', background: m.color, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13 }}>{b.name[0]}</div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600 }}>
-                      {b.name} {i === 0 && up ? '👑' : ''} {b.playing ? <span title="at the table rn" style={{ fontSize: 10, color: 'var(--c-mint)' }}>● live</span> : null}
+                <div key={b.name} style={{ borderBottom: '1px solid var(--border)', background: b.name === who ? 'var(--surface2)' : 'transparent' }}>
+                  <div onClick={() => setExpanded(open ? null : b.name)} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 18px', cursor: 'pointer' }}>
+                    <span style={{ fontSize: 12, color: 'var(--ink3)', width: 14, fontWeight: 700 }}>{i + 1}</span>
+                    <div style={{ width: 32, height: 32, borderRadius: '50%', flex: '0 0 auto', background: m.color, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 13 }}>{b.name[0]}</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600 }}>
+                        {b.name} {i === 0 && up ? '👑' : ''} {b.playing ? <span title="at the table rn" style={{ fontSize: 10, color: 'var(--c-mint)' }}>● live</span> : null}
+                      </div>
+                      <div style={{ fontSize: 11, color: 'var(--ink3)' }}>
+                        {money(b.bankroll)} · {b.markers} marker{b.markers === 1 ? '' : 's'} · {b.rounds} hand{b.rounds === 1 ? '' : 's'}{b.blackjacks ? ` · ${b.blackjacks} BJ` : ''}
+                      </div>
                     </div>
-                    <div style={{ fontSize: 11, color: 'var(--ink3)' }}>
-                      {money(b.bankroll)} · {b.markers} marker{b.markers === 1 ? '' : 's'} · {b.rounds} hand{b.rounds === 1 ? '' : 's'}{b.blackjacks ? ` · ${b.blackjacks} BJ` : ''}
+                    <div style={{ fontWeight: 700, fontSize: 14, color: up ? 'var(--c-mint)' : down ? 'var(--c-coral)' : 'var(--ink3)' }}>
+                      {up ? '+' : down ? '-' : ''}{money(b.net)}
                     </div>
+                    <span style={{ fontSize: 9, color: 'var(--ink3)', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform .15s ease' }}>▶</span>
                   </div>
-                  <div style={{ fontWeight: 700, fontSize: 14, color: up ? 'var(--c-mint)' : down ? 'var(--c-coral)' : 'var(--ink3)' }}>
-                    {up ? '+' : down ? '-' : ''}{money(b.net)}
-                  </div>
+                  {open && <StatSheet b={b} />}
                 </div>
               );
             })}
