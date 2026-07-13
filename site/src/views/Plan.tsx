@@ -1,6 +1,6 @@
-import { DAYS } from '../data/trip';
+import { DAYS, type Day } from '../data/trip';
 
-export function Plan() {
+export function Plan({ days = DAYS }: { days?: Day[] }) {
   return (
     <section className="section-wide" style={{ paddingBottom: 20 }}>
       <div style={{ marginBottom: 22 }}>
@@ -9,7 +9,7 @@ export function Plan() {
         <p className="sub">subject to change, hangovers, and whatever the casino does to joe.</p>
       </div>
       <div className="grid-250" style={{ gap: 16 }}>
-        {DAYS.map((d) => (
+        {days.map((d) => (
           <div key={d.label} style={{ borderRadius: 22, background: 'var(--surface)', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: 'var(--shadowSm)' }}>
             <div style={{ padding: '18px 20px', background: d.bg }}>
               <div style={{ fontSize: 12, letterSpacing: 2, fontWeight: 700, color: d.accent }}>{d.label}</div>

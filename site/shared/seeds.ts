@@ -11,6 +11,8 @@ export interface Pitch {
   place: string;
   mx: number; // percent x on the stylized map, 0 = not pinned
   my: number;
+  lat?: number; // real map coords for admin-planted pins (seeds use MAP_PINS)
+  lng?: number;
   link: string;
   note: string;
   who: string[];
@@ -18,6 +20,11 @@ export interface Pitch {
   voters: string[];
   status: PitchStatus;
 }
+
+// Itinerary override, stored in redis under `days` and merged over the static
+// DAYS in trip.tsx by index (colors/labels/dates stay static).
+export interface ItinItem { time: string; title: string; note: string }
+export interface ItinDayOverride { title?: string; items: ItinItem[] }
 
 export interface Expense {
   id: string;

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { POURERS, type Expense, type Pitch, type Pour } from '../../shared/seeds';
 import type { BoardRow } from '../../shared/blackjack';
-import { CATS, DAYS, HOUSE, INFO_CARDS, LORE, LORE_META, PHASE, POUR, SQUAD, squadMeta, TRIP_META } from '../data/trip';
+import { CATS, DAYS, HOUSE, INFO_CARDS, LORE, LORE_META, PHASE, POUR, SQUAD, squadMeta, TRIP_META, type Day } from '../data/trip';
 import { useCountdown, useElapsed } from '../lib/useCountdown';
 import { computeBudget, money } from '../lib/settle';
 import { etDateStr, horoscopeFor } from '../lib/horoscope';
@@ -10,7 +10,7 @@ import { Ticker } from '../components/Ticker';
 import type { CityWx } from '../lib/weather';
 import { WEATHER_CITIES } from '../data/trip';
 
-export function Home({ pitches, expenses, weather, casino, pours, whoami, onDeclarePour }: {
+export function Home({ pitches, expenses, weather, casino, pours, whoami, onDeclarePour, days = DAYS }: {
   pitches: Pitch[];
   expenses: Expense[];
   weather: Record<string, CityWx> | null;
@@ -18,6 +18,7 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
   pours?: Pour[];
   whoami: string | null;
   onDeclarePour: (text: string) => Promise<void>;
+  days?: Day[];
 }) {
   const [pourDraft, setPourDraft] = useState('');
   const [pourEditing, setPourEditing] = useState(false);
@@ -62,7 +63,7 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
 
   return (
     <>
-      <Ticker casino={casino} pours={pours} />
+      <Ticker casino={casino} pours={pours} days={days} />
       <section className="section" style={{ paddingBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
           <div>
@@ -98,15 +99,15 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
         </div>
 
         {phase === 'trip' && (
-          <div className="card" style={{ padding: 20, marginTop: 20, borderLeft: `4px solid ${DAYS[dayIdx].accent}` }}>
+          <div className="card" style={{ padding: 20, marginTop: 20, borderLeft: `4px solid ${days[dayIdx].accent}` }}>
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
               <div style={{ fontWeight: 700, fontSize: 15 }}>📍 {PHASE.todayTitle}</div>
-              <div style={{ fontSize: 12, color: 'var(--ink3)' }}>{DAYS[dayIdx].label} · {DAYS[dayIdx].title}</div>
+              <div style={{ fontSize: 12, color: 'var(--ink3)' }}>{days[dayIdx].label} · {days[dayIdx].title}</div>
             </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 10 }}>
-              {DAYS[dayIdx].items.map((it) => (
+              {days[dayIdx].items.map((it) => (
                 <div key={it.time + it.title} style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                  <span style={{ color: DAYS[dayIdx].accent, fontWeight: 700, minWidth: 52 }}>{it.time}</span>
+                  <span style={{ color: days[dayIdx].accent, fontWeight: 700, minWidth: 52 }}>{it.time}</span>
                   <span>{it.title}</span>
                 </div>
               ))}

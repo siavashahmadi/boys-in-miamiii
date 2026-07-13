@@ -1,11 +1,11 @@
-import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_POURS, type Expense, type Pitch, type Pour } from '../../shared/seeds';
+import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_POURS, type CatKey, type Expense, type ItinDayOverride, type Pitch, type Pour } from '../../shared/seeds';
 import type { BoardRow, SanitizedPlayer } from '../../shared/blackjack';
 
 // Client for the shared state. Talks to /api/* (Vercel functions + Upstash).
 // If the API is unreachable (plain `npm run dev`), falls back to localStorage
 // so the whole app still works, just per-browser.
 
-export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[] }
+export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[]; days?: ItinDayOverride[] | null }
 
 export interface BJResponse {
   me: SanitizedPlayer;
@@ -29,10 +29,13 @@ function loadLocal(): SharedState {
   try { const p = JSON.parse(localStorage.getItem(LS_PITCHES) || 'null'); if (Array.isArray(p)) pitches = p; } catch { /* seed */ }
   try { const e = JSON.parse(localStorage.getItem(LS_EXPENSES) || 'null'); if (Array.isArray(e)) expenses = e; } catch { /* seed */ }
   try { const o = JSON.parse(localStorage.getItem(LS_POURS) || 'null'); if (Array.isArray(o)) pours = o; } catch { /* seed */ }
+  let days: ItinDayOverride[] | null = null;
+  try { const d = JSON.parse(localStorage.getItem('miami_days_v1') || 'null'); if (Array.isArray(d)) days = d; } catch { /* static */ }
   return {
     pitches: pitches ?? ALL_SEED_PITCHES.map((x) => ({ ...x })),
     expenses: expenses ?? SEED_EXPENSES.map((x) => ({ ...x })),
     pours: pours ?? SEED_POURS.map((x) => ({ ...x })),
+    days,
   };
 }
 
@@ -126,6 +129,42 @@ export async function deleteExpense(id: string): Promise<SharedState> {
     return s;
   }
   return (await post('/api/expense', { action: 'delete', id }))!;
+}
+
+export interface PinnedPitchInput {
+  title: string;
+  category: CatKey;
+  place: string;
+  note: string;
+  link: string;
+  lat: number;
+  lng: number;
+}
+
+export async function addPinnedPitch(pin: PinnedPitchInput, adminKey: string): Promise<SharedState> {
+  if (localMode) {
+    const s = loadLocal();
+    const pitch: Pitch = {
+      id: 'a' + Date.now(), title: pin.title, category: pin.category, place: pin.place || 'somewhere in florida',
+      mx: 0, my: 0, lat: pin.lat, lng: pin.lng, link: pin.link,
+      note: pin.note || 'the king decreed it. no defense necessary.',
+      who: ['Sia'], requester: 'Sia', voters: ['Sia'], status: 'approved',
+    };
+    s.pitches = [pitch, ...s.pitches];
+    saveLocal(s);
+    return s;
+  }
+  return (await post('/api/pitch', { action: 'add-pinned', pitch: pin, adminKey }))!;
+}
+
+export async function saveItinerary(days: ItinDayOverride[], adminKey: string): Promise<SharedState> {
+  if (localMode) {
+    const s = loadLocal();
+    s.days = days;
+    try { localStorage.setItem('miami_days_v1', JSON.stringify(days)); } catch { /* fine */ }
+    return s;
+  }
+  return (await post('/api/itinerary', { action: 'save', days, adminKey }))!;
 }
 
 export async function savePour(name: string, text: string): Promise<SharedState> {

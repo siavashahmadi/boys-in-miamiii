@@ -44,18 +44,21 @@ export function MapView({ pitches, whoami, onVote, onAdd, initialSelected }: {
   const sel = pitches.find((p) => p.id === selected) ?? null;
 
   const mapMarkers: MapMarker[] = visible
-    .filter((p) => MAP_PINS[p.id])
-    .map((p) => {
+    .map((p): MapMarker | null => {
+      // seed pitches pin via MAP_PINS; admin-planted ones carry their own coords
+      const c = MAP_PINS[p.id] ?? (p.lat != null && p.lng != null ? { lat: p.lat, lng: p.lng } : null);
+      if (!c) return null;
       const cat = CATS[p.category] ?? CATS.chaos;
       return {
         id: p.id,
-        lat: MAP_PINS[p.id].lat,
-        lng: MAP_PINS[p.id].lng,
+        lat: c.lat,
+        lng: c.lng,
         emoji: cat.emoji,
         color: CAT_HEX[p.category] ?? CAT_HEX.chaos,
         title: p.title,
       };
-    });
+    })
+    .filter((m): m is MapMarker => m !== null);
 
   const filterTabs: { key: Filter; label: string }[] = [
     { key: 'all', label: 'All' },

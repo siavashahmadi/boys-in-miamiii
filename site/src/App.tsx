@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
-import type { CatKey, Expense } from '../shared/seeds';
+import type { CatKey, Expense, ItinDayOverride } from '../shared/seeds';
 import * as api from './lib/api';
+import { mergeDays } from './lib/mergeDays';
 import { fetchWeather, type CityWx } from './lib/weather';
 import { getWhoami, setWhoami } from './lib/whoami';
 import { Nav } from './components/Nav';
@@ -93,31 +94,51 @@ export default function App() {
     try { setState(await api.savePour(who, text)); } catch { alert("that didn't send. try again."); }
   };
 
-  const verdict = async (id: string, decision: 'approved' | 'denied', adminKey: string): Promise<boolean> => {
+  const verdict = async (id: string, decision: 'approved' | 'denied', adminKey: string): Promise<'ok' | 'auth' | 'error'> => {
     try {
       setState(await api.verdictPitch(id, decision, adminKey));
-      return true;
+      return 'ok';
     } catch (err) {
-      if (err instanceof api.ApiAuthError) return false;
+      if (err instanceof api.ApiAuthError) return 'auth';
       setState(await api.fetchState());
-      return false;
+      return 'error';
     }
   };
+
+  const addPin = async (pin: api.PinnedPitchInput, adminKey: string): Promise<'ok' | 'auth' | 'error'> => {
+    try {
+      setState(await api.addPinnedPitch(pin, adminKey));
+      return 'ok';
+    } catch (err) {
+      return err instanceof api.ApiAuthError ? 'auth' : 'error';
+    }
+  };
+
+  const saveDays = async (days: ItinDayOverride[], adminKey: string): Promise<'ok' | 'auth' | 'error'> => {
+    try {
+      setState(await api.saveItinerary(days, adminKey));
+      return 'ok';
+    } catch (err) {
+      return err instanceof api.ApiAuthError ? 'auth' : 'error';
+    }
+  };
+
+  const days = mergeDays(state?.days);
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Nav view={view} setView={setView} theme={theme} toggleTheme={toggleTheme} />
       <main style={{ flex: 1 }}>
-        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} casino={state?.casino} pours={state?.pours} whoami={who} onDeclarePour={declarePour} />}
+        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} casino={state?.casino} pours={state?.pours} whoami={who} onDeclarePour={declarePour} days={days} />}
         {view === 'stay' && <Stay />}
-        {view === 'plan' && <Plan />}
+        {view === 'plan' && <Plan days={days} />}
         {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} initialSelected={pinId} />}
         {view === 'casino' && <Casino whoami={who} />}
         {view === 'weather' && <Weather weather={weather} />}
         {view === 'budget' && <Budget expenses={expenses} whoami={who} onAdd={addExpense} onDelete={removeExpense} />}
       </main>
       <Footer />
-      {admin && <Admin pitches={pitches} onVerdict={verdict} onExit={exitAdmin} />}
+      {admin && <Admin pitches={pitches} days={days} onVerdict={verdict} onAddPin={addPin} onSaveDays={saveDays} onExit={exitAdmin} />}
       {!who && <IdentityPicker onPick={(n) => { setWhoami(n); setWho(n); }} />}
     </div>
   );

@@ -1,6 +1,6 @@
 // Minimal Upstash Redis REST client + shared state helpers for the api routes.
 // Env vars are injected by the Vercel + Upstash marketplace integration.
-import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_POURS, SQUAD_NAMES, type Expense, type Pitch, type Pour } from '../shared/seeds.js';
+import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_POURS, SQUAD_NAMES, type Expense, type ItinDayOverride, type Pitch, type Pour } from '../shared/seeds.js';
 import { freshRecord, netOf, type BoardRow, type PlayerRecord } from '../shared/blackjack.js';
 
 const URL_ = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || '';
@@ -28,7 +28,7 @@ export async function setJson(key: string, value: unknown): Promise<void> {
   await redis(['SET', key, JSON.stringify(value)]);
 }
 
-export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino: BoardRow[]; pours: Pour[] }
+export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino: BoardRow[]; pours: Pour[]; days: ItinDayOverride[] | null }
 
 export async function loadBoard(): Promise<BoardRow[]> {
   const raws = (await redis(['MGET', ...SQUAD_NAMES.map((n) => `bj:${n}`)])) as (string | null)[];
@@ -59,17 +59,19 @@ export async function loadBoard(): Promise<BoardRow[]> {
 }
 
 export async function loadState(): Promise<SharedState> {
-  const [pitches, expenses, casino, pours] = await Promise.all([
+  const [pitches, expenses, casino, pours, days] = await Promise.all([
     getJson<Pitch[]>('pitches'),
     getJson<Expense[]>('expenses'),
     loadBoard(),
     getJson<Pour[]>('pours'),
+    getJson<ItinDayOverride[]>('days'),
   ]);
   return {
     pitches: pitches ?? ALL_SEED_PITCHES,
     expenses: expenses ?? SEED_EXPENSES,
     casino,
     pours: pours ?? SEED_POURS,
+    days,
   };
 }
 

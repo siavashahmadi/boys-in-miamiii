@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 import type { BoardRow } from '../../shared/blackjack';
 import { POURERS, type Pour } from '../../shared/seeds';
-import { DAYS, TICKER } from '../data/trip';
+import { DAYS, TICKER, type Day } from '../data/trip';
 import { money } from '../lib/settle';
 import { useCountdown } from '../lib/useCountdown';
 import { tripDayIndex, tripPhase } from '../lib/tripPhase';
 
 // The chyron. Live headlines from real data, plus phase-appropriate fillers.
 // Content renders twice so the marquee's -50% loop is seamless.
-export function Ticker({ casino, pours }: { casino?: BoardRow[]; pours?: Pour[] }) {
+export function Ticker({ casino, pours, days = DAYS }: { casino?: BoardRow[]; pours?: Pour[]; days?: Day[] }) {
   const cd = useCountdown();
   const phase = tripPhase();
 
@@ -17,7 +17,7 @@ export function Ticker({ casino, pours }: { casino?: BoardRow[]; pours?: Pour[] 
     if (phase === 'pre') out.push(`${cd.days}d ${cd.hours}h to wheels up`);
     if (phase === 'trip') {
       const d = tripDayIndex();
-      out.push(`day ${d + 1} of 4 in florida`, `today: ${DAYS[d].title.toLowerCase()}`, 'hydrate. reapply. repeat');
+      out.push(`day ${d + 1} of 4 in florida`, `today: ${days[d].title.toLowerCase()}`, 'hydrate. reapply. repeat');
     }
     if (phase === 'after') out.push('we survived florida. barely');
     if (casino && casino.some((b) => b.rounds > 0)) {
@@ -32,7 +32,7 @@ export function Ticker({ casino, pours }: { casino?: BoardRow[]; pours?: Pour[] 
     if (pours && pours.length > 0) out.push(`pour registry: ${pours.length} of ${POURERS.length} declared. tommy is watching`);
     out.push(...TICKER[phase]);
     return out.join('  ···  ') + '  ···  ';
-  }, [casino, pours, cd.days, cd.hours, phase]);
+  }, [casino, pours, days, cd.days, cd.hours, phase]);
 
   // slower with more content so it stays readable
   const dur = Math.max(28, Math.round(line.length / 5));

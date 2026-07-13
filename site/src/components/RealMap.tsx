@@ -24,18 +24,32 @@ function makeIcon(emoji: string, color: string, selected: boolean): L.DivIcon {
   });
 }
 
+const draftIcon = (): L.DivIcon => L.divIcon({
+  className: '',
+  html: '<div style="width:34px;height:34px;border-radius:50%;background:var(--c-coral);border:2.5px dashed #fff;box-shadow:0 2px 8px rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;font-size:16px;">📍</div>',
+  iconSize: [34, 34],
+  iconAnchor: [17, 17],
+});
+
 // Real interactive street map (OpenStreetMap tiles via Leaflet: free, no key).
-// Shared by the Map tab (the six spots) and the Stay tab (one house pin).
-export function RealMap({ markers, selected, onSelect, legend, singleZoom }: {
+// Shared by the Map tab (the six spots), the Stay tab (one house pin), and the
+// admin pin-drop (onMapClick + draft).
+export function RealMap({ markers, selected, onSelect, legend, singleZoom, height, onMapClick, draft }: {
   markers: MapMarker[];
   selected?: string | null;
   onSelect?: (id: string) => void;
   legend?: boolean;
   singleZoom?: number; // when set (single marker), center at this zoom instead of fitBounds
+  height?: number;
+  onMapClick?: (lat: number, lng: number) => void;
+  draft?: { lat: number; lng: number } | null;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef<Record<string, L.Marker>>({});
+  const draftRef = useRef<L.Marker | null>(null);
+  const clickRef = useRef(onMapClick);
+  clickRef.current = onMapClick;
   const [ready, setReady] = useState(false);
 
   const sig = markers.map((m) => `${m.id}:${m.lat}:${m.lng}`).join('|');
@@ -48,10 +62,20 @@ export function RealMap({ markers, selected, onSelect, legend, singleZoom }: {
       maxZoom: 19,
       attribution: '&copy; OpenStreetMap',
     }).addTo(map);
+    map.on('click', (e: L.LeafletMouseEvent) => clickRef.current?.(e.latlng.lat, e.latlng.lng));
     mapRef.current = map;
     setReady(true);
     return () => { map.remove(); mapRef.current = null; setReady(false); };
   }, []);
+
+  // the admin's draft pin (distinct dashed marker, no refit)
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (draftRef.current) { draftRef.current.remove(); draftRef.current = null; }
+    if (draft) draftRef.current = L.marker([draft.lat, draft.lng], { icon: draftIcon() }).addTo(map);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [draft?.lat, draft?.lng, ready]);
 
   // (re)build markers when the set changes or the map becomes ready
   useEffect(() => {
@@ -94,7 +118,7 @@ export function RealMap({ markers, selected, onSelect, legend, singleZoom }: {
     <div style={{ position: 'relative' }}>
       <div
         ref={ref}
-        style={{ height: 520, borderRadius: 22, overflow: 'hidden', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', background: 'var(--surface2)' }}
+        style={{ height: height ?? 520, borderRadius: 22, overflow: 'hidden', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', background: 'var(--surface2)' }}
       />
       {legend && (
         <div style={{ position: 'absolute', left: 12, bottom: 12, zIndex: 500, display: 'flex', flexWrap: 'wrap', gap: '5px 10px', maxWidth: '70%', padding: '9px 12px', borderRadius: 12, background: 'var(--glass)', backdropFilter: 'blur(8px)', border: '1px solid var(--glassBorder)' }}>

@@ -54,7 +54,10 @@ function HandRow({ label, cards, total, active, result, bet }: {
   bet?: number;
 }) {
   const resultCol = result === 'blackjack' ? 'var(--c-gold)' : result === 'win' ? 'var(--c-mint)' : result === 'push' ? 'var(--c-gold)' : 'var(--c-coral)';
-  const resultLabel = result === 'blackjack' ? 'BLACKJACK' : result === 'win' ? 'WIN' : result === 'push' ? 'PUSH' : result === 'lose' ? 'LOSE' : null;
+  // Per-hand net rides inside the pill so settling never shifts the layout.
+  const resultNet = bet === undefined ? 0 : result === 'blackjack' ? bet * 1.5 : result === 'win' ? bet : result === 'lose' ? -bet : 0;
+  const netStr = result && result !== 'push' && bet !== undefined ? ` ${resultNet >= 0 ? '+' : '-'}${money(Math.abs(resultNet))}` : '';
+  const resultLabel = result === 'blackjack' ? `BLACKJACK${netStr}` : result === 'win' ? `WIN${netStr}` : result === 'push' ? 'PUSH' : result === 'lose' ? `LOSE${netStr}` : null;
   return (
     <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', padding: active ? 8 : 0, borderRadius: 14, outline: active ? '2px dashed rgba(255,255,255,.6)' : 'none' }}>
       {label && <span style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1.5, color: 'rgba(255,255,255,.65)', minWidth: 46 }}>{label}</span>}
@@ -302,11 +305,6 @@ export function Casino({ whoami }: { whoami: string | null }) {
                   ))
                 ) : (
                   <div style={{ fontSize: 13, color: 'rgba(255,255,255,.6)', fontStyle: 'italic' }}>stack your chips and run it.</div>
-                )}
-                {settled && round?.settledNet !== undefined && (
-                  <div style={{ fontSize: 14, fontWeight: 700, color: round.settledNet > 0 ? '#9FE3BC' : round.settledNet < 0 ? '#F5B5A3' : 'rgba(255,255,255,.8)' }}>
-                    {round.settledNet > 0 ? `+${money(round.settledNet)}` : round.settledNet < 0 ? `-${money(round.settledNet)}` : 'push. nothing moves.'}
-                  </div>
                 )}
               </div>
 

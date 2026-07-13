@@ -47,6 +47,35 @@ export default async function handler(req: Req, res: Res) {
       return res.status(200).json(state);
     }
 
+    // Admin-only: plant an already-approved pin with real map coordinates.
+    if (body.action === 'add-pinned') {
+      const adminKey = process.env.ADMIN_KEY;
+      if (!adminKey || clamp(body.adminKey, 200) !== adminKey) return bad(res, 401, 'not the king');
+      const p = (body.pitch ?? {}) as Record<string, unknown>;
+      const title = clamp(p.title, 80).trim();
+      if (!title) return bad(res, 400, 'name the spot first');
+      const lat = Number(p.lat);
+      const lng = Number(p.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return bad(res, 400, 'tap the map to place the pin first');
+      const pitch: Pitch = {
+        id: 'a' + Date.now() + Math.random().toString(36).slice(2, 6),
+        title,
+        category: CATS.includes(p.category as CatKey) ? (p.category as CatKey) : 'chaos',
+        place: clamp(p.place, 60).trim() || 'somewhere in florida',
+        mx: 0, my: 0,
+        lat, lng,
+        link: clamp(p.link, 500).trim(),
+        note: clamp(p.note, 500).trim() || 'the king decreed it. no defense necessary.',
+        who: ['Sia'],
+        requester: 'Sia',
+        voters: ['Sia'],
+        status: 'approved',
+      };
+      state.pitches = [pitch, ...state.pitches].slice(0, 200);
+      await savePitches(state.pitches);
+      return res.status(200).json(state);
+    }
+
     if (body.action === 'verdict') {
       const adminKey = process.env.ADMIN_KEY;
       if (!adminKey || clamp(body.adminKey, 200) !== adminKey) return bad(res, 401, 'not the king');
