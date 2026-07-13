@@ -64,6 +64,14 @@ a { color:inherit; }
 .label-sm { font-size:12px; color:var(--ink2); font-weight:600; }
 .list-head { padding:14px 18px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; letter-spacing:.5px; color:var(--ink2); }
 
+/* the ticker: chyron strip at the top of Home, scrolled by the marquee keyframe */
+.ticker { overflow:hidden; background:var(--surface2); border-bottom:1px solid var(--border); }
+.ticker-track { display:inline-flex; white-space:nowrap; padding:8px 0; font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--ink2); animation:marquee 40s linear infinite; will-change:transform; }
+@media (prefers-reduced-motion: reduce) {
+  .ticker { overflow-x:auto; }
+  .ticker-track { animation:none; }
+}
+
 /* casino felt controls: sizes live here so the phone override below can
    squeeze every row onto one line (colors stay inline in Casino.tsx) */
 .felt-actions { display:flex; gap:10px; flex-wrap:wrap; }

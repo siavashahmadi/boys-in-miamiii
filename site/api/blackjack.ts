@@ -55,6 +55,14 @@ export default async function handler(req: Req, res: Res) {
       return bad(res, 400, gameErr instanceof Error ? gameErr.message : 'table says no');
     }
 
+    // The prophecy egg: first player ever dealt J♠+J♣ claims it, permanently.
+    let prophecy: { fresh: boolean; by: string } | undefined;
+    if (action === 'deal' && rec.round?.prophecy) {
+      const claim = await getJson<{ name: string; at: number }>('egg:prophecy');
+      if (!claim) await setJson('egg:prophecy', { name, at: now });
+      prophecy = { fresh: !claim, by: claim?.name ?? name };
+    }
+
     if (action !== 'state') await setJson(key, rec);
     // The board only moves on deal/marker/settle. Mid-hand hits and stands
     // skip the rebuild so the hottest actions save a redis round trip; the
@@ -68,6 +76,7 @@ export default async function handler(req: Req, res: Res) {
       board,
       cutoff: BJ_CUTOFF_MS,
       closed: now >= BJ_CUTOFF_MS,
+      prophecy,
     });
   } catch (e) {
     bad(res, 500, e instanceof Error ? e.message : 'redis unavailable');

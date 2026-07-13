@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { POURERS, type Expense, type Pitch, type Pour } from '../../shared/seeds';
 import type { BoardRow } from '../../shared/blackjack';
-import { CATS, HOUSE, INFO_CARDS, POUR, SQUAD, squadMeta, TRIP_META } from '../data/trip';
-import { useCountdown } from '../lib/useCountdown';
+import { CATS, DAYS, HOUSE, INFO_CARDS, LORE, LORE_META, PHASE, POUR, SQUAD, squadMeta, TRIP_META } from '../data/trip';
+import { useCountdown, useElapsed } from '../lib/useCountdown';
 import { computeBudget, money } from '../lib/settle';
+import { etDateStr, horoscopeFor } from '../lib/horoscope';
+import { TRIP_START_MS, tripDayIndex, tripPhase } from '../lib/tripPhase';
+import { Ticker } from '../components/Ticker';
 import type { CityWx } from '../lib/weather';
 import { WEATHER_CITIES } from '../data/trip';
 
@@ -35,6 +38,10 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
     }
   };
   const cd = useCountdown();
+  const phase = tripPhase();
+  const elapsed = useElapsed(TRIP_START_MS);
+  const todayStr = etDateStr();
+  const dayIdx = tripDayIndex();
   const bud = computeBudget(SQUAD.map((s) => s.name), expenses);
   const perPerson = bud.total / SQUAD.length;
   const visible = pitches.filter((p) => p.status !== 'denied');
@@ -55,22 +62,57 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
 
   return (
     <>
+      <Ticker casino={casino} pours={pours} />
       <section className="section" style={{ paddingBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
           <div>
-            <div className="eyebrow">TRIP DASHBOARD</div>
+            <div className="eyebrow">{phase === 'trip' ? PHASE.tripEyebrow : phase === 'after' ? PHASE.afterEyebrow : 'TRIP DASHBOARD'}</div>
             <h1 className="h1" style={{ fontSize: 'clamp(30px,5vw,46px)' }}>
               Miami <span className="amp">&amp;</span> Fort Lauderdale
             </h1>
             <div style={{ fontSize: 14, color: 'var(--ink2)', marginTop: 6 }}>{TRIP_META}</div>
           </div>
-          <div style={{ textAlign: 'right', padding: '12px 18px', borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadowSm)' }}>
-            <div style={{ fontSize: 11, color: 'var(--ink3)', letterSpacing: '1.5px', fontWeight: 600 }}>WHEELS UP IN</div>
-            <div className="serif" style={{ fontSize: 32, lineHeight: 1.1, marginTop: 2 }}>
-              {cd.days}<span style={{ fontSize: 15, color: 'var(--ink2)' }}>d</span> {cd.hours}<span style={{ fontSize: 15, color: 'var(--ink2)' }}>h</span> {cd.mins}<span style={{ fontSize: 15, color: 'var(--ink2)' }}>m</span> <span style={{ color: 'var(--c-teal)' }}>{cd.secs}</span><span style={{ fontSize: 15, color: 'var(--ink2)' }}>s</span>
+          {phase === 'pre' && (
+            <div style={{ textAlign: 'right', padding: '12px 18px', borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadowSm)' }}>
+              <div style={{ fontSize: 11, color: 'var(--ink3)', letterSpacing: '1.5px', fontWeight: 600 }}>WHEELS UP IN</div>
+              <div className="serif" style={{ fontSize: 32, lineHeight: 1.1, marginTop: 2 }}>
+                {cd.days}<span style={{ fontSize: 15, color: 'var(--ink2)' }}>d</span> {cd.hours}<span style={{ fontSize: 15, color: 'var(--ink2)' }}>h</span> {cd.mins}<span style={{ fontSize: 15, color: 'var(--ink2)' }}>m</span> <span style={{ color: 'var(--c-teal)' }}>{cd.secs}</span><span style={{ fontSize: 15, color: 'var(--ink2)' }}>s</span>
+              </div>
+            </div>
+          )}
+          {phase === 'trip' && (
+            <div style={{ textAlign: 'right', padding: '12px 18px', borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadowSm)' }}>
+              <div style={{ fontSize: 11, color: 'var(--ink3)', letterSpacing: '1.5px', fontWeight: 600 }}>DAY {dayIdx + 1} OF 4 · {PHASE.hoursLabel}</div>
+              <div className="serif" style={{ fontSize: 32, lineHeight: 1.1, marginTop: 2, color: 'var(--c-teal)' }}>
+                {elapsed.totalHours}<span style={{ fontSize: 15, color: 'var(--ink2)' }}>h</span>
+              </div>
+            </div>
+          )}
+          {phase === 'after' && (
+            <div style={{ textAlign: 'right', padding: '12px 18px', borderRadius: 16, background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadowSm)', maxWidth: 260 }}>
+              <div style={{ fontSize: 11, color: 'var(--ink3)', letterSpacing: '1.5px', fontWeight: 600 }}>{PHASE.overLabel}</div>
+              <div className="serif" style={{ fontSize: 26, lineHeight: 1.1, marginTop: 2 }}>🕯️</div>
+              <div style={{ fontSize: 12, color: 'var(--ink2)', marginTop: 4 }}>{PHASE.overSub}</div>
+            </div>
+          )}
+        </div>
+
+        {phase === 'trip' && (
+          <div className="card" style={{ padding: 20, marginTop: 20, borderLeft: `4px solid ${DAYS[dayIdx].accent}` }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+              <div style={{ fontWeight: 700, fontSize: 15 }}>📍 {PHASE.todayTitle}</div>
+              <div style={{ fontSize: 12, color: 'var(--ink3)' }}>{DAYS[dayIdx].label} · {DAYS[dayIdx].title}</div>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 10 }}>
+              {DAYS[dayIdx].items.map((it) => (
+                <div key={it.time + it.title} style={{ display: 'flex', gap: 10, fontSize: 13 }}>
+                  <span style={{ color: DAYS[dayIdx].accent, fontWeight: 700, minWidth: 52 }}>{it.time}</span>
+                  <span>{it.title}</span>
+                </div>
+              ))}
             </div>
           </div>
-        </div>
+        )}
 
         <div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 12, marginTop: 22 }}>
           {stats.map((s) => (
@@ -235,6 +277,21 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
           </div>
 
           <div className="card" style={{ padding: 22 }}>
+            <div style={{ fontWeight: 700, fontSize: 16 }}>{PHASE.horoscopeTitle}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 12 }}>
+              {SQUAD.map((s) => (
+                <div key={s.name} style={{ display: 'flex', alignItems: 'flex-start', gap: 8, fontSize: 12.5 }}>
+                  <span style={{ width: 20, height: 20, borderRadius: '50%', flex: '0 0 auto', background: s.color, color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700 }}>{s.name[0]}</span>
+                  <span style={{ lineHeight: 1.45 }}>
+                    <b>{s.name.toLowerCase()}:</b> <span style={{ color: 'var(--ink2)' }}>{horoscopeFor(s.name, todayStr)}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--ink3)', marginTop: 12 }}>{PHASE.horoscopeFoot}</div>
+          </div>
+
+          <div className="card" style={{ padding: 22 }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 10 }}>
               <div style={{ fontWeight: 700, fontSize: 16 }}>🌤️ Weather</div>
               <a href="#weather" style={{ fontSize: 12.5, color: 'var(--c-teal)', fontWeight: 600, textDecoration: 'none' }}>Forecast →</a>
@@ -252,6 +309,25 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
             <div style={{ fontSize: 12.5, color: 'var(--ink2)', marginTop: 8 }}>hot, humid, daily 3pm downpour. SPF 50 minimum.</div>
           </div>
         </div>
+      </section>
+
+      <section className="section" style={{ padding: '10px 22px 56px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, flexWrap: 'wrap', marginBottom: 16 }}>
+          <h2 className="h2">🏛️ {LORE_META.title}</h2>
+          <span style={{ fontSize: 13, color: 'var(--ink3)' }}>{LORE_META.sub}</span>
+        </div>
+        <div className="grid-cards">
+          {LORE.map((x) => (
+            <div key={x.no} className="card" style={{ padding: 22 }}>
+              <div style={{ fontSize: 10, letterSpacing: 2, color: 'var(--ink3)', fontWeight: 700 }}>EXHIBIT {x.no}</div>
+              <div className="serif" style={{ fontSize: 19, margin: '8px 0 10px' }}>{x.title}</div>
+              <div style={{ fontSize: 14, fontStyle: 'italic', lineHeight: 1.55 }}>"{x.quote}"</div>
+              <div style={{ fontSize: 11, color: 'var(--ink3)', marginTop: 8 }}>{x.attribution}</div>
+              <div style={{ fontSize: 12.5, color: 'var(--ink2)', marginTop: 10, lineHeight: 1.6 }}>{x.note}</div>
+            </div>
+          ))}
+        </div>
+        <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--ink3)', marginTop: 18 }}>{LORE_META.warning}</div>
       </section>
     </>
   );

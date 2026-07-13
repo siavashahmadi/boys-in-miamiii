@@ -31,6 +31,7 @@ export interface Round {
   phase: 'player' | 'settled';
   isSplit: boolean;
   settledNet?: number; // payout minus staked, set at settle
+  prophecy?: boolean;  // opening hand was THE black jacks (J♠ + J♣)
 }
 
 export interface PlayerRecord {
@@ -220,6 +221,10 @@ export function startRound(rec: PlayerRecord, bet: number, deck: Card[], now: nu
   h.cards.push(draw(r));
   r.dealer.push(draw(r));
 
+  // The prophecy: dealt the two black jacks. Outcome-independent; getting
+  // robbed by a dealer blackjack right after being chosen is funnier.
+  if (h.cards.includes('JS') && h.cards.includes('JC')) r.prophecy = true;
+
   const pBJ = isBlackjack(h.cards);
   const dBJ = isBlackjack(r.dealer);
   if (pBJ || dBJ) {
@@ -322,6 +327,7 @@ export function sanitize(rec: PlayerRecord) {
           phase: r.phase,
           isSplit: r.isSplit,
           settledNet: r.settledNet,
+          prophecy: r.prophecy,
         }
       : null,
   };

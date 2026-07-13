@@ -122,10 +122,11 @@ export function Casino({ whoami }: { whoami: string | null }) {
   const [busy, setBusy] = useState(false);
   const [pending, setPending] = useState<string | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [stamp, setStamp] = useState<{ label: string; color: string; glow: string; burst: BurstParticle[] } | null>(null);
+  const [stamp, setStamp] = useState<{ label: string; color: string; glow: string; burst: BurstParticle[]; sub?: string } | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
   const stampTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const busyRef = useRef(false);
+  const crownedRef = useRef(false);
   const cd = useCountdown(BJ_CUTOFF_MS);
 
   const who = whoami;
@@ -146,20 +147,35 @@ export function Casino({ whoami }: { whoami: string | null }) {
     return () => clearInterval(t);
   }, [who, unavailable]);
 
+  // coronation: when the table is first seen closed, crown the winner once
+  useEffect(() => {
+    if (crownedRef.current || !data?.closed) return;
+    const lead = data.board?.[0];
+    if (!lead || lead.net <= 0) return;
+    crownedRef.current = true;
+    setStamp({ label: '👑', color: 'var(--c-gold)', glow: 'rgba(214,169,78,.6)', burst: makeBurst(JACKPOT_BURST), sub: CASINO.crownSub.replace('{name}', lead.name) });
+    const t = setTimeout(() => setStamp(null), 6000);
+    return () => clearTimeout(t);
+  }, [data]);
+
   const fireStamp = useCallback((round: SanitizedRound) => {
     const net = round.settledNet ?? 0;
     const hasBJ = round.hands.some((h) => h.result === 'blackjack');
     const allBust = round.hands.every((h) => handValue(h.cards).total > 21);
-    const s = hasBJ
-      ? { label: 'BLACKJACK.', color: 'var(--c-gold)', glow: 'rgba(214,169,78,.55)', burst: makeBurst(JACKPOT_BURST) }
-      : net > 0
-        ? { label: 'WIN.', color: 'var(--c-mint)', glow: 'rgba(90,165,126,.5)', burst: makeBurst(GOOD_BURST, 12) }
-        : net === 0
-          ? { label: 'PUSH.', color: 'var(--c-gold)', glow: 'rgba(214,169,78,.4)', burst: [] }
-          : { label: allBust ? 'BUST.' : 'dealer wins.', color: 'var(--c-coral)', glow: 'rgba(227,140,116,.5)', burst: [] };
+    const nice69 = net > 0 && round.hands.some((h) => h.bet === 69 && !h.doubled);
+    const s = nice69
+      ? { label: 'nice.', color: 'var(--c-mint)', glow: 'rgba(90,165,126,.55)', burst: makeBurst(GOOD_BURST, 14), sub: CASINO.niceEgg }
+      : hasBJ
+        ? { label: 'BLACKJACK.', color: 'var(--c-gold)', glow: 'rgba(214,169,78,.55)', burst: makeBurst(JACKPOT_BURST) }
+        : net > 0
+          ? { label: 'WIN.', color: 'var(--c-mint)', glow: 'rgba(90,165,126,.5)', burst: makeBurst(GOOD_BURST, 12) }
+          : net === 0
+            ? { label: 'PUSH.', color: 'var(--c-gold)', glow: 'rgba(214,169,78,.4)', burst: [] }
+            : { label: allBust ? 'BUST.' : 'dealer wins.', color: 'var(--c-coral)', glow: 'rgba(227,140,116,.5)', burst: [] };
     setStamp(s);
     if (stampTimer.current) clearTimeout(stampTimer.current);
-    stampTimer.current = setTimeout(() => setStamp(null), 1100);
+    // egg stamps stay up long enough to screenshot
+    stampTimer.current = setTimeout(() => setStamp(null), nice69 ? 6000 : 1100);
   }, []);
 
   const act = useCallback(async (action: 'deal' | 'hit' | 'stand' | 'double' | 'split' | 'marker', betArg?: number) => {
@@ -173,7 +189,18 @@ export function Casino({ whoami }: { whoami: string | null }) {
       // mid-hand actions skip the board rebuild server-side; keep the old one
       setData((prev) => (res.board ? res : { ...res, board: prev?.board ?? null }));
       const r = res.me.round;
-      if (r && r.phase === 'settled' && action !== 'marker') fireStamp(r);
+      if (res.prophecy) {
+        // the black jacks. outranks everything, stays up long enough to frame.
+        setStamp({
+          label: 'THE PROPHECY.',
+          color: 'var(--c-gold)',
+          glow: 'rgba(214,169,78,.6)',
+          burst: makeBurst(JACKPOT_BURST),
+          sub: res.prophecy.fresh ? CASINO.prophecyFresh : CASINO.prophecyStale.replace('{name}', res.prophecy.by),
+        });
+        if (stampTimer.current) clearTimeout(stampTimer.current);
+        stampTimer.current = setTimeout(() => setStamp(null), 8000);
+      } else if (r && r.phase === 'settled' && action !== 'marker') fireStamp(r);
       // the standing bet persists round to round but never above the bankroll
       if (!r || r.phase !== 'player') setBet((b) => Math.min(b, Math.floor(res.me.bankroll)));
     } catch (e) {
@@ -334,8 +361,11 @@ export function Casino({ whoami }: { whoami: string | null }) {
           {/* result stamp */}
           {stamp && (
             <div style={{ position: 'absolute', inset: 0, zIndex: 20, pointerEvents: 'none' }}>
-              <div className="serif" style={{ position: 'absolute', top: '46%', left: '50%', fontSize: 'clamp(34px,7vw,64px)', color: stamp.color, textShadow: `0 6px 30px ${stamp.glow}`, border: `6px solid ${stamp.color}`, padding: '8px 28px', borderRadius: 16, animation: 'stampSlam .6s cubic-bezier(.2,1.4,.4,1) forwards', background: 'rgba(0,0,0,.35)', whiteSpace: 'nowrap' }}>
+              <div className="serif" style={{ position: 'absolute', top: '46%', left: '50%', fontSize: 'clamp(34px,7vw,64px)', color: stamp.color, textShadow: `0 6px 30px ${stamp.glow}`, border: `6px solid ${stamp.color}`, padding: '8px 28px', borderRadius: 16, animation: 'stampSlam .6s cubic-bezier(.2,1.4,.4,1) forwards', background: 'rgba(0,0,0,.35)', whiteSpace: 'nowrap', textAlign: 'center' }}>
                 {stamp.label}
+                {stamp.sub && (
+                  <div style={{ fontFamily: "'Outfit',sans-serif", fontSize: 13, fontWeight: 600, color: '#fff', marginTop: 6, maxWidth: 300, whiteSpace: 'normal', lineHeight: 1.45 }}>{stamp.sub}</div>
+                )}
               </div>
               {stamp.burst.map((p, i) => <span key={i} style={p.style}>{p.emoji}</span>)}
             </div>
@@ -385,6 +415,56 @@ export function Casino({ whoami }: { whoami: string | null }) {
                 </div>
               );
             })}
+            {board.length > 0 && (() => {
+              const houseNet = -board.reduce((s, x) => s + x.net, 0);
+              const hHands = board.reduce((s, x) => s + x.rounds, 0);
+              const hMarkers = board.reduce((s, x) => s + x.markers, 0);
+              const hBJ = board.reduce((s, x) => s + x.blackjacks, 0);
+              const hWagered = board.reduce((s, x) => s + x.wagered, 0);
+              const counted = board.reduce((s, x) => s + x.wonRounds + x.lostRounds + x.pushRounds, 0);
+              const partial = counted < hHands;
+              const open = expanded === '__house__';
+              const hStats = [
+                { label: 'house net', value: `${houseNet > 0.005 ? '+' : houseNet < -0.005 ? '-' : ''}${money(Math.abs(houseNet))}` },
+                { label: 'hands dealt', value: String(hHands) },
+                { label: 'markers issued', value: String(hMarkers) },
+                { label: 'house money loaned', value: money(1000 * (board.length + hMarkers)) },
+                { label: 'blackjacks paid out', value: String(hBJ) },
+                { label: partial ? 'wagered against *' : 'wagered against', value: counted > 0 ? money(hWagered) : '-' },
+              ];
+              return (
+                <div style={{ background: 'var(--surface2)' }}>
+                  <div onClick={() => setExpanded(open ? null : '__house__')} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 18px', cursor: 'pointer' }}>
+                    <span style={{ width: 14 }} />
+                    <div style={{ width: 32, height: 32, borderRadius: 8, flex: '0 0 auto', background: 'var(--ink)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 15 }}>🏦</div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 14, fontWeight: 600 }}>{CASINO.houseTitle}</div>
+                      <div style={{ fontSize: 11, color: 'var(--ink3)' }}>{CASINO.houseSub}</div>
+                    </div>
+                    <div style={{ fontWeight: 700, fontSize: 14, color: open ? (houseNet > 0.005 ? 'var(--c-mint)' : 'var(--ink3)') : 'var(--ink3)' }}>
+                      {open ? `${houseNet > 0.005 ? '+' : houseNet < -0.005 ? '-' : ''}${money(Math.abs(houseNet))}` : '██████'}
+                    </div>
+                    <span style={{ fontSize: 9, color: 'var(--ink3)', transform: open ? 'rotate(90deg)' : 'none', transition: 'transform .15s ease' }}>▶</span>
+                  </div>
+                  {open && (
+                    <div style={{ padding: '2px 18px 14px 44px' }}>
+                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(104px, 1fr))', gap: 10 }}>
+                        {hStats.map((s) => (
+                          <div key={s.label}>
+                            <div style={{ fontSize: 9.5, fontWeight: 700, letterSpacing: 0.5, color: 'var(--ink3)', textTransform: 'uppercase' }}>{s.label}</div>
+                            <div style={{ fontSize: 13, fontWeight: 700, marginTop: 2 }}>{s.value}</div>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ fontSize: 11.5, color: 'var(--ink2)', marginTop: 10, fontStyle: 'italic' }}>{CASINO.houseLine}</div>
+                      {partial && (
+                        <div style={{ fontSize: 10.5, color: 'var(--ink3)', marginTop: 6, fontStyle: 'italic', lineHeight: 1.5 }}>{CASINO.statsSinceNote}</div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
 
           <div style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--surface2)', border: '1px dashed var(--border)' }}>

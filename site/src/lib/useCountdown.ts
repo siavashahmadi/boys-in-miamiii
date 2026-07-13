@@ -5,6 +5,18 @@ export interface Countdown { days: number; hours: string; mins: string; secs: st
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
+// Count-up twin of useCountdown, for trip mode ("hours in florida: 37h").
+export function useElapsed(since: number): { days: number; hours: number; totalHours: number } {
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+  const diff = Math.max(0, now - since);
+  const totalHours = Math.floor(diff / 3600000);
+  return { days: Math.floor(diff / 86400000), hours: totalHours % 24, totalHours };
+}
+
 export function useCountdown(target: number = WHEELS_UP): Countdown {
   const [now, setNow] = useState(Date.now());
   useEffect(() => {

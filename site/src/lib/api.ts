@@ -12,6 +12,7 @@ export interface BJResponse {
   board: BoardRow[] | null; // null when the action couldn't have moved the board
   cutoff: number;
   closed: boolean;
+  prophecy?: { fresh: boolean; by: string }; // dealt the black jacks
 }
 
 const LS_PITCHES = 'miami_pitches_v1';
