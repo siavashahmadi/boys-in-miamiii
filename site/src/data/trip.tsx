@@ -100,7 +100,7 @@ export const DAYS: Day[] = [
     items: [
       { time: '4:30p', title: 'Get to ATL', note: "it's ATL on a thursday. leave early or get left." },
       { time: '6:40p', title: 'ATL → FLL', note: 'jetblue. aisle seats for the tall ones or there will be words.' },
-      { time: '~9:00p', title: 'Land + grab the whip', note: "sia's working the LMco rate at the rental counter. still gotta actually book it." },
+      { time: '~9:00p', title: 'Land + grab the whip', note: 'the minivan awaits. LMco rate, booked and done. six uncs, one van, zero shame.' },
       { time: '10:00p', title: 'Check into Casa de los Uncs', note: 'heated pool, pool table, three bathrooms. we made it.' },
       { time: '11:00p', title: 'Hard rock recon?', note: 'joe has been waiting his whole life. something light.' },
       { time: '1:00a', title: 'Backyard summit, session one', note: "quorum convenes: sia, kia, lucas, pete. joe's annual invite stands. tom is welcome to watch and judge." },
@@ -197,7 +197,7 @@ export const INFO_CARDS: InfoCard[] = [
     emoji: '🚗', iconBg: 'var(--c-teal-s)', title: 'The whip',
     body: (
       <>
-        <span style={{ color: 'var(--c-coral)', fontWeight: 600 }}>not booked yet.</span> needs to seat 6. sia's got the <b style={{ color: 'var(--c-teal)' }}>LMco rate</b>. kia was gonna ask his manager for a hookup but she's slammed rn, so that's on hold. minivan ~$156 vs explorer ~$206. someone lock it in.
+        <span style={{ color: 'var(--c-mint)', fontWeight: 600 }}>booked.</span> it's a <b style={{ color: 'var(--c-teal)' }}>minivan</b> on the LMco rate. yes, a minivan. sliding doors, six seats, room for the durian. the explorer was $50 more to look 10% cooler and we are not those guys.
       </>
     ),
   },

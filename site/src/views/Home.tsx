@@ -53,7 +53,7 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
     { emoji: '🕶️', label: 'The squad', value: String(SQUAD.length), sub: 'locked in', color: 'var(--c-teal)' },
     { emoji: '🗓️', label: 'Trip length', value: '4 days', sub: '3 nights, zero plans after 2am', color: 'var(--c-coral)' },
     { emoji: '🏠', label: 'The crib', value: '✅', sub: 'casa de los uncs', color: 'var(--c-mint)' },
-    { emoji: '🚗', label: 'The whip', value: 'TBD', sub: 'someone book it', color: 'var(--c-lav)' },
+    { emoji: '🚗', label: 'The whip', value: '✅', sub: 'minivan gang', color: 'var(--c-lav)' },
     { emoji: '💰', label: 'Total spent', value: money(bud.total), sub: `${expenses.length} expense${expenses.length === 1 ? '' : 's'}`, color: 'var(--ink)' },
     { emoji: '👤', label: 'Per person', value: money(perPerson), sub: 'so far', color: 'var(--c-gold)' },
   ];
