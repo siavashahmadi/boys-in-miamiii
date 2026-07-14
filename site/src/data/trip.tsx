@@ -50,23 +50,106 @@ export const HOUSE: House = {
   name: 'Casa de los Uncs',
   area: 'Fort Lauderdale, FL',
   price: '$2,073 for the long weekend',
-  specs: '4 bedrooms · 7 beds · 3 baths · ★4.85',
+  specs: '4 bedrooms · 7 beds · 3 baths · ★4.85 (119 reviews)',
   url: 'https://www.airbnb.com/rooms/613636449757891426',
   blurb:
-    "home base. tucked in fort lauderdale, the quieter stretch up by lauderdale-by-the-sea, old-florida low-rise, flip-flops-and-a-tee kind of block, beach a short hop away. heated pool for the unc lifestyle, a pool table for the 2am tournaments nobody remembers, and three full bathrooms so nobody's fighting for the shower before the casino. we paid a little extra for that third bathroom and we'd do it again. the backyard hosts the nightly summit: four regulars, joe once a year, and tommy on lookout duty until further notice.",
+    "home base, verified pin and all. one flat mile from the lauderdale-by-the-sea sand, 19 minutes from las olas. heated pool (we are not paying $100 a night to heat water in july), a pool table for the 2am tournaments nobody remembers, an outdoor bar, corn hole, a giant connect 4, and a chef's kitchen with four different ways to make coffee. beach gear included down to the wagon, plus two bikes for whoever loses the minivan seat argument. three full bathrooms so nobody fights before the casino. the backyard hosts the nightly summit: four regulars, joe once a year, and tommy on lookout duty until further notice.",
   amenities: [
     { emoji: '🏊', label: 'heated pool' },
     { emoji: '🎱', label: 'pool table' },
+    { emoji: '🍹', label: 'outdoor bar' },
+    { emoji: '🎯', label: 'corn hole + giant connect 4' },
     { emoji: '🚿', label: '3 full baths' },
     { emoji: '🛏️', label: '7 beds' },
-    { emoji: '🎰', label: '~30 min to the casino' },
-    { emoji: '🏖️', label: 'near the beach' },
+    { emoji: '📺', label: '75" tv' },
+    { emoji: '🚲', label: '2 bikes included' },
+    { emoji: '🏖️', label: 'beach gear + wagon' },
+    { emoji: '🎰', label: '20 min to live tables' },
     { emoji: '🌿', label: 'summit-ready backyard' },
   ],
-  mapQuery: 'Fort Lauderdale, FL',
-  lat: 26.175, // approx (matches "the crib" on the map tab) until we have the street address
-  lng: -80.11,
+  mapQuery: '26.1863,-80.1094',
+  lat: 26.1863, // the listing's verified location circle; exact door number lives in pete's inbox
+  lng: -80.1094,
 };
+
+// The deeper listing intel, straight from the airbnb page.
+export const HOUSE_DETAIL = {
+  galleryNote: 'actual photos. the pool is real. the pool table is real. the loungers are already claimed.',
+  sleepsTitle: 'Who sleeps where',
+  sleepsSub: 'seven beds, four rooms, six uncs. the draft will be televised.',
+  sleeps: [
+    { emoji: '👑', name: 'bedroom 1', beds: 'king + twin', perk: 'ensuite bathroom AND its own door to the pool. the power suite. expect bloodshed in the draft.' },
+    { emoji: '💼', name: 'bedroom 2', beds: 'queen + twin w/ trundle', perk: 'the only dedicated workspace, for whoever pretends to work remote on friday.' },
+    { emoji: '🛏️', name: 'bedroom 3', beds: 'queen', perk: 'no frills, has a mirror. the humble room builds character.' },
+    { emoji: '🚪', name: 'bedroom 4', beds: 'king', perk: 'king bed plus direct outdoor access for discreet summit attendance.' },
+  ],
+  rulesTitle: 'The fine print',
+  rules: [
+    'check-in 4pm · checkout 10am. the sunday walk of shame ends at 9:45.',
+    'no parties. a gathering of six respectful uncs is not a party.',
+    'exterior camera out front. wave to michael.',
+    'parking for 5 cars. we have one minivan. flex.',
+    'pool heating is $100 a night. declined. it is july, the sun works for free.',
+  ],
+  hostLine: 'hosted by michael the superhost and his wife jill. 1,345 reviews, responds within the hour. do not test him.',
+  reviewsLine: '★4.85 across 119 reviews. location scores 4.9. the people love it here.',
+  mapCaption: "pin is the listing's verified location. exact door number lives in pete's inbox.",
+};
+
+// The essentials: researched and verified jul 13. Feeds the Stay guide AND the
+// muted pins on the Map tab (top pick per category).
+export interface EssentialPick { name: string; lat: number; lng: number; distMi: number; driveMin: number; link: string; why: string; top?: boolean }
+export interface Essential { key: string; emoji: string; label: string; picks: EssentialPick[] }
+export const ESSENTIALS: Essential[] = [
+  {
+    key: 'grocery', emoji: '🛒', label: 'the grocery run',
+    picks: [
+      { name: 'Publix at Sea Ranch Village', lat: 26.197, lng: -80.097, distMi: 1.5, driveMin: 5, top: true, link: 'https://www.google.com/maps/search/?api=1&query=Publix%20Sea%20Ranch%20Village%204703%20N%20Ocean%20Dr%20Lauderdale-by-the-Sea%20FL', why: 'the grill-run store. full deli and meat counter, straight over the commercial blvd bridge. open til 10, 11 on weekends.' },
+      { name: 'Total Wine & More', lat: 26.145, lng: -80.119, distMi: 3.7, driveMin: 11, link: 'https://www.google.com/maps/search/?api=1&query=Total%20Wine%201740%20N%20Federal%20Hwy%20Fort%20Lauderdale%20FL', why: 'a warehouse of beverages with case pricing, and it shares a plaza with another publix. one combined run.' },
+      { name: "BJ's Wholesale Club", lat: 26.19, lng: -80.155, distMi: 3.3, driveMin: 10, link: 'https://www.google.com/maps/search/?api=1&query=BJs%20Wholesale%205100%20NW%209th%20Ave%20Fort%20Lauderdale%20FL', why: "bulk meat, ice, and paper goods plus a gas station. membership required, someone's mom has one." },
+    ],
+  },
+  {
+    key: 'food', emoji: '🍽️', label: 'eating out',
+    picks: [
+      { name: 'Aruba Beach Cafe', lat: 26.189, lng: -80.096, distMi: 1.2, driveMin: 5, top: true, link: 'https://www.google.com/maps/search/?api=1&query=Aruba%20Beach%20Cafe%201%20Commercial%20Blvd%20Lauderdale-By-The-Sea%20FL', why: 'on the actual sand at the end of our street. live music every night, open past midnight on weekends. the default.' },
+      { name: 'Greek Islands Taverna', lat: 26.169, lng: -80.101, distMi: 2, driveMin: 7, link: 'https://www.google.com/maps/search/?api=1&query=Greek%20Islands%20Taverna%203300%20N%20Ocean%20Blvd%20Fort%20Lauderdale%20FL', why: 'host rec and the best-rated plates around. lamb chops, octopus, no reservations, the line wraps the building. send a scout.' },
+      { name: 'Shooters Waterfront', lat: 26.166, lng: -80.113, distMi: 2.3, driveMin: 8, link: 'https://www.google.com/maps/search/?api=1&query=Shooters%20Waterfront%203033%20NE%2032nd%20Ave%20Fort%20Lauderdale%20FL', why: 'dockside on the intracoastal since 1982. burgers and boat watching.' },
+    ],
+  },
+  {
+    key: 'fun', emoji: '🎉', label: 'non-beach fun',
+    picks: [
+      { name: 'Topgolf Pompano Beach', lat: 26.225, lng: -80.152, distMi: 6, driveMin: 15, top: true, link: 'https://www.google.com/maps/search/?api=1&query=Topgolf%20Pompano%20Beach%20400%20Lucky%20Ln%20Pompano%20Beach%20FL', why: 'one bay fits all six. half off mon-thu, $30/hr after 10pm weekends, open til 1am fri-sat. loser funds the publix run.' },
+      { name: 'Funky Buddha Brewery', lat: 26.168, lng: -80.137, distMi: 3, driveMin: 9, link: 'https://www.google.com/maps/search/?api=1&query=Funky%20Buddha%20Brewery%201201%20NE%2038th%20St%20Oakland%20Park%20FL', why: '25+ house drafts, a real kitchen, cornhole and giant jenga. nine minutes from the crib.' },
+      { name: 'Glitch Bar & Arcade', lat: 26.143, lng: -80.141, distMi: 4.5, driveMin: 14, link: 'https://www.google.com/maps/search/?api=1&query=Glitch%20Bar%20905%20NE%205th%20Ave%20Fort%20Lauderdale%20FL', why: 'retro arcade cabinets and skee-ball, game pass free with any drink, open til 3am on weekends.' },
+    ],
+  },
+  {
+    key: 'beach', emoji: '🏖️', label: 'the sand',
+    picks: [
+      { name: 'Lauderdale-by-the-Sea Beach', lat: 26.189, lng: -80.096, distMi: 1.2, driveMin: 6, top: true, link: 'https://www.google.com/maps/search/?api=1&query=Lauderdale-by-the-Sea%20Beach%20El%20Mar%20Dr%20%26%20Commercial%20Blvd%20FL', why: 'our beach. one flat mile down commercial blvd, so walk the wagon or ride the bikes and skip parking entirely. bars right on the sand.' },
+      { name: 'Fort Lauderdale Beach (Las Olas)', lat: 26.119, lng: -80.104, distMi: 6.2, driveMin: 20, link: 'https://www.google.com/maps/search/?api=1&query=Las%20Olas%20Oceanside%20Park%20Fort%20Lauderdale%20FL', why: 'the classic strip with the wave wall. 650-space garage one block from the sand when we want the scene.' },
+      { name: 'Pompano Beach Pier', lat: 26.235, lng: -80.089, distMi: 4.8, driveMin: 13, link: 'https://www.google.com/maps/search/?api=1&query=Pompano%20Beach%20Pier%20222%20N%20Pompano%20Beach%20Blvd%20FL', why: 'quieter, wider sand with the rebuilt 900ft pier and a proper garage. good for a six-man wagon convoy.' },
+    ],
+  },
+  {
+    key: 'casino', emoji: '🎰', label: 'joe containment',
+    picks: [
+      { name: 'Seminole Casino Coconut Creek', lat: 26.278, lng: -80.175, distMi: 11, driveMin: 20, top: true, link: 'https://www.google.com/maps/search/?api=1&query=Seminole%20Casino%20Coconut%20Creek%205550%20NW%2040th%20St%20Coconut%20Creek%20FL', why: 'the discovery: 80 REAL live tables (blackjack, craps, roulette) running 24/7 at half the drive of the church. the chapel of ease.' },
+      { name: "Harrah's Pompano Beach", lat: 26.226, lng: -80.156, distMi: 6, driveMin: 13, link: 'https://www.google.com/maps/search/?api=1&query=Harrahs%20Pompano%20Beach%20777%20Isle%20of%20Capri%20Cir%20FL', why: 'closest casino overall at 13 minutes, but the table games are electronic only. slots, a WSOP poker room, and topgolf next door.' },
+      { name: 'Gulfstream Park Casino', lat: 25.98, lng: -80.139, distMi: 17, driveMin: 26, link: 'https://www.google.com/maps/search/?api=1&query=Gulfstream%20Park%20Casino%20Hallandale%20Beach%20FL', why: 'slots plus live horse racing in hallandale. no closer than the church, skip unless the ponies call.' },
+    ],
+  },
+  {
+    key: 'jetski', emoji: '🌊', label: 'jet skis',
+    picks: [
+      { name: 'KC Jet Ski & Watersports', lat: 26.232, lng: -80.091, distMi: 5, driveMin: 14, top: true, link: 'https://www.google.com/maps/search/?api=1&query=KC%20Jet%20Ski%20125%20N%20Riverside%20Dr%20Pompano%20Beach%20FL', why: 'family-run, launches straight onto the intracoastal from sands harbor marina. $110/hr, $70 half hour, $20 extra rider. 10am-6pm daily.' },
+      { name: 'American Watersports', lat: 26.239, lng: -80.089, distMi: 4.7, driveMin: 14, link: 'https://www.google.com/maps/search/?api=1&query=American%20Watersports%20615%20N%20Ocean%20Blvd%20Pompano%20Beach%20FL', why: 'cheapest at $100/hr with a beach launch right off pompano sand. groupon deals float around $86.' },
+      { name: 'Prime Watersports', lat: 26.114, lng: -80.104, distMi: 6.5, driveMin: 18, link: 'https://www.google.com/maps/search/?api=1&query=Prime%20Watersports%20301%20Seabreeze%20Blvd%20Fort%20Lauderdale%20FL', why: 'bahia mar launch on lauderdale beach, $135/hr plus $30 fuel, and they throw in a scenic boat ride.' },
+    ],
+  },
+];
 export const HOUSE_MAPS_URL = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(HOUSE.mapQuery)}`;
 
 // Convenience link (opens the phone's maps app to the area for directions).
@@ -83,11 +166,11 @@ export const CAT_HEX: Record<CatKey, string> = {
 export const MAP_PINS: Record<string, { lat: number; lng: number }> = {
   p_beach: { lat: 26.192, lng: -80.0955 },     // Lauderdale-by-the-Sea beach
   p_soccer: { lat: 26.188, lng: -80.098 },     // beach / backyard
-  p_grill: { lat: 26.175, lng: -80.11 },       // the crib, Fort Lauderdale
+  p_grill: { lat: 26.1863, lng: -80.1094 },    // the crib (listing's verified location)
   p_hardrock: { lat: 26.0512, lng: -80.2103 }, // Seminole Hard Rock, Hollywood
   p_neon: { lat: 25.801, lng: -80.199 },       // Wynwood, Miami (find neon lol)
   p_drake: { lat: 25.7814, lng: -80.187 },     // downtown Miami (Kaseya Center)
-  p_sesh: { lat: 26.1757, lng: -80.1093 },     // the backyard, casa de los uncs
+  p_sesh: { lat: 26.1866, lng: -80.109 },      // the backyard, casa de los uncs
   p_tommy: { lat: 26.05, lng: -80.02 },        // the middle of the atlantic, where tommy's odds live
 };
 

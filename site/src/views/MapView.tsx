@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { CatKey, Pitch } from '../../shared/seeds';
-import { AREA_MAPS_URL, CATS, CAT_HEX, MAP_PINS } from '../data/trip';
+import { AREA_MAPS_URL, CATS, CAT_HEX, ESSENTIALS, MAP_PINS } from '../data/trip';
 import { Graveyard } from '../components/Graveyard';
 import { RealMap, type MapMarker } from '../components/RealMap';
 
@@ -59,6 +59,19 @@ export function MapView({ pitches, whoami, onVote, onAdd, initialSelected }: {
       };
     })
     .filter((m): m is MapMarker => m !== null);
+
+  // the essentials: top pick per category, muted pins, always visible
+  const essMarkers: MapMarker[] = ESSENTIALS.map((e) => {
+    const t = e.picks.find((p) => p.top) ?? e.picks[0];
+    return { id: `ess_${e.key}`, lat: t.lat, lng: t.lng, emoji: e.emoji, color: '#5C5470', title: t.name };
+  });
+  const essSel = selected?.startsWith('ess_')
+    ? (() => {
+        const e = ESSENTIALS.find((x) => `ess_${x.key}` === selected);
+        if (!e) return null;
+        return { ess: e, pick: e.picks.find((p) => p.top) ?? e.picks[0] };
+      })()
+    : null;
 
   const filterTabs: { key: Filter; label: string }[] = [
     { key: 'all', label: 'All' },
@@ -131,14 +144,28 @@ export function MapView({ pitches, whoami, onVote, onAdd, initialSelected }: {
 
       <div className="grid-2col">
         <div style={{ display: 'flex', flexDirection: 'column', gap: 10, minWidth: 0 }}>
-          <RealMap markers={mapMarkers} selected={selected} onSelect={setSelected} legend />
+          <RealMap markers={[...mapMarkers, ...essMarkers]} selected={selected} onSelect={setSelected} legend />
           <a href={AREA_MAPS_URL} target="_blank" rel="noreferrer" style={{ alignSelf: 'flex-start', fontSize: 13, color: 'var(--c-teal)', textDecoration: 'none', fontWeight: 600 }}>
             need real directions? open google maps ↗
           </a>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
-          {sel ? (() => {
+          {essSel ? (
+            <div style={{ padding: 20, borderRadius: 20, background: 'var(--surface)', border: '2px solid #5C5470', boxShadow: 'var(--shadow)' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 8 }}>
+                <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 11, fontWeight: 700, letterSpacing: '.5px', padding: '5px 11px', borderRadius: 999, background: 'var(--surface2)', color: 'var(--ink2)' }}>
+                  {essSel.ess.emoji} {essSel.ess.label} · the essentials
+                </span>
+                <button onClick={() => setSelected(null)} style={{ border: 'none', background: 'transparent', color: 'var(--ink3)', fontSize: 18, cursor: 'pointer', lineHeight: 1 }}>✕</button>
+              </div>
+              <div className="serif" style={{ fontSize: 24, lineHeight: 1.1, margin: '12px 0 3px' }}>{essSel.pick.name}</div>
+              <div style={{ fontSize: 13, color: 'var(--ink3)' }}>📍 {essSel.pick.distMi} mi from the crib · {essSel.pick.driveMin} min drive</div>
+              <div style={{ fontSize: 14, color: 'var(--ink2)', lineHeight: 1.55, margin: '12px 0 4px' }}>{essSel.pick.why}</div>
+              <a href={essSel.pick.link} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: 10, fontSize: 13, color: 'var(--c-teal)', textDecoration: 'none', fontWeight: 600 }}>🔗 open in google maps ↗</a>
+              <div style={{ fontSize: 11.5, color: 'var(--ink3)', marginTop: 10 }}>full list with backups lives on the <a href="#stay" style={{ color: 'var(--c-teal)', fontWeight: 600 }}>stay tab →</a></div>
+            </div>
+          ) : sel ? (() => {
             const d = decorate(sel, whoami);
             return (
               <div style={{ padding: 20, borderRadius: 20, background: 'var(--surface)', border: `2px solid ${d.cat.color}`, boxShadow: 'var(--shadow)', animation: 'softGlow 3s ease-in-out infinite' }}>
