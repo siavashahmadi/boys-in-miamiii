@@ -281,7 +281,6 @@ export const TICKER = {
   ],
   after: [
     'the table is closed forever',
-    'the hall of lore is open below',
     'SPF 50 was a suggestion apparently',
   ],
 };
@@ -297,70 +296,6 @@ export const PHASE = {
   horoscopeTitle: '🔮 Daily degen horoscope',
   horoscopeFoot: 'renews at midnight. the stars are not liable for losses.',
 };
-
-// ---------- the hall of lore ----------
-export interface LoreExhibit { no: string; title: string; quote: string; attribution: string; note: string }
-export const LORE_META = {
-  title: 'The hall of lore',
-  sub: 'a museum of things we cannot take back.',
-  warning: 'please do not touch the exhibits.',
-};
-export const LORE: LoreExhibit[] = [
-  {
-    no: '001', title: 'the first era',
-    quote: '-$15,500 in 120 hands. fifteen markers deep.',
-    attribution: 'joe · jul 10, 2026',
-    note: 'he thought the goal was to lose the most. the table believed in him. reset out of mercy.',
-  },
-  {
-    no: '002', title: 'the confession',
-    quote: 'I thought it was whoever could lose the most money',
-    attribution: 'joe · jul 10, 2026',
-    note: 'spoken minutes after his downfall. a new house rule was carved that same night, for one specific person.',
-  },
-  {
-    no: '003', title: 'the market maker incident',
-    quote: 'locked the low fare. the price rose $124 for everyone after.',
-    attribution: 'tom · booking week',
-    note: 'his $80 penance lives in the group pool to this day. jet skis pending.',
-  },
-  {
-    no: '004', title: 'untitled (criticism)',
-    quote: 'Bitch ass game',
-    attribution: 'lucas · jul 12, 2026',
-    note: 'minimalist. devastating. he kept playing.',
-  },
-  {
-    no: '005', title: 'the anvil escalation',
-    quote: "this went from pouring something to Joe dropping an anvil on Tommy's head",
-    attribution: 'pete · jul 12, 2026',
-    note: 'the sentence allowed one poured item each. the definition of pour did not survive the afternoon.',
-  },
-  {
-    no: '006', title: 'the +$0 doctrine',
-    quote: "I'm gonna win with +$0 😈",
-    attribution: 'pete · jul 10, 2026',
-    note: 'a beautiful theory. nineteen markers later it remains a theory.',
-  },
-  {
-    no: '007', title: "tommy's first time (year 4)",
-    quote: 'maybe on a trip',
-    attribution: 'tommy · a simpler time',
-    note: 'the pin is in the ocean because that is where the odds live. this is the year. it is not the year.',
-  },
-  {
-    no: '008', title: 'the h&m playlist affair',
-    quote: "I've heard all these songs at H&M",
-    attribution: 'pete · jul 10, 2026',
-    note: 'the MIA playlist has never recovered. zara declined to comment.',
-  },
-  {
-    no: '009', title: 'the second era',
-    quote: 'records are made to be broken.',
-    attribution: 'joe · ongoing',
-    note: 'the first era took a week. the second took two days. historians are concerned. the table is thrilled.',
-  },
-];
 
 // ---------- the pouring of tommy ----------
 export const POUR = {

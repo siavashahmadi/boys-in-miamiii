@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { POURERS, type Expense, type Pitch, type Pour } from '../../shared/seeds';
 import type { BoardRow } from '../../shared/blackjack';
-import { CATS, DAYS, HOUSE, INFO_CARDS, LORE, LORE_META, PHASE, POUR, SQUAD, squadMeta, TRIP_META, type Day } from '../data/trip';
+import { CATS, DAYS, HOUSE, INFO_CARDS, PHASE, POUR, SQUAD, squadMeta, TRIP_META, type Day } from '../data/trip';
 import { useCountdown, useElapsed } from '../lib/useCountdown';
 import { computeBudget, money } from '../lib/settle';
 import { etDateStr, horoscopeFor } from '../lib/horoscope';
@@ -312,24 +312,6 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
         </div>
       </section>
 
-      <section className="section" style={{ padding: '10px 22px 56px' }}>
-        <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, flexWrap: 'wrap', marginBottom: 16 }}>
-          <h2 className="h2">🏛️ {LORE_META.title}</h2>
-          <span style={{ fontSize: 13, color: 'var(--ink3)' }}>{LORE_META.sub}</span>
-        </div>
-        <div className="grid-cards">
-          {LORE.map((x) => (
-            <div key={x.no} className="card" style={{ padding: 22 }}>
-              <div style={{ fontSize: 10, letterSpacing: 2, color: 'var(--ink3)', fontWeight: 700 }}>EXHIBIT {x.no}</div>
-              <div className="serif" style={{ fontSize: 19, margin: '8px 0 10px' }}>{x.title}</div>
-              <div style={{ fontSize: 14, fontStyle: 'italic', lineHeight: 1.55 }}>"{x.quote}"</div>
-              <div style={{ fontSize: 11, color: 'var(--ink3)', marginTop: 8 }}>{x.attribution}</div>
-              <div style={{ fontSize: 12.5, color: 'var(--ink2)', marginTop: 10, lineHeight: 1.6 }}>{x.note}</div>
-            </div>
-          ))}
-        </div>
-        <div style={{ textAlign: 'center', fontSize: 11, color: 'var(--ink3)', marginTop: 18 }}>{LORE_META.warning}</div>
-      </section>
     </>
   );
 }
