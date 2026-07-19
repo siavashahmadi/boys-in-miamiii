@@ -94,6 +94,10 @@ export default function App() {
     try { setState(await api.savePour(who, text)); } catch { alert("that didn't send. try again."); }
   };
 
+  const manifestAct = async (a: api.ManifestAction) => {
+    try { setState(await api.manifestAct(a)); } catch { alert("that didn't send. try again."); }
+  };
+
   const verdict = async (id: string, decision: 'approved' | 'denied', adminKey: string): Promise<'ok' | 'auth' | 'error'> => {
     try {
       setState(await api.verdictPitch(id, decision, adminKey));
@@ -129,8 +133,8 @@ export default function App() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Nav view={view} setView={setView} theme={theme} toggleTheme={toggleTheme} />
       <main style={{ flex: 1 }}>
-        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} casino={state?.casino} pours={state?.pours} whoami={who} onDeclarePour={declarePour} days={days} />}
-        {view === 'stay' && <Stay />}
+        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} casino={state?.casino} pours={state?.pours} whoami={who} onDeclarePour={declarePour} days={days} manifest={state?.manifest} />}
+        {view === 'stay' && <Stay manifest={state?.manifest} whoami={who} onManifest={manifestAct} />}
         {view === 'plan' && <Plan days={days} />}
         {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} initialSelected={pinId} />}
         {view === 'casino' && <Casino whoami={who} />}

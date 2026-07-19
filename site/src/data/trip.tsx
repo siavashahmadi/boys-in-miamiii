@@ -394,6 +394,20 @@ export const POUR = {
   tomLine: "you're the pouree. sit down.",
 };
 
+// ---------- the manifest ----------
+export const MANIFEST = {
+  title: 'The manifest',
+  sub: 'what michael does not provide. beach gear, wagon, boogie boards, coolers, and two bikes are already at the house.',
+  claimBtn: 'i got it',
+  claimedSuffix: "'s got it",
+  addLabelPh: 'what are we forgetting?',
+  addNotePh: 'why it matters (optional)',
+  addEmojiPh: '🧳',
+  addBtn: 'add to the load',
+  unclaimedSuffix: 'unclaimed',
+  allClaimed: 'everything is claimed. the uncs are prepared. suspicious.',
+};
+
 export const FOOTER = {
   tagline: (
     <>

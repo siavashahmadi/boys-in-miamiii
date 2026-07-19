@@ -1,11 +1,11 @@
-import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_POURS, type CatKey, type Expense, type ItinDayOverride, type Pitch, type Pour } from '../../shared/seeds';
+import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_MANIFEST, SEED_POURS, type CatKey, type Expense, type ItinDayOverride, type ManifestItem, type Pitch, type Pour } from '../../shared/seeds';
 import type { BoardRow, SanitizedPlayer } from '../../shared/blackjack';
 
 // Client for the shared state. Talks to /api/* (Vercel functions + Upstash).
 // If the API is unreachable (plain `npm run dev`), falls back to localStorage
 // so the whole app still works, just per-browser.
 
-export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[]; days?: ItinDayOverride[] | null }
+export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[]; days?: ItinDayOverride[] | null; manifest?: ManifestItem[] }
 
 export interface BJResponse {
   me: SanitizedPlayer;
@@ -31,11 +31,14 @@ function loadLocal(): SharedState {
   try { const o = JSON.parse(localStorage.getItem(LS_POURS) || 'null'); if (Array.isArray(o)) pours = o; } catch { /* seed */ }
   let days: ItinDayOverride[] | null = null;
   try { const d = JSON.parse(localStorage.getItem('miami_days_v1') || 'null'); if (Array.isArray(d)) days = d; } catch { /* static */ }
+  let manifest: ManifestItem[] | null = null;
+  try { const m = JSON.parse(localStorage.getItem('miami_manifest_v1') || 'null'); if (Array.isArray(m)) manifest = m; } catch { /* seed */ }
   return {
     pitches: pitches ?? ALL_SEED_PITCHES.map((x) => ({ ...x })),
     expenses: expenses ?? SEED_EXPENSES.map((x) => ({ ...x })),
     pours: pours ?? SEED_POURS.map((x) => ({ ...x })),
     days,
+    manifest: manifest ?? SEED_MANIFEST.map((x) => ({ ...x })),
   };
 }
 
@@ -129,6 +132,26 @@ export async function deleteExpense(id: string): Promise<SharedState> {
     return s;
   }
   return (await post('/api/expense', { action: 'delete', id }))!;
+}
+
+export type ManifestAction =
+  | { action: 'add'; emoji: string; label: string; note: string; addedBy: string }
+  | { action: 'claim' | 'unclaim'; id: string; name: string }
+  | { action: 'delete'; id: string };
+
+export async function manifestAct(a: ManifestAction): Promise<SharedState> {
+  if (localMode) {
+    const s = loadLocal();
+    let list = s.manifest ?? SEED_MANIFEST.map((x) => ({ ...x }));
+    if (a.action === 'add') list = [...list, { id: 'm' + Date.now(), emoji: a.emoji || '🧳', label: a.label, note: a.note, claimedBy: null, addedBy: a.addedBy }];
+    else if (a.action === 'claim') list = list.map((m) => (m.id === a.id && !m.claimedBy ? { ...m, claimedBy: a.name } : m));
+    else if (a.action === 'unclaim') list = list.map((m) => (m.id === a.id && m.claimedBy === a.name ? { ...m, claimedBy: null } : m));
+    else list = list.filter((m) => m.id !== a.id);
+    s.manifest = list;
+    try { localStorage.setItem('miami_manifest_v1', JSON.stringify(list)); } catch { /* fine */ }
+    return s;
+  }
+  return (await post('/api/manifest', a))!;
 }
 
 export interface PinnedPitchInput {

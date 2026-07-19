@@ -1,12 +1,37 @@
 import { useState } from 'react';
-import { CAT_HEX, ESSENTIALS, HOUSE, HOUSE_DETAIL, HOUSE_MAPS_URL } from '../data/trip';
+import type { ManifestItem } from '../../shared/seeds';
+import { CAT_HEX, ESSENTIALS, HOUSE, HOUSE_DETAIL, HOUSE_MAPS_URL, MANIFEST } from '../data/trip';
+import type { ManifestAction } from '../lib/api';
 import { RealMap } from '../components/RealMap';
 
 // Curated from the actual listing (site/public/house). 1 is the money shot.
 const GALLERY = ['/house/1.jpg', '/house/2.jpg', '/house/3.jpg', '/house/4.jpg', '/house/5.jpg', '/house/6.jpg'];
 
-export function Stay() {
+export function Stay({ manifest, whoami, onManifest }: {
+  manifest?: ManifestItem[];
+  whoami: string | null;
+  onManifest: (a: ManifestAction) => Promise<void>;
+}) {
   const [shot, setShot] = useState(0);
+  const [addForm, setAddForm] = useState({ emoji: '', label: '', note: '' });
+  const [manifestBusy, setManifestBusy] = useState(false);
+
+  const items = manifest ?? [];
+  const unclaimed = items.filter((m) => !m.claimedBy).length;
+  // unclaimed floats to the top so the guilt is visible
+  const sorted = [...items.filter((m) => !m.claimedBy), ...items.filter((m) => m.claimedBy)];
+
+  const act = async (a: ManifestAction) => {
+    if (manifestBusy) return;
+    setManifestBusy(true);
+    try { await onManifest(a); } finally { setManifestBusy(false); }
+  };
+
+  const addItem = async () => {
+    if (!whoami || !addForm.label.trim()) return;
+    await act({ action: 'add', emoji: addForm.emoji.trim(), label: addForm.label.trim(), note: addForm.note.trim(), addedBy: whoami });
+    setAddForm({ emoji: '', label: '', note: '' });
+  };
 
   return (
     <section className="section">
@@ -135,6 +160,65 @@ export function Stay() {
               </div>
             </div>
           ))}
+        </div>
+      </div>
+
+      {/* the manifest */}
+      <div style={{ marginTop: 30 }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 12, flexWrap: 'wrap', marginBottom: 6 }}>
+          <h2 className="h2">🎒 {MANIFEST.title}</h2>
+          <span style={{ fontSize: 12, fontWeight: 700, padding: '4px 10px', borderRadius: 999, background: unclaimed > 0 ? 'var(--c-coral-s)' : 'var(--c-mint-s)', color: unclaimed > 0 ? 'var(--c-coral)' : 'var(--c-mint)' }}>
+            {unclaimed > 0 ? `${unclaimed} ${MANIFEST.unclaimedSuffix}` : '✅ all claimed'}
+          </span>
+        </div>
+        <div style={{ fontSize: 13, color: 'var(--ink3)', marginBottom: 14, maxWidth: 620 }}>{MANIFEST.sub}</div>
+        <div style={{ borderRadius: 20, background: 'var(--surface)', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: 'var(--shadowSm)' }}>
+          {sorted.length === 0 && (
+            <div style={{ padding: 18, fontSize: 13, color: 'var(--ink2)' }}>{MANIFEST.allClaimed}</div>
+          )}
+          {sorted.map((m) => (
+            <div key={m.id} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '12px 18px', borderBottom: '1px solid var(--border)', opacity: m.claimedBy ? 0.75 : 1 }}>
+              <span style={{ fontSize: 20, flex: '0 0 auto' }}>{m.emoji}</span>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>{m.label}</div>
+                {m.note && <div style={{ fontSize: 11.5, color: 'var(--ink3)', lineHeight: 1.45 }}>{m.note}</div>}
+              </div>
+              {m.claimedBy ? (
+                <button
+                  onClick={() => { if (whoami && whoami === m.claimedBy) act({ action: 'unclaim', id: m.id, name: whoami }); }}
+                  disabled={manifestBusy || whoami !== m.claimedBy}
+                  title={whoami === m.claimedBy ? 'tap to unclaim' : undefined}
+                  style={{ flex: '0 0 auto', padding: '7px 12px', borderRadius: 999, border: 'none', background: 'var(--c-mint-s)', color: 'var(--c-mint)', fontSize: 12, fontWeight: 700, cursor: whoami === m.claimedBy ? 'pointer' : 'default' }}
+                >
+                  ✅ {m.claimedBy.toLowerCase()}{MANIFEST.claimedSuffix}
+                </button>
+              ) : (
+                <button
+                  onClick={() => { if (whoami) act({ action: 'claim', id: m.id, name: whoami }); }}
+                  disabled={manifestBusy || !whoami}
+                  style={{ flex: '0 0 auto', padding: '8px 14px', borderRadius: 999, border: 'none', background: 'var(--c-coral)', color: '#fff', fontSize: 12.5, fontWeight: 700, cursor: 'pointer', opacity: manifestBusy ? 0.5 : 1 }}
+                >
+                  {MANIFEST.claimBtn}
+                </button>
+              )}
+              <button
+                onClick={() => act({ action: 'delete', id: m.id })}
+                disabled={manifestBusy}
+                title="remove"
+                style={{ flex: '0 0 auto', border: 'none', background: 'transparent', color: 'var(--ink3)', fontSize: 14, cursor: 'pointer', padding: 4 }}
+              >
+                ✕
+              </button>
+            </div>
+          ))}
+          <div style={{ display: 'flex', gap: 8, padding: '14px 18px', flexWrap: 'wrap', background: 'var(--surface2)' }}>
+            <input className="input" value={addForm.emoji} maxLength={4} onChange={(e) => setAddForm({ ...addForm, emoji: e.target.value })} placeholder={MANIFEST.addEmojiPh} style={{ marginTop: 0, width: 58, flex: '0 0 auto', textAlign: 'center' }} />
+            <input className="input" value={addForm.label} maxLength={60} onChange={(e) => setAddForm({ ...addForm, label: e.target.value })} placeholder={MANIFEST.addLabelPh} onKeyDown={(e) => { if (e.key === 'Enter') addItem(); }} style={{ marginTop: 0, flex: '2 1 180px' }} />
+            <input className="input" value={addForm.note} maxLength={140} onChange={(e) => setAddForm({ ...addForm, note: e.target.value })} placeholder={MANIFEST.addNotePh} onKeyDown={(e) => { if (e.key === 'Enter') addItem(); }} style={{ marginTop: 0, flex: '3 1 200px' }} />
+            <button onClick={addItem} disabled={manifestBusy || !whoami || !addForm.label.trim()} style={{ padding: '11px 18px', borderRadius: 11, border: 'none', background: 'var(--c-teal)', color: '#fff', fontWeight: 700, fontSize: 13, cursor: 'pointer', opacity: manifestBusy || !addForm.label.trim() ? 0.5 : 1 }}>
+              {MANIFEST.addBtn}
+            </button>
+          </div>
         </div>
       </div>
     </section>

@@ -21,6 +21,34 @@ export interface Pitch {
   status: PitchStatus;
 }
 
+// The manifest: shared packing list. Redis key `manifest`. Everyone can add,
+// claim, unclaim, and delete; honor system like expenses.
+export interface ManifestItem {
+  id: string;
+  emoji: string;
+  label: string;
+  note: string;
+  claimedBy: string | null;
+  addedBy: string;
+}
+
+export const SEED_MANIFEST: ManifestItem[] = [
+  { id: 'm_speaker', emoji: '🔊', label: 'the speaker', note: 'the MIA playlist needs a body. h&m ambience is not acceptable.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_spf', emoji: '🧴', label: 'SPF 50', note: 'site policy. non-negotiable.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_cards', emoji: '🃏', label: 'cards + chips', note: 'for practicing the practice.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_ball', emoji: '⚽', label: 'the lil soccer ball', note: 'for the lil soccer ball action.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_summit', emoji: '🌿', label: 'summit provisions', note: 'the quorum knows. the quorum handles it.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_durian', emoji: '🍈', label: 'the durian', note: "joe's ceremonial instrument. handle with respect.", claimedBy: 'Joe', addedBy: 'Sia' },
+  { id: 'm_anchovies', emoji: '🐟', label: 'anchovies', note: 'for the smoothie. do not ask questions.', claimedBy: 'Kia', addedBy: 'Sia' },
+  { id: 'm_chargers', emoji: '🔌', label: 'chargers + a fat power strip', note: 'six phones, one-outlet culture.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_advil', emoji: '💊', label: 'advil + electrolytes', note: 'hydrate before you donate.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_shades', emoji: '🕶️', label: 'sunglasses you can afford to lose', note: 'the pool will collect its tax.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_ids', emoji: '🪪', label: 'IDs', note: 'the church cards everyone.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_cash', emoji: '💵', label: 'casino cash', note: 'only what you can watch leave your hand with dignity.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_hdmi', emoji: '📺', label: 'hdmi cable', note: 'in case the 75 inch resists our content.', claimedBy: null, addedBy: 'Sia' },
+  { id: 'm_trunks', emoji: '🩳', label: 'trunks that fit', note: 'you know who you are.', claimedBy: null, addedBy: 'Sia' },
+];
+
 // Itinerary override, stored in redis under `days` and merged over the static
 // DAYS in trip.tsx by index (colors/labels/dates stay static).
 export interface ItinItem { time: string; title: string; note: string }

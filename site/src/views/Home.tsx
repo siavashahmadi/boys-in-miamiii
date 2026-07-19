@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { POURERS, type Expense, type Pitch, type Pour } from '../../shared/seeds';
+import { POURERS, type Expense, type ManifestItem, type Pitch, type Pour } from '../../shared/seeds';
 import type { BoardRow } from '../../shared/blackjack';
 import { CATS, DAYS, HOUSE, INFO_CARDS, PHASE, POUR, SQUAD, squadMeta, TRIP_META, type Day } from '../data/trip';
 import { useCountdown, useElapsed } from '../lib/useCountdown';
@@ -10,7 +10,7 @@ import { Ticker } from '../components/Ticker';
 import type { CityWx } from '../lib/weather';
 import { WEATHER_CITIES } from '../data/trip';
 
-export function Home({ pitches, expenses, weather, casino, pours, whoami, onDeclarePour, days = DAYS }: {
+export function Home({ pitches, expenses, weather, casino, pours, whoami, onDeclarePour, days = DAYS, manifest }: {
   pitches: Pitch[];
   expenses: Expense[];
   weather: Record<string, CityWx> | null;
@@ -19,6 +19,7 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
   whoami: string | null;
   onDeclarePour: (text: string) => Promise<void>;
   days?: Day[];
+  manifest?: ManifestItem[];
 }) {
   const [pourDraft, setPourDraft] = useState('');
   const [pourEditing, setPourEditing] = useState(false);
@@ -63,7 +64,7 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
 
   return (
     <>
-      <Ticker casino={casino} pours={pours} days={days} />
+      <Ticker casino={casino} pours={pours} days={days} manifest={manifest} />
       <section className="section" style={{ paddingBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
           <div>

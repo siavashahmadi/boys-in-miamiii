@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import type { BoardRow } from '../../shared/blackjack';
-import { POURERS, type Pour } from '../../shared/seeds';
+import { POURERS, type ManifestItem, type Pour } from '../../shared/seeds';
 import { DAYS, TICKER, type Day } from '../data/trip';
 import { money } from '../lib/settle';
 import { useCountdown } from '../lib/useCountdown';
@@ -8,7 +8,7 @@ import { tripDayIndex, tripPhase } from '../lib/tripPhase';
 
 // The chyron. Live headlines from real data, plus phase-appropriate fillers.
 // Content renders twice so the marquee's -50% loop is seamless.
-export function Ticker({ casino, pours, days = DAYS }: { casino?: BoardRow[]; pours?: Pour[]; days?: Day[] }) {
+export function Ticker({ casino, pours, days = DAYS, manifest }: { casino?: BoardRow[]; pours?: Pour[]; days?: Day[]; manifest?: ManifestItem[] }) {
   const cd = useCountdown();
   const phase = tripPhase();
 
@@ -30,9 +30,13 @@ export function Ticker({ casino, pours, days = DAYS }: { casino?: BoardRow[]; po
       casino.filter((b) => b.playing).forEach((b) => out.push(`${b.name} is at the table rn`));
     }
     if (pours && pours.length > 0) out.push(`pour registry: ${pours.length} of ${POURERS.length} declared. tommy is watching`);
+    if (phase === 'pre' && manifest) {
+      const un = manifest.filter((m) => !m.claimedBy).length;
+      if (un > 0) out.push(`manifest: ${un} item${un === 1 ? '' : 's'} unclaimed. the speaker does not pack itself`);
+    }
     out.push(...TICKER[phase]);
     return out.join('  ···  ') + '  ···  ';
-  }, [casino, pours, days, cd.days, cd.hours, phase]);
+  }, [casino, pours, days, manifest, cd.days, cd.hours, phase]);
 
   // slower with more content so it stays readable
   const dur = Math.max(28, Math.round(line.length / 5));
