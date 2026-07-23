@@ -1,11 +1,11 @@
-import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_MANIFEST, SEED_POURS, type CatKey, type Expense, type ItinDayOverride, type ManifestItem, type Pitch, type Pour } from '../../shared/seeds';
+import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_MANIFEST, SEED_POURS, type CatKey, type Expense, type ItinDayOverride, type ManifestItem, type Pitch, type Pour, type Tonight } from '../../shared/seeds';
 import type { BoardRow, SanitizedPlayer } from '../../shared/blackjack';
 
 // Client for the shared state. Talks to /api/* (Vercel functions + Upstash).
 // If the API is unreachable (plain `npm run dev`), falls back to localStorage
 // so the whole app still works, just per-browser.
 
-export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[]; days?: ItinDayOverride[] | null; manifest?: ManifestItem[] }
+export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[]; days?: ItinDayOverride[] | null; manifest?: ManifestItem[]; tonight?: Tonight | null }
 
 export interface BJResponse {
   me: SanitizedPlayer;

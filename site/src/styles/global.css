@@ -64,6 +64,20 @@ a { color:inherit; }
 .label-sm { font-size:12px; color:var(--ink2); font-weight:600; }
 .list-head { padding:14px 18px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; letter-spacing:.5px; color:var(--ink2); }
 
+/* the landing ceremony: smooth laser sweeps, no strobe (photosensitivity) */
+.ceremony { position:fixed; inset:0; z-index:400; background:#0B0714; overflow:hidden; display:flex; align-items:center; justify-content:center; animation:ceremonyIn .7s ease; }
+@keyframes ceremonyIn { from{opacity:0;} to{opacity:1;} }
+.ceremony-beam { position:absolute; bottom:-12%; width:6px; height:135vmax; border-radius:999px; opacity:.5; transform-origin:50% 100%; animation:laserSweep 4.4s ease-in-out infinite alternate; filter:blur(1px); }
+@keyframes laserSweep { 0%{transform:rotate(-40deg);} 100%{transform:rotate(40deg);} }
+.ceremony-glow { position:absolute; inset:-20%; background:radial-gradient(circle at 50% 88%, rgba(227,140,116,.3), transparent 62%); animation:glowPulse 3.2s ease-in-out infinite; }
+@keyframes glowPulse { 0%,100%{opacity:.45;} 50%{opacity:.95;} }
+/* stampSlam bakes in translate(-50%,-50%) for absolutely-centered stamps; the
+   ceremony title is in normal flow, so it gets its own translate-free slam */
+@keyframes ceremonySlam { 0%{transform:scale(3.4) rotate(-10deg);opacity:0;} 55%{transform:scale(.9) rotate(-2deg);opacity:1;} 100%{transform:scale(1) rotate(0deg);opacity:1;} }
+@media (prefers-reduced-motion: reduce) {
+  .ceremony-beam, .ceremony-glow { display:none; }
+}
+
 /* the ticker: chyron strip at the top of Home, scrolled by the marquee keyframe */
 .ticker { overflow:hidden; background:var(--surface2); border-bottom:1px solid var(--border); }
 .ticker-track { display:inline-flex; white-space:nowrap; padding:8px 0; font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--ink2); animation:marquee 40s linear infinite; will-change:transform; }

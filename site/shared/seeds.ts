@@ -49,6 +49,11 @@ export const SEED_MANIFEST: ManifestItem[] = [
   { id: 'm_trunks', emoji: '🩳', label: 'trunks that fit', note: 'you know who you are.', claimedBy: null, addedBy: 'Sia' },
 ];
 
+// Tonight in the 954: agent-curated events feed, Redis key `tonight`.
+// The card only renders when `date` matches today in ET.
+export interface TonightPick { emoji: string; title: string; where: string; when: string; note: string; link?: string }
+export interface Tonight { date: string; updatedAt: number; picks: TonightPick[] }
+
 // Itinerary override, stored in redis under `days` and merged over the static
 // DAYS in trip.tsx by index (colors/labels/dates stay static).
 export interface ItinItem { time: string; title: string; note: string }

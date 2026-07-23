@@ -15,9 +15,11 @@ import { Weather } from './views/Weather';
 import { Budget } from './views/Budget';
 import { Admin } from './views/Admin';
 import { Casino } from './views/Casino';
+import { Booth } from './views/Booth';
+import { Ceremony } from './components/Ceremony';
 
-export type View = 'home' | 'stay' | 'plan' | 'map' | 'casino' | 'weather' | 'budget';
-const VIEWS: View[] = ['home', 'stay', 'plan', 'map', 'casino', 'weather', 'budget'];
+export type View = 'home' | 'stay' | 'plan' | 'map' | 'casino' | 'weather' | 'budget' | 'booth';
+const VIEWS: View[] = ['home', 'stay', 'plan', 'map', 'casino', 'weather', 'budget', 'booth'];
 
 function readHash(): { view: View; admin: boolean; pinId: string | null } {
   const raw = (location.hash || '').replace('#', '');
@@ -133,7 +135,8 @@ export default function App() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Nav view={view} setView={setView} theme={theme} toggleTheme={toggleTheme} />
       <main style={{ flex: 1 }}>
-        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} casino={state?.casino} pours={state?.pours} whoami={who} onDeclarePour={declarePour} days={days} manifest={state?.manifest} />}
+        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} casino={state?.casino} pours={state?.pours} whoami={who} onDeclarePour={declarePour} days={days} manifest={state?.manifest} tonight={state?.tonight} />}
+        {view === 'booth' && <Booth />}
         {view === 'stay' && <Stay manifest={state?.manifest} whoami={who} onManifest={manifestAct} />}
         {view === 'plan' && <Plan days={days} />}
         {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} initialSelected={pinId} />}
@@ -142,6 +145,9 @@ export default function App() {
         {view === 'budget' && <Budget expenses={expenses} whoami={who} onAdd={addExpense} onDelete={removeExpense} />}
       </main>
       <Footer />
+      {/* gated on identity: otherwise the picker (same z-index, later in DOM)
+          covers the ceremony while its 10s auto-dismiss burns the one-shot flag */}
+      {who && <Ceremony casino={state?.casino} />}
       {admin && <Admin pitches={pitches} days={days} onVerdict={verdict} onAddPin={addPin} onSaveDays={saveDays} onExit={exitAdmin} />}
       {!who && <IdentityPicker onPick={(n) => { setWhoami(n); setWho(n); }} />}
     </div>

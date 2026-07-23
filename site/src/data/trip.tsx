@@ -415,6 +415,33 @@ export const POUR = {
   tomLine: "you're the pouree. sit down.",
 };
 
+// ---------- the landing ceremony ----------
+export const CEREMONY = {
+  title: 'WE ARE SO BACK',
+  subWinner: 'day {n} of 4. the table is closed. {name} eats free.',
+  subNoWinner: 'day {n} of 4. we are actually here.',
+  enter: 'enter the trip →',
+};
+
+// ---------- tonight in the 954 ----------
+export const TONIGHT = {
+  title: '🔦 tonight in the 954',
+  foot: 'curated fresh daily. weather considered. attendance optional.',
+};
+
+// ---------- the vice booth ----------
+export const BOOTH = {
+  eyebrow: 'DOCUMENT RESPONSIBLY',
+  title: 'The vice booth',
+  sub: 'pick a photo, pick a filter, send it to the chat. no cloud, no ai, no evidence retained.',
+  pickBtn: '📸 choose or take a photo',
+  shareBtn: 'share it',
+  downloadBtn: 'download',
+  again: 'new photo',
+  homeCard: 'turn trip photos into miami vice frames, vhs tapes, and certified unc portraits.',
+  homeCta: 'open the booth →',
+};
+
 // ---------- the manifest ----------
 export const MANIFEST = {
   title: 'The manifest',

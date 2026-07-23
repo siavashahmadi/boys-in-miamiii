@@ -1,14 +1,15 @@
 import { useMemo } from 'react';
 import type { BoardRow } from '../../shared/blackjack';
-import { POURERS, type ManifestItem, type Pour } from '../../shared/seeds';
+import { POURERS, type ManifestItem, type Pour, type Tonight } from '../../shared/seeds';
 import { DAYS, TICKER, type Day } from '../data/trip';
 import { money } from '../lib/settle';
 import { useCountdown } from '../lib/useCountdown';
 import { tripDayIndex, tripPhase } from '../lib/tripPhase';
+import { etDateStr } from '../lib/horoscope';
 
 // The chyron. Live headlines from real data, plus phase-appropriate fillers.
 // Content renders twice so the marquee's -50% loop is seamless.
-export function Ticker({ casino, pours, days = DAYS, manifest }: { casino?: BoardRow[]; pours?: Pour[]; days?: Day[]; manifest?: ManifestItem[] }) {
+export function Ticker({ casino, pours, days = DAYS, manifest, tonight }: { casino?: BoardRow[]; pours?: Pour[]; days?: Day[]; manifest?: ManifestItem[]; tonight?: Tonight | null }) {
   const cd = useCountdown();
   const phase = tripPhase();
 
@@ -17,7 +18,10 @@ export function Ticker({ casino, pours, days = DAYS, manifest }: { casino?: Boar
     if (phase === 'pre') out.push(`${cd.days}d ${cd.hours}h to wheels up`);
     if (phase === 'trip') {
       const d = tripDayIndex();
-      out.push(`day ${d + 1} of 4 in florida`, `today: ${days[d].title.toLowerCase()}`, 'hydrate. reapply. repeat');
+      out.push(`day ${d + 1} of 4 in florida`, `today: ${days[d].title.toLowerCase()}`, 'hydrate. reapply. repeat', 'the vice booth is open. document responsibly');
+    }
+    if (tonight && tonight.date === etDateStr() && tonight.picks.length > 0) {
+      tonight.picks.slice(0, 2).forEach((p) => out.push(`tonight: ${p.title} @ ${p.where}`));
     }
     if (phase === 'after') out.push('we survived florida. barely');
     if (casino && casino.some((b) => b.rounds > 0)) {
@@ -36,7 +40,7 @@ export function Ticker({ casino, pours, days = DAYS, manifest }: { casino?: Boar
     }
     out.push(...TICKER[phase]);
     return out.join('  ···  ') + '  ···  ';
-  }, [casino, pours, days, manifest, cd.days, cd.hours, phase]);
+  }, [casino, pours, days, manifest, tonight, cd.days, cd.hours, phase]);
 
   // slower with more content so it stays readable
   const dur = Math.max(28, Math.round(line.length / 5));

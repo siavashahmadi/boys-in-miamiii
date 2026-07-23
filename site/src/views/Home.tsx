@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { POURERS, type Expense, type ManifestItem, type Pitch, type Pour } from '../../shared/seeds';
+import { POURERS, type Expense, type ManifestItem, type Pitch, type Pour, type Tonight } from '../../shared/seeds';
 import type { BoardRow } from '../../shared/blackjack';
-import { CATS, DAYS, HOUSE, INFO_CARDS, PHASE, POUR, SQUAD, squadMeta, TRIP_META, type Day } from '../data/trip';
+import { BOOTH, CATS, DAYS, HOUSE, INFO_CARDS, PHASE, POUR, SQUAD, squadMeta, TONIGHT, TRIP_META, type Day } from '../data/trip';
+import { replayCeremony } from '../components/Ceremony';
 import { useCountdown, useElapsed } from '../lib/useCountdown';
 import { computeBudget, money } from '../lib/settle';
 import { etDateStr, horoscopeFor } from '../lib/horoscope';
@@ -10,7 +11,7 @@ import { Ticker } from '../components/Ticker';
 import type { CityWx } from '../lib/weather';
 import { WEATHER_CITIES } from '../data/trip';
 
-export function Home({ pitches, expenses, weather, casino, pours, whoami, onDeclarePour, days = DAYS, manifest }: {
+export function Home({ pitches, expenses, weather, casino, pours, whoami, onDeclarePour, days = DAYS, manifest, tonight }: {
   pitches: Pitch[];
   expenses: Expense[];
   weather: Record<string, CityWx> | null;
@@ -20,6 +21,7 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
   onDeclarePour: (text: string) => Promise<void>;
   days?: Day[];
   manifest?: ManifestItem[];
+  tonight?: Tonight | null;
 }) {
   const [pourDraft, setPourDraft] = useState('');
   const [pourEditing, setPourEditing] = useState(false);
@@ -64,11 +66,16 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
 
   return (
     <>
-      <Ticker casino={casino} pours={pours} days={days} manifest={manifest} />
+      <Ticker casino={casino} pours={pours} days={days} manifest={manifest} tonight={tonight} />
       <section className="section" style={{ paddingBottom: 8 }}>
         <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
           <div>
-            <div className="eyebrow">{phase === 'trip' ? PHASE.tripEyebrow : phase === 'after' ? PHASE.afterEyebrow : 'TRIP DASHBOARD'}</div>
+            <div className="eyebrow">
+              {phase === 'trip' ? PHASE.tripEyebrow : phase === 'after' ? PHASE.afterEyebrow : 'TRIP DASHBOARD'}
+              {phase !== 'pre' && (
+                <button onClick={replayCeremony} aria-label="replay the landing ceremony" title="replay the landing" style={{ border: 'none', background: 'transparent', cursor: 'pointer', fontSize: 14, marginLeft: 2, padding: 12 }}>🪩</button>
+              )}
+            </div>
             <h1 className="h1" style={{ fontSize: 'clamp(30px,5vw,46px)' }}>
               Miami <span className="amp">&amp;</span> Fort Lauderdale
             </h1>
@@ -113,6 +120,38 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {tonight && tonight.date === todayStr && tonight.picks.length > 0 && (
+          <div className="card" style={{ padding: 20, marginTop: 20, borderLeft: '4px solid var(--c-lav)' }}>
+            <div style={{ fontWeight: 700, fontSize: 15 }}>{TONIGHT.title}</div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
+              {tonight.picks.map((p) => (
+                <div key={p.title} style={{ display: 'flex', gap: 10, alignItems: 'flex-start' }}>
+                  <span style={{ fontSize: 16, flex: '0 0 auto' }}>{p.emoji}</span>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 13.5, fontWeight: 700 }}>
+                      {p.link ? <a href={p.link} target="_blank" rel="noreferrer" style={{ color: 'var(--ink)', textDecoration: 'none' }}>{p.title} ↗</a> : p.title}
+                      <span style={{ fontWeight: 600, color: 'var(--ink3)', fontSize: 12 }}> · {p.where}{p.when ? ` · ${p.when}` : ''}</span>
+                    </div>
+                    <div style={{ fontSize: 12, color: 'var(--ink2)', lineHeight: 1.5 }}>{p.note}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <div style={{ fontSize: 11, color: 'var(--ink3)', marginTop: 10 }}>{TONIGHT.foot}</div>
+          </div>
+        )}
+
+        {phase !== 'pre' && (
+          <div className="card" style={{ padding: 20, marginTop: 20, display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+            <div style={{ fontSize: 26 }}>📸</div>
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <div style={{ fontWeight: 700, fontSize: 15 }}>{BOOTH.title}</div>
+              <div style={{ fontSize: 12.5, color: 'var(--ink2)' }}>{BOOTH.homeCard}</div>
+            </div>
+            <a href="#booth" style={{ padding: '10px 18px', borderRadius: 999, background: 'var(--c-coral)', color: '#fff', fontWeight: 700, fontSize: 13, textDecoration: 'none' }}>{BOOTH.homeCta}</a>
           </div>
         )}
 
