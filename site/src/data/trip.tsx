@@ -14,7 +14,7 @@ export const SQUAD: Member[] = [
 export const squadMeta = Object.fromEntries(SQUAD.map((s) => [s.name, s])) as Record<string, Member>;
 
 // ---------- trip constants ----------
-export const WHEELS_UP = new Date('2026-07-23T18:40:00-04:00').getTime();
+export const WHEELS_UP = new Date('2026-07-23T21:40:00-04:00').getTime(); // B6 1697, the real one
 export const TRIP_META = 'Jul 23–26, 2026 · fort lauderdale · 6 mfers confirmed';
 
 // ---------- categories / map ----------
@@ -181,12 +181,11 @@ export const DAYS: Day[] = [
   {
     label: 'THURSDAY', title: 'Wheels up', date: 'Jul 23 · leave ATL', accent: 'var(--c-coral)', bg: 'var(--c-coral-s)',
     items: [
-      { time: '4:30p', title: 'Get to ATL', note: "it's ATL on a thursday. leave early or get left." },
-      { time: '6:40p', title: 'ATL → FLL', note: 'jetblue. aisle seats for the tall ones or there will be words.' },
-      { time: '~9:00p', title: 'Land + grab the whip', note: 'the minivan awaits. LMco rate, booked and done. six uncs, one van, zero shame.' },
-      { time: '10:00p', title: 'Check into Casa de los Uncs', note: 'heated pool, pool table, three bathrooms. we made it.' },
-      { time: '11:00p', title: 'Hard rock recon?', note: 'joe has been waiting his whole life. something light.' },
-      { time: '1:00a', title: 'Backyard summit, session one', note: "quorum convenes: sia, kia, lucas, pete. joe's annual invite stands. tom is welcome to watch and judge." },
+      { time: '7:30p', title: 'Get to ATL', note: "it's ATL on a thursday. leave early or get left." },
+      { time: '9:40p', title: 'ATL → FLL · B6 1697', note: 'the 6:40 is dead, long live the 9:40. aisle seats for the tall ones or there will be words.' },
+      { time: '~11:45p', title: 'Land + grab the whip', note: 'the minivan awaits. LMco rate, booked and done. six uncs, one van, zero shame.' },
+      { time: '12:30a', title: 'Check into Casa de los Uncs', note: 'smartlock self check-in. michael sleeps, we do not.' },
+      { time: '1:30a', title: 'Backyard summit, session one', note: "quorum convenes: sia, kia, lucas, pete. joe's annual invite stands. tom is welcome to watch and judge." },
     ],
   },
   {
@@ -271,7 +270,7 @@ export const INFO_CARDS: InfoCard[] = [
     emoji: '✈️', iconBg: 'var(--c-coral-s)', title: 'Flights',
     body: (
       <>
-        <b style={{ color: 'var(--ink)' }}>Out:</b> thu 7/23, 6:40p ATL → FLL, jetblue. all six of us.<br />
+        <b style={{ color: 'var(--ink)' }}>Out:</b> thu 7/23, 9:40p ATL → FLL, jetblue B6 1697. all six of us, landing ~11:45p.<br />
         <b style={{ color: 'var(--ink)' }}>Back:</b> sun 7/26, 6:55p. <b style={{ color: 'var(--c-lav)' }}>lucas &amp; tom on the 8:40</b> like it's a residency. everyone's booked.
       </>
     ),
