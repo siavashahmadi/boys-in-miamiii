@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { ManifestItem } from '../../shared/seeds';
-import { CAT_HEX, ESSENTIALS, HOUSE, HOUSE_DETAIL, HOUSE_MAPS_URL, MANIFEST } from '../data/trip';
+import { CAT_HEX, ESSENTIALS, HOUSE, HOUSE_DETAIL, HOUSE_INTEL, HOUSE_MAPS_URL, MANIFEST } from '../data/trip';
 import type { ManifestAction } from '../lib/api';
 import { RealMap } from '../components/RealMap';
 
@@ -66,6 +66,28 @@ export function Stay({ manifest, whoami, onManifest }: {
           <a href={HOUSE.url} target="_blank" rel="noreferrer" style={{ display: 'inline-block', marginTop: 16, padding: '11px 20px', borderRadius: 12, background: 'var(--c-coral)', color: '#fff', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
             peep the listing ↗
           </a>
+        </div>
+      </div>
+
+      {/* house intel: the day-of essentials from the check-in email */}
+      <div style={{ marginTop: 18, borderRadius: 20, background: 'var(--c-teal-s)', border: '1px solid var(--border)', boxShadow: 'var(--shadowSm)', padding: '18px 20px' }}>
+        <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ fontWeight: 700, fontSize: 16 }}>🗝️ {HOUSE_INTEL.title}</div>
+          <span style={{ fontSize: 12, color: 'var(--ink3)' }}>{HOUSE_INTEL.sub}</span>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(210px, 1fr))', gap: 12, marginTop: 14 }}>
+          {HOUSE_INTEL.items.map((it) => (
+            <div key={it.label} style={{ padding: '12px 14px', borderRadius: 14, background: 'var(--surface)', border: '1px solid var(--border)' }}>
+              <div style={{ fontSize: 10, fontWeight: 700, letterSpacing: 1, color: 'var(--ink3)', textTransform: 'uppercase' }}>{it.emoji} {it.label}</div>
+              {it.href ? (
+                <a href={it.href} target={it.href.startsWith('tel:') ? undefined : '_blank'} rel="noreferrer" style={{ display: 'block', fontSize: 14, fontWeight: 700, color: 'var(--c-teal)', marginTop: 4, textDecoration: 'none', lineHeight: 1.45, wordBreak: 'break-word' }}>
+                  {it.value} ↗
+                </a>
+              ) : (
+                <div style={{ fontSize: it.value.length <= 12 ? 22 : 13.5, fontWeight: 700, marginTop: 4, lineHeight: 1.45, fontFamily: it.value.length <= 12 ? "'DM Serif Display',serif" : undefined }}>{it.value}</div>
+              )}
+            </div>
+          ))}
         </div>
       </div>
 

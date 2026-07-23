@@ -67,9 +67,25 @@ export const HOUSE: House = {
     { emoji: '🎰', label: '20 min to live tables' },
     { emoji: '🌿', label: 'summit-ready backyard' },
   ],
-  mapQuery: '26.1863,-80.1094',
-  lat: 26.1863, // the listing's verified location circle; exact door number lives in pete's inbox
-  lng: -80.1094,
+  mapQuery: '4710 NE 27th Ave, Fort Lauderdale, FL 33308',
+  lat: 26.18604, // the actual front door, from michael's check-in email
+  lng: -80.10954,
+};
+
+// The check-in email intel, jul 19, from michael. Day-of essentials.
+export const HOUSE_INTEL = {
+  title: 'House intel',
+  sub: "straight from michael's check-in email. screenshot this before boarding.",
+  items: [
+    { emoji: '📍', label: 'address', value: '4710 NE 27th Ave, Fort Lauderdale, FL 33308', href: 'https://www.google.com/maps/search/?api=1&query=4710%20NE%2027th%20Ave%2C%20Fort%20Lauderdale%2C%20FL%2033308' },
+    { emoji: '🔑', label: 'front door code', value: '2895' },
+    { emoji: '🚪', label: 'garage code', value: '7951' },
+    { emoji: '📶', label: 'wifi', value: 'Soflobnb · Soflofun!' },
+    { emoji: '📲', label: 'host line', value: '(904) 650-5854', href: 'tel:+19046505854' },
+    { emoji: '🕓', label: 'check-in / out', value: 'from 4:00p jul 23 · out by 10:00a jul 26' },
+    { emoji: '🚗', label: 'parking', value: '2 in the garage + 3 in the driveway. NO street parking, HOA is watching. garage clears 81 inches, the minivan fits.' },
+    { emoji: '📖', label: 'guidebook', value: 'the official house guide', href: 'https://guide.breezeway.io/1IQ0-i9rJ34' },
+  ],
 };
 
 // The deeper listing intel, straight from the airbnb page.
@@ -86,14 +102,20 @@ export const HOUSE_DETAIL = {
   rulesTitle: 'The fine print',
   rules: [
     'check-in 4pm · checkout 10am. the sunday walk of shame ends at 9:45.',
-    'no parties. a gathering of six respectful uncs is not a party.',
+    'quiet hours 10pm to 8am. the summit convenes at library volume.',
+    'no smoking on the premises. the summit acknowledges this rule exists.',
+    'no parties. detection means cancellation with no refund. a gathering of six respectful uncs remains not a party.',
+    'no extra guests without approval. neon waits outside.',
+    'no glass near the pool. decant like a professional.',
+    'do not touch the pool equipment. there is a skimmer by the gate for leaf emergencies.',
+    'do not mix colors with the white linens. this is a laundry rule and a lifestyle.',
+    'trash goes out monday and thursday. a service handles it. our job is nothing.',
     'exterior camera out front. wave to michael.',
-    'parking for 5 cars. we have one minivan. flex.',
     'pool heating is $100 a night. declined. it is july, the sun works for free.',
   ],
   hostLine: 'hosted by michael the superhost and his wife jill. 1,345 reviews, responds within the hour. do not test him.',
   reviewsLine: '★4.85 across 119 reviews. location scores 4.9. the people love it here.',
-  mapCaption: "pin is the listing's verified location. exact door number lives in pete's inbox.",
+  mapCaption: 'the pin is the actual front door. 4710 NE 27th Ave.',
 };
 
 // The essentials: researched and verified jul 13. Feeds the Stay guide AND the
@@ -166,11 +188,11 @@ export const CAT_HEX: Record<CatKey, string> = {
 export const MAP_PINS: Record<string, { lat: number; lng: number }> = {
   p_beach: { lat: 26.192, lng: -80.0955 },     // Lauderdale-by-the-Sea beach
   p_soccer: { lat: 26.188, lng: -80.098 },     // beach / backyard
-  p_grill: { lat: 26.1863, lng: -80.1094 },    // the crib (listing's verified location)
+  p_grill: { lat: 26.18604, lng: -80.10954 },  // the crib (actual front door)
   p_hardrock: { lat: 26.0512, lng: -80.2103 }, // Seminole Hard Rock, Hollywood
   p_neon: { lat: 25.801, lng: -80.199 },       // Wynwood, Miami (find neon lol)
   p_drake: { lat: 25.7814, lng: -80.187 },     // downtown Miami (Kaseya Center)
-  p_sesh: { lat: 26.1866, lng: -80.109 },      // the backyard, casa de los uncs
+  p_sesh: { lat: 26.18624, lng: -80.10934 },   // the backyard, casa de los uncs
   p_tommy: { lat: 26.05, lng: -80.02 },        // the middle of the atlantic, where tommy's odds live
 };
 
