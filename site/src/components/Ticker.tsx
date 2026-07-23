@@ -12,15 +12,18 @@ import { etDateStr } from '../lib/horoscope';
 export function Ticker({ casino, pours, days = DAYS, manifest, tonight }: { casino?: BoardRow[]; pours?: Pour[]; days?: Day[]; manifest?: ManifestItem[]; tonight?: Tonight | null }) {
   const cd = useCountdown();
   const phase = tripPhase();
+  // computed in the render body (which ticks every second via useCountdown) so
+  // the memo recomputes at the midnight ET rollover instead of freezing
+  const today = etDateStr();
+  const dayIdx = tripDayIndex();
 
   const line = useMemo(() => {
     const out: string[] = [];
     if (phase === 'pre') out.push(`${cd.days}d ${cd.hours}h to wheels up`);
     if (phase === 'trip') {
-      const d = tripDayIndex();
-      out.push(`day ${d + 1} of 4 in florida`, `today: ${days[d].title.toLowerCase()}`, 'hydrate. reapply. repeat', 'the vice booth is open. document responsibly');
+      out.push(`day ${dayIdx + 1} of 4 in florida`, `today: ${days[dayIdx].title.toLowerCase()}`, 'hydrate. reapply. repeat', 'the vice booth is open. document responsibly');
     }
-    if (tonight && tonight.date === etDateStr() && tonight.picks.length > 0) {
+    if (tonight && tonight.date === today && Array.isArray(tonight.picks) && tonight.picks.length > 0) {
       tonight.picks.slice(0, 2).forEach((p) => out.push(`tonight: ${p.title} @ ${p.where}`));
     }
     if (phase === 'after') out.push('we survived florida. barely');
@@ -40,7 +43,7 @@ export function Ticker({ casino, pours, days = DAYS, manifest, tonight }: { casi
     }
     out.push(...TICKER[phase]);
     return out.join('  ···  ') + '  ···  ';
-  }, [casino, pours, days, manifest, tonight, cd.days, cd.hours, phase]);
+  }, [casino, pours, days, manifest, tonight, cd.days, cd.hours, phase, today, dayIdx]);
 
   // slower with more content so it stays readable
   const dur = Math.max(28, Math.round(line.length / 5));

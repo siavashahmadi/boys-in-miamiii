@@ -2,7 +2,7 @@ import { SQUAD } from '../data/trip';
 
 export function IdentityPicker({ onPick }: { onPick: (name: string) => void }) {
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 400, background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: 1200, background: 'var(--bg)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: 20 }}>
       <div style={{ maxWidth: 460, width: '100%', textAlign: 'center', padding: '38px 28px', borderRadius: 24, background: 'var(--surface)', border: '1px solid var(--border)', boxShadow: 'var(--shadow)' }}>
         <div style={{ fontSize: 44 }}>🕶️</div>
         <div className="serif" style={{ fontSize: 32, marginTop: 10 }}>who are you?</div>

@@ -65,7 +65,7 @@ a { color:inherit; }
 .list-head { padding:14px 18px; border-bottom:1px solid var(--border); font-size:12px; font-weight:700; letter-spacing:.5px; color:var(--ink2); }
 
 /* the landing ceremony: smooth laser sweeps, no strobe (photosensitivity) */
-.ceremony { position:fixed; inset:0; z-index:400; background:#0B0714; overflow:hidden; display:flex; align-items:center; justify-content:center; animation:ceremonyIn .7s ease; }
+.ceremony { position:fixed; inset:0; z-index:1100; background:#0B0714; overflow:hidden; display:flex; align-items:center; justify-content:center; animation:ceremonyIn .7s ease; }
 @keyframes ceremonyIn { from{opacity:0;} to{opacity:1;} }
 .ceremony-beam { position:absolute; bottom:-12%; width:6px; height:135vmax; border-radius:999px; opacity:.5; transform-origin:50% 100%; animation:laserSweep 4.4s ease-in-out infinite alternate; filter:blur(1px); }
 @keyframes laserSweep { 0%{transform:rotate(-40deg);} 100%{transform:rotate(40deg);} }

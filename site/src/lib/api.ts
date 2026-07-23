@@ -70,7 +70,12 @@ export async function fetchState(): Promise<SharedState> {
     const r = await fetch('/api/state');
     if (r.ok) {
       const j = (await r.json()) as SharedState;
-      if (Array.isArray(j.pitches) && Array.isArray(j.expenses)) return j;
+      if (Array.isArray(j.pitches) && Array.isArray(j.expenses)) {
+        // un-latch local mode when the server is reachable again (hotel wifi
+        // blips must not silently fork writes into localStorage forever)
+        localMode = false;
+        return j;
+      }
     }
     throw new Error(`state ${r.status}`);
   } catch {

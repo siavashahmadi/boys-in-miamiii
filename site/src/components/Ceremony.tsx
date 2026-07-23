@@ -11,10 +11,13 @@ const SEEN_KEY = 'miami_ceremony_v1';
 // In-memory guard: if localStorage writes fail (quota, private mode) the
 // ceremony must still stay dismissed for this page load instead of looping.
 let dismissedThisLoad = false;
+// Explicit replays work in any phase (incl. 'after'); auto-show is trip-only.
+let forceReplay = false;
 
 const seen = () => { try { return !!localStorage.getItem(SEEN_KEY); } catch { return true; } };
 export const replayCeremony = () => {
   dismissedThisLoad = false;
+  forceReplay = true;
   try { localStorage.removeItem(SEEN_KEY); } catch { /* fine */ }
 };
 
@@ -33,7 +36,11 @@ export function Ceremony({ casino }: { casino?: BoardRow[] }) {
   const reduced = useMemo(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches, []);
 
   useEffect(() => {
-    const check = () => { if (!dismissedThisLoad && tripPhase() !== 'pre' && !seen()) setShow(true); };
+    const check = () => {
+      if (dismissedThisLoad) return;
+      if (forceReplay) { forceReplay = false; setShow(true); return; }
+      if (tripPhase() === 'trip' && !seen()) setShow(true);
+    };
     check();
     const t = setInterval(check, 1000);
     return () => clearInterval(t);

@@ -123,7 +123,7 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
           </div>
         )}
 
-        {tonight && tonight.date === todayStr && tonight.picks.length > 0 && (
+        {tonight && tonight.date === todayStr && Array.isArray(tonight.picks) && tonight.picks.length > 0 && (
           <div className="card" style={{ padding: 20, marginTop: 20, borderLeft: '4px solid var(--c-lav)' }}>
             <div style={{ fontWeight: 700, fontSize: 15 }}>{TONIGHT.title}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10, marginTop: 10 }}>
