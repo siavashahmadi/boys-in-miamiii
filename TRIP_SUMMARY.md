@@ -18,14 +18,14 @@ Confirmed by Sia on Jul 3.
 ## Dates
 
 - **Trip: Thursday Jul 23 to Sunday Jul 26, 2026** (3 nights). Confirmed by the Vrbo link parameters (check-in 2026-07-23, check-out 2026-07-26, 6 adults).
-- Everyone flies out of ATL together around **6:40 PM Thursday**, arriving in FLL that evening.
+- Everyone flies out of ATL together around **9:40 PM Thursday** (JetBlue B6 1697, the original 6:40 PM was canceled), landing ~11:45 PM.
 - Return Sunday Jul 26 from FLL: **two groups**. Four on the **6:55 PM JetBlue**; **Lucas and Tom on the ~8:40 PM flight**, landing in Atlanta around 10.
 - Lucas cleared his 07/26 work shift on Jun 29.
 - No scheduling conflicts beyond the split return times.
 
 ## Flights (booked)
 
-- **Outbound: ATL to FLL, JetBlue, Thu Jul 23, ~6:40 PM departure**, all six together. Booked the evening of Jun 29 after a 7:30 PM group call.
+- **Outbound: ATL to FLL, JetBlue, Thu Jul 23, 9:40 PM departure (B6 1697; the ~6:40 PM booking was canceled, corrected Jul 23)**, all six together. Booked the evening of Jun 29 after a 7:30 PM group call.
 - **Return: Sun Jul 26 from FLL.** Four on the **6:55 PM JetBlue**; **Lucas and Tom on the ~8:40 PM flight**, landing in Atlanta around 10.
 - Price was about **$208 per person** (Pete's recollection when Joe asked).
 - Day-after drama: JetBlue dropped the later return to the same price as the earlier one. Sia noted the under-24-hour change window; no rebooking was confirmed in the chat.
