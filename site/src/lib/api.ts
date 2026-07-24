@@ -5,14 +5,24 @@ import type { BoardRow, SanitizedPlayer } from '../../shared/blackjack';
 // If the API is unreachable (plain `npm run dev`), falls back to localStorage
 // so the whole app still works, just per-browser.
 
-export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[]; days?: ItinDayOverride[] | null; manifest?: ManifestItem[]; tonight?: Tonight | null }
+export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[]; days?: ItinDayOverride[] | null; manifest?: ManifestItem[]; tonight?: Tonight | null; wheelHistory?: string[] }
 
 export interface BJResponse {
   me: SanitizedPlayer;
   board: BoardRow[] | null; // null when the action couldn't have moved the board
   cutoff: number;
   closed: boolean;
+  contest?: { name: string | null; net: number } | null; // frozen dinner winner
   prophecy?: { fresh: boolean; by: string }; // dealt the black jacks
+}
+
+export interface RouletteResponse extends Omit<BJResponse, 'prophecy'> {
+  pocket: string;
+  color: 'green' | 'red' | 'black';
+  net: number;
+  payout: number;
+  staked: number;
+  history: string[];
 }
 
 const LS_PITCHES = 'miami_pitches_v1';
@@ -203,6 +213,20 @@ export async function savePour(name: string, text: string): Promise<SharedState>
     return s;
   }
   return (await post('/api/pour', { name, text }))!;
+}
+
+export interface RouletteBetInput { kind: string; pocket?: string; target?: number; amount: number }
+
+export async function rouletteSpin(name: string, bets: RouletteBetInput[]): Promise<RouletteResponse> {
+  const r = await fetch('/api/roulette', {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ action: 'spin', name, bets }),
+  });
+  if (r.status === 401) throw new ApiAuthError();
+  const j = await r.json().catch(() => null);
+  if (!r.ok) throw new Error((j as { error?: string } | null)?.error || `wheel error ${r.status}`);
+  return j as RouletteResponse;
 }
 
 // Blackjack runs server-side only (the deck must never exist in a browser),

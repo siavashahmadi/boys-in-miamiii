@@ -5,9 +5,9 @@
 export const BJ_MIN_BET = 25;
 // There is no table max since jul 12. Your bankroll is the max. Godspeed.
 export const BJ_BUYIN = 1000;
-// Table closes when we land in FLL (B6 1697, scheduled ~11:45p; the plane
-// leg is the final session, jetblue wifi permitting). After this, deals are
-// rejected and the leader is crowned.
+// The CONTEST ends when we land in FLL (B6 1697, ~11:45p): the dinner winner
+// is snapshotted then (see ensureContestFinal). The table itself stays open
+// forever after as exhibition play. Pride only.
 export const BJ_CUTOFF_MS = Date.parse('2026-07-23T23:45:00-04:00');
 
 export type Card = string; // rank+suit, e.g. 'AS', 'TH', '9D' (T = 10)
@@ -54,6 +54,7 @@ export interface PlayerRecord {
   biggestLoss: number; // most negative single-round net (0 = none yet)
   bestStreak: number;  // longest run of winning rounds (pushes don't break it)
   curStreak: number;
+  spins: number;       // roulette rounds (rounds counts both games)
   round: Round | null;
 }
 
@@ -85,7 +86,7 @@ export function freshRecord(): PlayerRecord {
   return {
     bankroll: BJ_BUYIN, markers: 0, rounds: 0, wins: 0, blackjacks: 0, biggestWin: 0,
     wonRounds: 0, lostRounds: 0, pushRounds: 0, doubles: 0, splits: 0,
-    wagered: 0, biggestLoss: 0, bestStreak: 0, curStreak: 0,
+    wagered: 0, biggestLoss: 0, bestStreak: 0, curStreak: 0, spins: 0,
     round: null,
   };
 }
@@ -199,8 +200,7 @@ export function deal(rec: PlayerRecord, bet: number, rng: Rng, now: number) {
 
 // Separated from deal() so tests can rig exact decks. deck is consumed via
 // pop(), so the LAST element is the first card dealt.
-export function startRound(rec: PlayerRecord, bet: number, deck: Card[], now: number) {
-  if (now >= BJ_CUTOFF_MS) throw new Error("table's closed. the real one is 30 minutes away.");
+export function startRound(rec: PlayerRecord, bet: number, deck: Card[], _now: number) {
   if (rec.round && rec.round.phase === 'player') throw new Error('finish the hand you have.');
   if (!Number.isFinite(bet) || bet !== Math.round(bet)) throw new Error('whole dollars only.');
   if (bet < BJ_MIN_BET) throw new Error(`table minimum is $${BJ_MIN_BET}.`);

@@ -78,6 +78,23 @@ a { color:inherit; }
   .ceremony-beam, .ceremony-glow { display:none; }
 }
 
+/* the wheel: continuous slow head rotation; the ball counter-rotates inside
+   the head's frame via a single transition, so it lands with pure index math */
+@keyframes wheelDrift { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
+/* view-box (not fill-box): the arm's fill box is just the tiny ball, so
+   fill-box would rotate the ball around its own center and it would never
+   orbit. view-box origin 50%/50% = the wheel center (230,230) for both. */
+.wheel-head { transform-origin: 50% 50%; transform-box: view-box; will-change: transform; animation: wheelDrift 30s linear infinite; }
+.wheel-ball-arm { transform-origin: 50% 50%; transform-box: view-box; will-change: transform; }
+.wheel-ball-arm.spinning { transition: transform 8.5s cubic-bezier(0.12, 0.8, 0.15, 1); }
+.wheel-ball { transition: transform .5s ease-in; }
+.roulette-board { touch-action: manipulation; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+@media (prefers-reduced-motion: reduce) {
+  .wheel-head { animation: none; }
+  .wheel-ball-arm.spinning { transition: none; }
+  .wheel-ball { transition: none; }
+}
+
 /* the ticker: chyron strip at the top of Home, scrolled by the marquee keyframe */
 .ticker { overflow:hidden; background:var(--surface2); border-bottom:1px solid var(--border); }
 .ticker-track { display:inline-flex; white-space:nowrap; padding:8px 0; font-size:11px; font-weight:700; letter-spacing:1.2px; color:var(--ink2); animation:marquee 40s linear infinite; will-change:transform; }

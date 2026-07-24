@@ -354,7 +354,12 @@ export const CASINO = {
     'continuous shuffle. no counting. this WAS a family casino.',
     'markers are $1,000 and the count is public. the shame is the interest.',
     'the goal is to WIN the money. this rule was added jul 10 for one specific person.',
+    'roulette: straight 35:1 · dozens and columns 2:1 · colors 1:1',
+    'the wheel has two zeros. the house needed a second one for joe.',
   ],
+  exhibitionCaption: 'EXHIBITION ERA · PRIDE ONLY',
+  contestOverTitle: '👑 dinner is decided',
+  contestOverBody: '{name} finished on top when we landed. the rest of us are buying. the table stays open for pride.',
   memorialTitle: '🕯️ in memoriam',
   memorialBody: "joe's first era: -$15,500 in 120 hands. fifteen markers deep. eight blackjacks and none of them helped. he thought the goal was to lose the most. he was at -$12,400 when we started carving this plaque and lost another $3,100 before it was finished. the table believed in him. reset to $1,000 out of mercy, jul 10, 2026.",
   boardTitle: 'THE BOARD',
@@ -417,6 +422,22 @@ export const POUR = {
   saveBtn: 'declare it',
   editBtn: 'revise',
   tomLine: "you're the pouree. sit down.",
+};
+
+// ---------- the wheel ----------
+export const ROULETTE = {
+  title: 'the wheel',
+  spinBtn: 'send it.',
+  clearBtn: 'clear',
+  undoBtn: 'undo',
+  rebetBtn: 'rebet',
+  atStake: 'at stake',
+  minNote: '$25 minimum across your bets. tap a chip, then tap the board.',
+  zerosNote: '0 and 00 are green. they are also inevitable.',
+  historyTitle: 'LAST SPINS',
+  straightHit: '35 TO 1.',
+  winStamp: 'WIN.',
+  loseStamp: 'the house thanks you.',
 };
 
 // ---------- the landing ceremony ----------

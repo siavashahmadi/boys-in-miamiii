@@ -7,7 +7,7 @@ import {
   deal, doubleDown, freshRecord, hit, sanitize, split, stand, takeMarker,
   type PlayerRecord, type Rng,
 } from '../shared/blackjack.js';
-import { bad, getJson, loadBoard, setJson, type Req, type Res } from './_lib.js';
+import { bad, ensureContestFinal, getJson, loadBoard, setJson, type Req, type Res } from './_lib.js';
 
 const rng: Rng = (n) => {
   const b = new Uint32Array(1);
@@ -31,6 +31,8 @@ export default async function handler(req: Req, res: Res) {
     const stored = await getJson<Partial<PlayerRecord>>(key);
     const rec: PlayerRecord = { ...freshRecord(), ...(stored ?? {}) };
     const now = Date.now();
+    // freeze the contest board before any post-cutoff action mutates it
+    const contest = await ensureContestFinal(now);
 
     try {
       if (action === 'state') {
@@ -76,6 +78,7 @@ export default async function handler(req: Req, res: Res) {
       board,
       cutoff: BJ_CUTOFF_MS,
       closed: now >= BJ_CUTOFF_MS,
+      contest: contest ? { name: contest.board[0]?.name ?? null, net: contest.board[0]?.net ?? 0 } : null,
       prophecy,
     });
   } catch (e) {

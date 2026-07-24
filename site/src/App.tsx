@@ -140,7 +140,7 @@ export default function App() {
         {view === 'stay' && <Stay manifest={state?.manifest} whoami={who} onManifest={manifestAct} />}
         {view === 'plan' && <Plan days={days} />}
         {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} initialSelected={pinId} />}
-        {view === 'casino' && <Casino whoami={who} />}
+        {view === 'casino' && <Casino whoami={who} wheelHistory={state?.wheelHistory} />}
         {view === 'weather' && <Weather weather={weather} />}
         {view === 'budget' && <Budget expenses={expenses} whoami={who} onAdd={addExpense} onDelete={removeExpense} />}
       </main>

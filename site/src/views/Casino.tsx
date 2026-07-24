@@ -6,17 +6,8 @@ import { money } from '../lib/settle';
 import { useCountdown } from '../lib/useCountdown';
 import { JACKPOT_BURST, GOOD_BURST, makeBurst, type BurstParticle } from '../lib/burst';
 
-const CHIPS: { v: number; color: string }[] = [
-  { v: 25, color: 'var(--c-mint)' },
-  { v: 50, color: 'var(--c-teal)' },
-  { v: 100, color: 'var(--c-gold)' },
-  { v: 250, color: 'var(--c-lav)' },
-  { v: 500, color: 'var(--c-pink)' },
-  { v: 1000, color: 'var(--c-coral)' },
-  { v: 5000, color: '#2E2840' },
-];
-
-const chipLabel = (v: number) => (v >= 1000 ? `${v / 1000}k` : String(v));
+import { CHIPS, chipLabel } from '../lib/chips';
+import { RouletteTable } from '../components/RouletteTable';
 
 const SUIT_GLYPH: Record<string, string> = { S: '♠', H: '♥', D: '♦', C: '♣' };
 
@@ -118,7 +109,7 @@ function StatSheet({ b }: { b: BoardRow }) {
   );
 }
 
-export function Casino({ whoami }: { whoami: string | null }) {
+export function Casino({ whoami, wheelHistory }: { whoami: string | null; wheelHistory?: string[] }) {
   const [data, setData] = useState<BJResponse | null>(null);
   const [unavailable, setUnavailable] = useState(false);
   const [bet, setBet] = useState(0);
@@ -127,6 +118,8 @@ export function Casino({ whoami }: { whoami: string | null }) {
   const [err, setErr] = useState<string | null>(null);
   const [stamp, setStamp] = useState<{ label: string; color: string; glow: string; burst: BurstParticle[]; sub?: string } | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [game, setGame] = useState<'bj' | 'wheel'>('bj');
+  const [wheelBusy, setWheelBusy] = useState(false);
   const stampTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const busyRef = useRef(false);
   const crownedRef = useRef(false);
@@ -150,13 +143,13 @@ export function Casino({ whoami }: { whoami: string | null }) {
     return () => clearInterval(t);
   }, [who, unavailable]);
 
-  // coronation: when the table is first seen closed, crown the winner once
+  // coronation: crown the FROZEN contest winner once, not the live leader
   useEffect(() => {
     if (crownedRef.current || !data?.closed) return;
-    const lead = data.board?.[0];
-    if (!lead || lead.net <= 0) return;
+    const champ = data.contest;
+    if (!champ?.name || champ.net <= 0) return;
     crownedRef.current = true;
-    setStamp({ label: '👑', color: 'var(--c-gold)', glow: 'rgba(214,169,78,.6)', burst: makeBurst(JACKPOT_BURST), sub: CASINO.crownSub.replace('{name}', lead.name) });
+    setStamp({ label: '👑', color: 'var(--c-gold)', glow: 'rgba(214,169,78,.6)', burst: makeBurst(JACKPOT_BURST), sub: CASINO.crownSub.replace('{name}', champ.name) });
     const t = setTimeout(() => setStamp(null), 6000);
     return () => clearTimeout(t);
   }, [data]);
@@ -241,8 +234,6 @@ export function Casino({ whoami }: { whoami: string | null }) {
   const canSplit = !!hand && !!round && !round.isSplit && round.hands.length === 1 && hand.cards.length === 2
     && cardValue(hand.cards[0]) === cardValue(hand.cards[1]) && bankroll >= hand.bet;
   const dealerRevealed = !!round && round.dealer.every((c) => c !== 'XX');
-  const leader = board[0];
-
   const feltBtn = (label: string, onClick: () => void, color: string, disabled = false, actionKey?: string) => (
     <button key={label} className="felt-btn" onClick={onClick} disabled={disabled || busy} style={{ cursor: disabled || busy ? 'default' : 'pointer', background: color, opacity: disabled || busy ? 0.45 : 1 }}>
       {busy && actionKey && pending === actionKey ? '. . .' : label}
@@ -260,20 +251,25 @@ export function Casino({ whoami }: { whoami: string | null }) {
       <div className="grid-2col">
         {/* THE FELT */}
         <div style={{ position: 'relative', borderRadius: 22, overflow: 'hidden', background: 'linear-gradient(165deg,#31909B 0%,#1E5D68 55%,#174B55 100%)', border: '1px solid var(--border)', boxShadow: 'var(--shadow)', padding: '20px 22px 22px', display: 'flex', flexDirection: 'column', gap: 18, minHeight: 460 }}>
-          <div style={{ textAlign: 'center', fontSize: 10, letterSpacing: 2.5, fontWeight: 700, color: 'rgba(255,255,255,.5)' }}>{CASINO.feltCaption}</div>
+          <div style={{ textAlign: 'center', fontSize: 10, letterSpacing: 2.5, fontWeight: 700, color: 'rgba(255,255,255,.5)' }}>
+            {CASINO.feltCaption}{closed ? ` · ${CASINO.exhibitionCaption}` : ''}
+          </div>
 
-          {closed ? (
-            <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', gap: 10, color: '#fff' }}>
-              <div style={{ fontSize: 44 }}>⛔</div>
-              <div className="serif" style={{ fontSize: 34 }}>{CASINO.closedTitle}</div>
-              <div style={{ fontSize: 14, color: 'rgba(255,255,255,.75)', maxWidth: 380 }}>{CASINO.closedSub}</div>
-              {leader && leader.net > 0 && (
-                <div style={{ marginTop: 14, padding: '12px 20px', borderRadius: 14, background: 'rgba(0,0,0,.3)', fontSize: 15, fontWeight: 700 }}>
-                  {CASINO.winnerPrefix} {leader.name}, up {money(leader.net)}. {CASINO.winnerSuffix}
-                </div>
-              )}
-            </div>
-          ) : (
+          {/* game switcher: locked while either game is mid-action */}
+          <div style={{ display: 'flex', justifyContent: 'center', gap: 8 }}>
+            {([['bj', '🃏 blackjack'], ['wheel', '🎡 roulette']] as const).map(([key, label]) => (
+              <button key={key} onClick={() => setGame(key)} disabled={busy || wheelBusy} style={{ padding: '8px 16px', borderRadius: 999, border: game === key ? '2px solid #D6A94E' : '1px solid rgba(255,255,255,.35)', background: game === key ? 'rgba(0,0,0,.3)' : 'transparent', color: '#fff', fontWeight: 700, fontSize: 12.5, cursor: 'pointer', opacity: busy || wheelBusy ? 0.5 : 1 }}>
+                {label}
+              </button>
+            ))}
+          </div>
+
+          {/* the wheel stays MOUNTED while hidden so a mid-spin result is never lost */}
+          <div style={{ display: game === 'wheel' ? 'flex' : 'none', flexDirection: 'column', gap: 14 }}>
+            <RouletteTable who={who} bankroll={bankroll} initialHistory={wheelHistory} onResult={(r) => setData(r)} onBusyChange={setWheelBusy} />
+          </div>
+
+          {game === 'bj' ? (
             <>
               {/* dealer */}
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -354,7 +350,7 @@ export function Casino({ whoami }: { whoami: string | null }) {
                 {err && <div style={{ fontSize: 13, fontWeight: 600, color: '#FFD9CC' }}>{err}</div>}
               </div>
             </>
-          )}
+          ) : null}
 
           {/* result stamp */}
           {stamp && (
@@ -372,11 +368,17 @@ export function Casino({ whoami }: { whoami: string | null }) {
 
         {/* SIDE COLUMN */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14, minWidth: 0 }}>
+          {closed && data?.contest?.name && (
+            <div style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--c-gold-s)', border: '2px solid var(--c-gold)' }}>
+              <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>{CASINO.contestOverTitle}</div>
+              <div style={{ fontSize: 13, color: 'var(--ink2)', lineHeight: 1.55 }}>{CASINO.contestOverBody.replace('{name}', data.contest.name.toLowerCase())}</div>
+            </div>
+          )}
           <div style={{ padding: '16px 20px', borderRadius: 16, background: 'var(--c-gold-s)', border: '1px solid var(--border)' }}>
             <div style={{ fontWeight: 700, fontSize: 14, marginBottom: 4 }}>{CASINO.stakesTitle}</div>
             <div style={{ fontSize: 13.5, color: 'var(--ink2)', lineHeight: 1.55 }}>{CASINO.stakes}</div>
             <div style={{ fontSize: 12.5, fontWeight: 700, color: 'var(--c-gold)', marginTop: 8 }}>
-              {closed ? 'table closed.' : `${CASINO.closesPrefix} ${cd.days}d ${cd.hours}h ${cd.mins}m`}
+              {closed ? 'contest settled at landing. exhibition era.' : `${CASINO.closesPrefix} ${cd.days}d ${cd.hours}h ${cd.mins}m`}
             </div>
           </div>
 
