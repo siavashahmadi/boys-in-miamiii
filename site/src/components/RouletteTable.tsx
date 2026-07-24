@@ -125,12 +125,16 @@ export function RouletteTable({ who, bankroll, initialHistory, onResult, onBusyC
     const res = resRef.current;
     if (!res) return;
     const straightHit = res.net > 0 && Object.keys(lastBetsAtSpin.current ?? {}).some((id) => id === `n${res.pocket}`);
+    // full accounting in every sub line: pocket, staked, paid, net
+    const ledger = `${res.pocket} ${res.color} · staked ${money(res.staked)}, paid ${money(res.payout)}`;
     setStamp(
       res.net > 0
         ? straightHit
-          ? { label: ROULETTE.straightHit, color: 'var(--c-gold)', glow: 'rgba(214,169,78,.6)', burst: makeBurst(JACKPOT_BURST), sub: `${res.pocket} ${res.color}. +${money(res.net)}.` }
-          : { label: ROULETTE.winStamp, color: 'var(--c-mint)', glow: 'rgba(90,165,126,.5)', burst: makeBurst(GOOD_BURST, 12), sub: `${res.pocket} ${res.color}. +${money(res.net)}.` }
-        : { label: ROULETTE.loseStamp, color: 'var(--c-coral)', glow: 'rgba(227,140,116,.5)', burst: [], sub: `${res.pocket} ${res.color}. -${money(Math.abs(res.net))}.` }
+          ? { label: ROULETTE.straightHit, color: 'var(--c-gold)', glow: 'rgba(214,169,78,.6)', burst: makeBurst(JACKPOT_BURST), sub: `${ledger}. +${money(res.net)}.` }
+          : { label: ROULETTE.winStamp, color: 'var(--c-mint)', glow: 'rgba(90,165,126,.5)', burst: makeBurst(GOOD_BURST, 12), sub: `${ledger}. +${money(res.net)}.` }
+        : res.net === 0
+          ? { label: ROULETTE.pushStamp, color: 'var(--c-gold)', glow: 'rgba(214,169,78,.4)', burst: [], sub: `${ledger}. nothing moves.` }
+          : { label: ROULETTE.loseStamp, color: 'var(--c-coral)', glow: 'rgba(227,140,116,.5)', burst: [], sub: `${ledger}. -${money(Math.abs(res.net))}.` }
     );
     setHistory(res.history);
     onResult(res);

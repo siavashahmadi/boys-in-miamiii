@@ -437,6 +437,7 @@ export const ROULETTE = {
   historyTitle: 'LAST SPINS',
   straightHit: '35 TO 1.',
   winStamp: 'WIN.',
+  pushStamp: 'a wash.',
   loseStamp: 'the house thanks you.',
 };
 
