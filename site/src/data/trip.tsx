@@ -244,7 +244,8 @@ export const DAYS: Day[] = [
 ];
 
 // ---------- weather ----------
-export interface WxDay { day: string; date: string; icon: string; hi: string; lo: string; cond: string; rain: string }
+export interface WxHour { time: string; icon: string; feels: string; rain: string }
+export interface WxDay { day: string; date: string; icon: string; hi: string; lo: string; cond: string; rain: string; feels?: string; hours?: WxHour[] }
 export interface WxCity { key: string; label: string; accent: string; soft: string; lat: number; lon: number; fallbackNow: string; note: string; fallbackDays: WxDay[] }
 export const WEATHER_CITIES: WxCity[] = [
   {
@@ -272,6 +273,9 @@ export const WEATHER_CITIES: WxCity[] = [
 ];
 export const WEATHER_SUB = "it's july in south florida. sun, one violent 20-minute storm at 3pm, then sun again like nothing happened.";
 export const WEATHER_FALLBACK_NOTE = 'real forecast unlocks ~jul 10 when the trip enters the 16-day window. until then: educated guesses.';
+export const WEATHER_HOURLY_HINT = 'tap a day for the hour-by-hour';
+export const WEATHER_FEELS_NOTE = 'temps are feels-like. the humidity is priced in.';
+export const WEATHER_HOURLY_OFFLINE = "hourly needs the live feed. it's florida in july, assume soup with a 3pm storm.";
 export const PACKING = {
   title: '🧳 what to actually pack',
   body: 'SPF 50 minimum (it’s literally in the footer), one dry shirt per day because you WILL sweat through the first, a wife beater for kia, the soccer ball, sunglasses you can afford to lose at the casino, eye drops for four of us, a blanket for joe’s annual 10pm curtain call, and a lighter for tommy (manifesting).',

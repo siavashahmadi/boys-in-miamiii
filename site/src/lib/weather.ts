@@ -1,6 +1,6 @@
-import { WEATHER_CITIES, type WxCity, type WxDay } from '../data/trip';
+import { WEATHER_CITIES, type WxCity, type WxDay, type WxHour } from '../data/trip';
 
-export interface CityWx { key: string; now: string | null; days: WxDay[] | null }
+export interface CityWx { key: string; now: string | null; nowFeels: string | null; days: WxDay[] | null }
 
 const DAY_LABELS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 const TRIP_START = '2026-07-23';
@@ -18,22 +18,48 @@ function wmoToIconCond(code: number): { icon: string; cond: string } {
   return { icon: '🌤️', cond: 'florida stuff' };
 }
 
+// '2026-07-23T15:00' -> '3p'
+function hourLabel(iso: string): string {
+  const h = Number(iso.slice(11, 13));
+  if (h === 0) return '12a';
+  if (h < 12) return `${h}a`;
+  if (h === 12) return '12p';
+  return `${h - 12}p`;
+}
+
 async function fetchCity(c: WxCity): Promise<CityWx> {
-  const base = `https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&temperature_unit=fahrenheit&timezone=America%2FNew_York`;
   let now: string | null = null;
+  let nowFeels: string | null = null;
   let days: WxDay[] | null = null;
   try {
-    const r = await fetch(`${base}&current=temperature_2m`);
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${c.lat}&longitude=${c.lon}&temperature_unit=fahrenheit&timezone=America%2FNew_York`
+      + '&current=temperature_2m,apparent_temperature'
+      + '&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,apparent_temperature_max'
+      + '&hourly=weather_code,apparent_temperature,precipitation_probability'
+      + `&start_date=${TRIP_START}&end_date=${TRIP_END}`;
+    const r = await fetch(url);
     if (r.ok) {
       const j = await r.json();
       const t = j?.current?.temperature_2m;
       if (typeof t === 'number') now = `${Math.round(t)}°`;
-    }
-  } catch { /* fall through to fallback */ }
-  try {
-    const r = await fetch(`${base}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&start_date=${TRIP_START}&end_date=${TRIP_END}`);
-    if (r.ok) {
-      const j = await r.json();
+      const f = j?.current?.apparent_temperature;
+      if (typeof f === 'number') nowFeels = `${Math.round(f)}°`;
+
+      // hourly, grouped by calendar date ('YYYY-MM-DDTHH:00')
+      const hoursByDate: Record<string, WxHour[]> = {};
+      const h = j?.hourly;
+      if (h?.time?.length) {
+        h.time.forEach((iso: string, i: number) => {
+          const date = iso.slice(0, 10);
+          (hoursByDate[date] ??= []).push({
+            time: hourLabel(iso),
+            icon: wmoToIconCond(h.weather_code[i]).icon,
+            feels: typeof h.apparent_temperature[i] === 'number' ? `${Math.round(h.apparent_temperature[i])}°` : '?',
+            rain: `${h.precipitation_probability[i] ?? '?'}%`,
+          });
+        });
+      }
+
       const d = j?.daily;
       if (d?.time?.length) {
         days = d.time.map((iso: string, i: number) => {
@@ -47,12 +73,14 @@ async function fetchCity(c: WxCity): Promise<CityWx> {
             lo: `${Math.round(d.temperature_2m_min[i])}°`,
             cond,
             rain: `${d.precipitation_probability_max[i] ?? '?'}%`,
+            feels: typeof d.apparent_temperature_max?.[i] === 'number' ? `${Math.round(d.apparent_temperature_max[i])}°` : undefined,
+            hours: hoursByDate[iso],
           } as WxDay;
         });
       }
     }
-  } catch { /* trip dates outside the 16-day window, or offline */ }
-  return { key: c.key, now, days };
+  } catch { /* trip dates outside the 16-day window, or offline; fallback renders */ }
+  return { key: c.key, now, nowFeels, days };
 }
 
 export async function fetchWeather(): Promise<Record<string, CityWx>> {
