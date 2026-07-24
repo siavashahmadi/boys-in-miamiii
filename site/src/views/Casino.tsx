@@ -266,7 +266,7 @@ export function Casino({ whoami, wheelHistory }: { whoami: string | null; wheelH
 
           {/* the wheel stays MOUNTED while hidden so a mid-spin result is never lost */}
           <div style={{ display: game === 'wheel' ? 'flex' : 'none', flexDirection: 'column', gap: 14 }}>
-            <RouletteTable who={who} bankroll={bankroll} initialHistory={wheelHistory} onResult={(r) => setData(r)} onBusyChange={setWheelBusy} />
+            <RouletteTable who={who} bankroll={bankroll} initialHistory={wheelHistory} onResult={(r) => setData(r)} onBusyChange={setWheelBusy} onMarker={() => act('marker')} />
           </div>
 
           {game === 'bj' ? (

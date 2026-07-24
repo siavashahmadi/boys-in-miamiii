@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { BJ_MIN_BET } from '../../shared/blackjack';
 import { AMERICAN_ORDER, RED, STEP, colorOf, type Pocket } from '../../shared/roulette';
-import { ROULETTE } from '../data/trip';
+import { CASINO, ROULETTE } from '../data/trip';
 import { rouletteSpin, type RouletteBetInput, type RouletteResponse } from '../lib/api';
 import { money } from '../lib/settle';
 import { CHIPS, chipLabel } from '../lib/chips';
@@ -46,12 +46,13 @@ function betsToApi(bets: BetMap): RouletteBetInput[] {
 
 const totalOf = (bets: BetMap) => Object.values(bets).reduce((s, v) => s + v, 0);
 
-export function RouletteTable({ who, bankroll, initialHistory, onResult, onBusyChange }: {
+export function RouletteTable({ who, bankroll, initialHistory, onResult, onBusyChange, onMarker }: {
   who: string;
   bankroll: number;
   initialHistory?: string[];
   onResult: (r: RouletteResponse) => void;
   onBusyChange?: (busy: boolean) => void;
+  onMarker: () => Promise<void>;
 }) {
   const [chip, setChip] = useState(25);
   const [bets, setBets] = useState<BetMap>({});
@@ -299,6 +300,14 @@ export function RouletteTable({ who, bankroll, initialHistory, onResult, onBusyC
         <button onClick={rebet} disabled={busy || !lastBets} style={{ border: 'none', background: 'transparent', color: 'rgba(255,255,255,.7)', fontSize: 13, cursor: 'pointer', textDecoration: 'underline' }}>{ROULETTE.rebetBtn}</button>
       </div>
       <div style={{ fontSize: 11, color: 'rgba(255,255,255,.55)' }}>{ROULETTE.minNote} {ROULETTE.zerosNote} bankroll: {money(bankroll)}</div>
+      {bankroll < BJ_MIN_BET && !busy && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <span style={{ fontSize: 13, color: 'rgba(255,255,255,.8)' }}>{CASINO.brokeLine}</span>
+          <button onClick={() => { setErr(null); onMarker(); }} className="felt-btn" style={{ background: 'var(--c-pink)', cursor: 'pointer', alignSelf: 'flex-start' }}>
+            {CASINO.markerBtn}
+          </button>
+        </div>
+      )}
       {err && <div style={{ fontSize: 13, fontWeight: 600, color: '#FFD9CC' }}>{err}</div>}
 
       {/* result stamp */}
