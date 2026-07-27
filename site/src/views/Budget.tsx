@@ -1,19 +1,39 @@
-import { useState } from 'react';
-import type { Expense } from '../../shared/seeds';
-import { BUDGET_EMPTY, BUDGET_SUB, SQUAD, squadMeta, TOM_CALLOUT } from '../data/trip';
+import { useEffect, useRef, useState } from 'react';
+import type { Expense, Payment } from '../../shared/seeds';
+import { BUDGET_EMPTY, BUDGET_SUB, RECEIPTS, SQUAD, squadMeta, TOM_CALLOUT } from '../data/trip';
 import { computeBudget, money } from '../lib/settle';
 
-export function Budget({ expenses, whoami, onAdd, onDelete }: {
+export function Budget({ expenses, payments, whoami, onAdd, onDelete, onRecordPayment, onUndoPayment }: {
   expenses: Expense[];
+  payments: Payment[];
   whoami: string | null;
   onAdd: (e: Omit<Expense, 'id'>) => void;
   onDelete: (id: string) => void;
+  onRecordPayment: (p: { from: string; to: string; amount: number; by: string }) => void;
+  onUndoPayment: (id: string) => void;
 }) {
   const names = SQUAD.map((s) => s.name);
   const [show, setShow] = useState(false);
   const [form, setForm] = useState({ desc: '', amount: '', payer: whoami ?? 'Sia', participants: names });
+  const [armed, setArmed] = useState<string | null>(null); // settle line awaiting the "sure?" tap
+  const armTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => { if (armTimer.current) clearTimeout(armTimer.current); }, []);
 
-  const bud = computeBudget(names, expenses);
+  const markPaid = (t: { from: string; to: string; amount: number }) => {
+    if (!whoami) return;
+    const key = `${t.from}>${t.to}`;
+    if (armed !== key) {
+      setArmed(key);
+      if (armTimer.current) clearTimeout(armTimer.current);
+      armTimer.current = setTimeout(() => setArmed(null), 3000);
+      return;
+    }
+    if (armTimer.current) clearTimeout(armTimer.current);
+    setArmed(null);
+    onRecordPayment({ from: t.from, to: t.to, amount: t.amount, by: whoami });
+  };
+
+  const bud = computeBudget(names, expenses, payments);
   const perPerson = bud.total / names.length;
   let topSpender = 'nobody', topAmt = -1;
   names.forEach((n) => { if ((bud.paid[n] || 0) > topAmt) { topAmt = bud.paid[n] || 0; topSpender = n; } });
@@ -139,20 +159,60 @@ export function Budget({ expenses, whoami, onAdd, onDelete }: {
             <div className="list-head">💸 SETTLE UP</div>
             {bud.settle.length ? (
               <div style={{ padding: '6px 0' }}>
-                {bud.settle.map((t, i) => (
-                  <div key={i} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 18px', fontSize: 14 }}>
-                    <span style={{ fontWeight: 600, color: squadMeta[t.from]?.color ?? 'var(--ink)' }}>{t.from}</span>
-                    <span style={{ color: 'var(--ink3)' }}>pays</span>
-                    <span style={{ fontWeight: 600, color: squadMeta[t.to]?.color ?? 'var(--ink)' }}>{t.to}</span>
-                    <span style={{ flex: 1 }} />
-                    <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{money(t.amount)}</span>
-                  </div>
-                ))}
+                {bud.settle.map((t) => {
+                  const key = `${t.from}>${t.to}`;
+                  const mine = whoami === t.from || whoami === t.to;
+                  const isArmed = armed === key;
+                  return (
+                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 18px', fontSize: 14 }}>
+                      <span style={{ fontWeight: 600, color: squadMeta[t.from]?.color ?? 'var(--ink)' }}>{t.from}</span>
+                      <span style={{ color: 'var(--ink3)' }}>pays</span>
+                      <span style={{ fontWeight: 600, color: squadMeta[t.to]?.color ?? 'var(--ink)' }}>{t.to}</span>
+                      <span style={{ flex: 1 }} />
+                      <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{money(t.amount)}</span>
+                      {mine && (
+                        <button
+                          onClick={() => markPaid(t)}
+                          style={{
+                            padding: '5px 12px', borderRadius: 999, cursor: 'pointer', fontSize: 12, fontWeight: 700,
+                            border: `1px solid ${isArmed ? 'var(--c-coral)' : 'var(--c-mint)'}`,
+                            background: isArmed ? 'var(--c-coral)' : 'transparent',
+                            color: isArmed ? '#fff' : 'var(--c-mint)',
+                          }}
+                        >
+                          {isArmed ? RECEIPTS.confirmBtn : RECEIPTS.paidBtn}
+                        </button>
+                      )}
+                    </div>
+                  );
+                })}
+                <div style={{ padding: '8px 18px 10px', fontSize: 11.5, color: 'var(--ink3)', fontStyle: 'italic' }}>{RECEIPTS.settleHint}</div>
               </div>
             ) : (
-              <div style={{ padding: '22px 18px', textAlign: 'center', fontSize: 14, color: 'var(--ink2)' }}>🎉 all square. nobody owes anybody. miracle.</div>
+              <div style={{ padding: '22px 18px', textAlign: 'center', fontSize: 14, color: 'var(--ink2)' }}>
+                {payments.length ? RECEIPTS.allSettled : '🎉 all square. nobody owes anybody. miracle.'}
+              </div>
             )}
           </div>
+
+          {payments.length > 0 && (
+            <div style={{ borderRadius: 20, background: 'var(--surface)', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: 'var(--shadowSm)' }}>
+              <div className="list-head">{RECEIPTS.title}</div>
+              {payments.map((p) => (
+                <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 18px', fontSize: 13.5, borderBottom: '1px solid var(--border)' }}>
+                  <span style={{ fontWeight: 600, color: squadMeta[p.from]?.color ?? 'var(--ink)' }}>{p.from}</span>
+                  <span style={{ color: 'var(--ink3)' }}>paid</span>
+                  <span style={{ fontWeight: 600, color: squadMeta[p.to]?.color ?? 'var(--ink)' }}>{p.to}</span>
+                  <span style={{ fontWeight: 700 }}>{money(p.amount)}</span>
+                  <span style={{ flex: 1 }} />
+                  <span style={{ fontSize: 10.5, color: 'var(--ink3)' }}>
+                    {RECEIPTS.loggedBy} {p.by}, {new Date(p.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }).toLowerCase()}
+                  </span>
+                  <button onClick={() => onUndoPayment(p.id)} style={{ border: 'none', background: 'transparent', color: 'var(--ink3)', fontSize: 12, cursor: 'pointer' }}>{RECEIPTS.undoBtn}</button>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div style={{ borderRadius: 20, background: 'var(--surface)', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: 'var(--shadowSm)' }}>

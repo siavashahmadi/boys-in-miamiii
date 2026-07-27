@@ -67,6 +67,16 @@ export interface Expense {
   participants: string[];
 }
 
+// A settled debt: `from` handed `to` real money outside the app.
+export interface Payment {
+  id: string;
+  from: string;
+  to: string;
+  amount: number;
+  by: string;
+  at: number;
+}
+
 export const SQUAD_NAMES = ['Sia', 'Pete', 'Joe', 'Lucas', 'Kia', 'Tom'] as const;
 export type SquadName = (typeof SQUAD_NAMES)[number];
 

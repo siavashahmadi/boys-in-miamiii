@@ -91,6 +91,19 @@ export default function App() {
     try { setState(await api.deleteExpense(id)); } catch { setState(await api.fetchState()); }
   };
 
+  const recordPayment = async (p: { from: string; to: string; amount: number; by: string }) => {
+    try {
+      setState(await api.recordPayment(p));
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "that didn't send. try again.");
+      setState(await api.fetchState());
+    }
+  };
+
+  const undoPayment = async (id: string) => {
+    try { setState(await api.undoPayment(id)); } catch { setState(await api.fetchState()); }
+  };
+
   const declarePour = async (text: string) => {
     if (!who) return;
     try { setState(await api.savePour(who, text)); } catch { alert("that didn't send. try again."); }
@@ -142,7 +155,7 @@ export default function App() {
         {view === 'map' && <MapView pitches={pitches} whoami={who} onVote={vote} onAdd={addPitch} initialSelected={pinId} />}
         {view === 'casino' && <Casino whoami={who} wheelHistory={state?.wheelHistory} />}
         {view === 'weather' && <Weather weather={weather} />}
-        {view === 'budget' && <Budget expenses={expenses} whoami={who} onAdd={addExpense} onDelete={removeExpense} />}
+        {view === 'budget' && <Budget expenses={expenses} payments={state?.payments ?? []} whoami={who} onAdd={addExpense} onDelete={removeExpense} onRecordPayment={recordPayment} onUndoPayment={undoPayment} />}
       </main>
       <Footer />
       {/* gated on identity: otherwise the picker (same z-index, later in DOM)

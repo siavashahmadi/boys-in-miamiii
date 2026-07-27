@@ -1,6 +1,6 @@
 // Minimal Upstash Redis REST client + shared state helpers for the api routes.
 // Env vars are injected by the Vercel + Upstash marketplace integration.
-import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_MANIFEST, SEED_POURS, SQUAD_NAMES, type Expense, type ItinDayOverride, type ManifestItem, type Pitch, type Pour, type Tonight } from '../shared/seeds.js';
+import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_MANIFEST, SEED_POURS, SQUAD_NAMES, type Expense, type ItinDayOverride, type ManifestItem, type Payment, type Pitch, type Pour, type Tonight } from '../shared/seeds.js';
 import { BJ_CUTOFF_MS, freshRecord, netOf, type BoardRow, type PlayerRecord } from '../shared/blackjack.js';
 
 const URL_ = process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || '';
@@ -54,7 +54,7 @@ export async function casJson(key: string, prevRaw: string | null, value: unknow
   return r === 1;
 }
 
-export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino: BoardRow[]; pours: Pour[]; days: ItinDayOverride[] | null; manifest: ManifestItem[]; tonight: Tonight | null; wheelHistory: string[] }
+export interface SharedState { pitches: Pitch[]; expenses: Expense[]; payments: Payment[]; casino: BoardRow[]; pours: Pour[]; days: ItinDayOverride[] | null; manifest: ManifestItem[]; tonight: Tonight | null; wheelHistory: string[] }
 
 export async function loadBoard(): Promise<BoardRow[]> {
   const raws = (await redis(['MGET', ...SQUAD_NAMES.map((n) => `bj:${n}`)])) as (string | null)[];
@@ -100,7 +100,7 @@ export async function ensureContestFinal(now: number): Promise<ContestFinal | nu
 }
 
 export async function loadState(): Promise<SharedState> {
-  const [pitches, expenses, casino, pours, days, manifest, tonight, wheelHistory] = await Promise.all([
+  const [pitches, expenses, casino, pours, days, manifest, tonight, wheelHistory, payments] = await Promise.all([
     getJson<Pitch[]>('pitches'),
     getJson<Expense[]>('expenses'),
     loadBoard(),
@@ -109,10 +109,12 @@ export async function loadState(): Promise<SharedState> {
     getJson<ManifestItem[]>('manifest'),
     getJson<Tonight>('tonight'),
     getJson<string[]>('wheel_history'),
+    getJson<Payment[]>('payments'),
   ]);
   return {
     pitches: pitches ?? ALL_SEED_PITCHES,
     expenses: expenses ?? SEED_EXPENSES,
+    payments: payments ?? [],
     casino,
     pours: pours ?? SEED_POURS,
     days,
@@ -128,6 +130,10 @@ export async function savePitches(pitches: Pitch[]): Promise<void> {
 
 export async function saveExpenses(expenses: Expense[]): Promise<void> {
   await setJson('expenses', expenses);
+}
+
+export async function savePayments(payments: Payment[]): Promise<void> {
+  await setJson('payments', payments);
 }
 
 // Tiny helpers for the route handlers (kept dependency-free).

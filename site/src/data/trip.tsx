@@ -288,6 +288,15 @@ export const TOM_CALLOUT = {
   body: "the flights were dirt cheap, so naturally we called tom the market maker. then tom bought his ticket first, locked his low price, and the second sia hit purchase jetblue jacked it +$124. everybody after tom paid up. classic pump and dump. tom felt bad and put $80 in the pool for a group dinner or jet skis. we're holding him to it.",
 };
 export const BUDGET_EMPTY = "nothing logged yet. the airbnb deposit is coming for one of us. probably pete.";
+export const RECEIPTS = {
+  title: '🧾 RECEIPTS',
+  paidBtn: '✓ paid',
+  confirmBtn: 'sure?',
+  undoBtn: 'undo',
+  loggedBy: 'logged by',
+  allSettled: '🕊️ every debt paid. the group chat is at peace.',
+  settleHint: 'tap ✓ paid when the money actually moves. venmo first, tap second.',
+};
 
 // ---------- home page cards ----------
 export interface InfoCard { emoji: string; iconBg: string; title: string; body: ReactNode }

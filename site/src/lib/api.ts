@@ -1,11 +1,11 @@
-import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_MANIFEST, SEED_POURS, type CatKey, type Expense, type ItinDayOverride, type ManifestItem, type Pitch, type Pour, type Tonight } from '../../shared/seeds';
+import { ALL_SEED_PITCHES, SEED_EXPENSES, SEED_MANIFEST, SEED_POURS, type CatKey, type Expense, type ItinDayOverride, type ManifestItem, type Payment, type Pitch, type Pour, type Tonight } from '../../shared/seeds';
 import type { BoardRow, SanitizedPlayer } from '../../shared/blackjack';
 
 // Client for the shared state. Talks to /api/* (Vercel functions + Upstash).
 // If the API is unreachable (plain `npm run dev`), falls back to localStorage
 // so the whole app still works, just per-browser.
 
-export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[]; days?: ItinDayOverride[] | null; manifest?: ManifestItem[]; tonight?: Tonight | null; wheelHistory?: string[] }
+export interface SharedState { pitches: Pitch[]; expenses: Expense[]; casino?: BoardRow[]; pours?: Pour[]; days?: ItinDayOverride[] | null; manifest?: ManifestItem[]; tonight?: Tonight | null; wheelHistory?: string[]; payments?: Payment[] }
 
 export interface BJResponse {
   me: SanitizedPlayer;
@@ -67,7 +67,12 @@ async function post(path: string, body: unknown): Promise<SharedState | null> {
     body: JSON.stringify(body),
   });
   if (r.status === 401) throw new ApiAuthError();
-  if (!r.ok) throw new Error(`api ${path} ${r.status}`);
+  if (!r.ok) {
+    // surface the server's table-talk message when it has one
+    let msg = `api ${path} ${r.status}`;
+    try { msg = ((await r.json()) as { error?: string }).error || msg; } catch { /* keep generic */ }
+    throw new Error(msg);
+  }
   return (await r.json()) as SharedState;
 }
 
@@ -147,6 +152,26 @@ export async function deleteExpense(id: string): Promise<SharedState> {
     return s;
   }
   return (await post('/api/expense', { action: 'delete', id }))!;
+}
+
+export async function recordPayment(p: { from: string; to: string; amount: number; by: string }): Promise<SharedState> {
+  if (localMode) {
+    const s = loadLocal();
+    s.payments = [{ ...p, id: 'p' + Date.now(), at: Date.now() }, ...(s.payments ?? [])];
+    saveLocal(s);
+    return s;
+  }
+  return (await post('/api/payment', { action: 'record', ...p }))!;
+}
+
+export async function undoPayment(id: string): Promise<SharedState> {
+  if (localMode) {
+    const s = loadLocal();
+    s.payments = (s.payments ?? []).filter((p) => p.id !== id);
+    saveLocal(s);
+    return s;
+  }
+  return (await post('/api/payment', { action: 'undo', id }))!;
 }
 
 export type ManifestAction =
