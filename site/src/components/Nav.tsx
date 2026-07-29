@@ -2,12 +2,12 @@ import type { View } from '../App';
 
 const TABS: { k: View; label: string; emoji: string }[] = [
   { k: 'home', label: 'Home', emoji: '🏠' },
+  { k: 'budget', label: 'Budget', emoji: '💸' },
   { k: 'stay', label: 'Stay', emoji: '🏝️' },
   { k: 'plan', label: 'Plan', emoji: '🗓️' },
   { k: 'map', label: 'Map', emoji: '📍' },
   { k: 'casino', label: 'Casino', emoji: '🃏' },
   { k: 'weather', label: 'Weather', emoji: '🌤️' },
-  { k: 'budget', label: 'Budget', emoji: '💸' },
 ];
 
 export function Nav({ view, setView, theme, toggleTheme }: {
