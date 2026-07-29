@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { POURERS, type Expense, type ManifestItem, type Pitch, type Pour, type Tonight } from '../../shared/seeds';
+import { POURERS, type Expense, type ManifestItem, type Payment, type Pitch, type Pour, type Tonight } from '../../shared/seeds';
 import type { BoardRow } from '../../shared/blackjack';
-import { BOOTH, CATS, DAYS, HOUSE, INFO_CARDS, PHASE, POUR, SQUAD, squadMeta, TONIGHT, TRIP_META, type Day } from '../data/trip';
+import { BOOTH, CATS, DAYS, HOUSE, INFO_CARDS, PHASE, POUR, SETTLE_CTA, SQUAD, squadMeta, TONIGHT, TRIP_META, type Day } from '../data/trip';
 import { replayCeremony } from '../components/Ceremony';
 import { useCountdown, useElapsed } from '../lib/useCountdown';
 import { computeBudget, money } from '../lib/settle';
@@ -11,9 +11,10 @@ import { Ticker } from '../components/Ticker';
 import type { CityWx } from '../lib/weather';
 import { WEATHER_CITIES } from '../data/trip';
 
-export function Home({ pitches, expenses, weather, casino, pours, whoami, onDeclarePour, days = DAYS, manifest, tonight }: {
+export function Home({ pitches, expenses, payments = [], weather, casino, pours, whoami, onDeclarePour, days = DAYS, manifest, tonight }: {
   pitches: Pitch[];
   expenses: Expense[];
+  payments?: Payment[];
   weather: Record<string, CityWx> | null;
   casino?: BoardRow[];
   pours?: Pour[];
@@ -46,8 +47,12 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
   const elapsed = useElapsed(TRIP_START_MS);
   const todayStr = etDateStr();
   const dayIdx = tripDayIndex();
-  const bud = computeBudget(SQUAD.map((s) => s.name), expenses);
+  const bud = computeBudget(SQUAD.map((s) => s.name), expenses, payments);
   const perPerson = bud.total / SQUAD.length;
+  const myLines = whoami ? bud.settle.filter((t) => t.from === whoami) : [];
+  const owedLines = whoami ? bud.settle.filter((t) => t.to === whoami) : [];
+  const iOwe = myLines.reduce((s, t) => s + t.amount, 0);
+  const owedMe = owedLines.reduce((s, t) => s + t.amount, 0);
   const visible = pitches.filter((p) => p.status !== 'denied');
   const boardTop = visible.slice(0, 5);
   const budgetTop = [...expenses].sort((a, b) => b.amount - a.amount).slice(0, 3);
@@ -105,6 +110,51 @@ export function Home({ pitches, expenses, weather, casino, pours, whoami, onDecl
             </div>
           )}
         </div>
+
+        {phase === 'after' && (() => {
+          const owing = iOwe > 0.01;
+          const collecting = !owing && owedMe > 0.01;
+          const accent = owing ? 'var(--c-coral)' : collecting ? 'var(--c-mint)' : 'var(--c-gold)';
+          const recipients = myLines.map((t) => (
+            <b key={t.to} style={{ color: squadMeta[t.to]?.color ?? 'var(--ink)' }}>{t.to} ({money(t.amount)})</b>
+          ));
+          return (
+            <div className="card" style={{ marginTop: 20, padding: 'clamp(20px, 4vw, 30px)', borderLeft: `5px solid ${accent}`, display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <div className="eyebrow" style={{ color: accent }}>{SETTLE_CTA.eyebrow}</div>
+              {!whoami ? (
+                <div style={{ fontSize: 15, color: 'var(--ink2)' }}>{SETTLE_CTA.anon}</div>
+              ) : owing ? (
+                <>
+                  <div className="serif" style={{ fontSize: 'clamp(40px, 9vw, 60px)', lineHeight: 1, color: 'var(--c-coral)' }}>{money(iOwe)}</div>
+                  <div style={{ fontSize: 14.5, color: 'var(--ink2)', lineHeight: 1.6 }}>
+                    {SETTLE_CTA.owePrefix}{' '}
+                    {recipients.map((r, i) => (
+                      <span key={i}>{i > 0 && (i === recipients.length - 1 ? ' and ' : ', ')}{r}</span>
+                    ))}
+                    . {SETTLE_CTA.oweSuffix}
+                  </div>
+                </>
+              ) : collecting ? (
+                <>
+                  <div className="serif" style={{ fontSize: 'clamp(40px, 9vw, 60px)', lineHeight: 1, color: 'var(--c-mint)' }}>{money(owedMe)}</div>
+                  <div style={{ fontSize: 14.5, color: 'var(--ink2)' }}>{SETTLE_CTA.owedLine}</div>
+                </>
+              ) : (
+                <div style={{ fontSize: 16, fontWeight: 600, color: 'var(--ink)' }}>{SETTLE_CTA.squareLine}</div>
+              )}
+              <a
+                href="#budget"
+                style={{
+                  display: 'block', textAlign: 'center', marginTop: 12, padding: '18px 32px', borderRadius: 18,
+                  fontSize: 'clamp(18px, 4vw, 22px)', fontWeight: 800, textDecoration: 'none', color: '#fff',
+                  background: owing ? 'var(--c-coral)' : 'var(--c-gold)', boxShadow: 'var(--shadowSm)', letterSpacing: '.5px',
+                }}
+              >
+                {collecting ? SETTLE_CTA.collectBtn : SETTLE_CTA.settleBtn}
+              </a>
+            </div>
+          );
+        })()}
 
         {phase === 'trip' && (
           <div className="card" style={{ padding: 20, marginTop: 20, borderLeft: `4px solid ${days[dayIdx].accent}` }}>

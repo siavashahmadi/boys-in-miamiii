@@ -148,7 +148,7 @@ export default function App() {
     <div style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
       <Nav view={view} setView={setView} theme={theme} toggleTheme={toggleTheme} />
       <main style={{ flex: 1 }}>
-        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} weather={weather} casino={state?.casino} pours={state?.pours} whoami={who} onDeclarePour={declarePour} days={days} manifest={state?.manifest} tonight={state?.tonight} />}
+        {view === 'home' && !admin && <Home pitches={pitches} expenses={expenses} payments={state?.payments ?? []} weather={weather} casino={state?.casino} pours={state?.pours} whoami={who} onDeclarePour={declarePour} days={days} manifest={state?.manifest} tonight={state?.tonight} />}
         {view === 'booth' && <Booth />}
         {view === 'stay' && <Stay manifest={state?.manifest} whoami={who} onManifest={manifestAct} />}
         {view === 'plan' && <Plan days={days} />}

@@ -288,6 +288,16 @@ export const TOM_CALLOUT = {
   body: "the flights were dirt cheap, so naturally we called tom the market maker. then tom bought his ticket first, locked his low price, and the second sia hit purchase jetblue jacked it +$124. everybody after tom paid up. classic pump and dump. tom felt bad and put $80 in the pool for a group dinner or jet skis. we're holding him to it.",
 };
 export const BUDGET_EMPTY = "nothing logged yet. the airbnb deposit is coming for one of us. probably pete.";
+export const SETTLE_CTA = {
+  eyebrow: 'THE TAB COMES DUE',
+  owePrefix: 'this is what you owe. send it to',
+  oweSuffix: 'venmo has no feelings.',
+  owedLine: 'coming your way. start collecting, gently at first.',
+  squareLine: "you're all square. watch the others suffer.",
+  anon: 'the tab is open and it knows your name.',
+  settleBtn: '💸 settle up →',
+  collectBtn: '🧾 see who owes you →',
+};
 export const RECEIPTS = {
   title: '🧾 RECEIPTS',
   paidBtn: '✓ paid',
