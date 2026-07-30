@@ -56,9 +56,51 @@ export function computeBudget(squadNames: string[], expenses: Expense[], payment
   return { total, paid, share, net, settle };
 }
 
-// What the matcher says `from` currently owes `to` (0 if that line doesn't exist).
-export function pairDebt(summary: BudgetSummary, from: string, to: string): number {
-  const line = summary.settle.find((t) => t.from === from && t.to === to);
+export interface PairLine { from: string; to: string; amount: number }
+
+// The traceable ledger: one line per pair of people, netted within the pair
+// only. Unlike the greedy matcher above, nothing routes through third parties,
+// so every amount maps to actual shared expenses. Rounding happens once at the
+// end (rounding inside the loop is how the greedy plan strands cents).
+export function computePairwise(squadNames: string[], expenses: Expense[], payments: Payment[] = []): PairLine[] {
+  const bal: Record<string, Record<string, number>> = {};
+  const owe = (a: string, b: string, amt: number) => {
+    if (!bal[a]) bal[a] = {};
+    bal[a][b] = (bal[a][b] ?? 0) + amt;
+  };
+
+  expenses.forEach((e) => {
+    const parts = e.participants && e.participants.length ? e.participants : squadNames;
+    const per = e.amount / parts.length;
+    parts.forEach((p) => { if (p !== e.payer) owe(p, e.payer, per); });
+  });
+  payments.forEach((p) => owe(p.from, p.to, -p.amount));
+
+  const people = new Set<string>();
+  Object.keys(bal).forEach((a) => { people.add(a); Object.keys(bal[a]).forEach((b) => people.add(b)); });
+  const list = [...people].sort();
+
+  const lines: PairLine[] = [];
+  for (let i = 0; i < list.length; i++) {
+    for (let j = i + 1; j < list.length; j++) {
+      const a = list[i], b = list[j];
+      const raw = (bal[a]?.[b] ?? 0) - (bal[b]?.[a] ?? 0);
+      // dead zone: paying a displayed (rounded) line leaves up to a half-cent
+      // of float residue; without this, that residue can round back up into a
+      // phantom or even reversed one-cent line
+      if (Math.abs(raw) < 0.0051) continue;
+      const net = Math.round(raw * 100) / 100;
+      if (net >= 0.01) lines.push({ from: a, to: b, amount: net });
+      else if (net <= -0.01) lines.push({ from: b, to: a, amount: -net });
+    }
+  }
+  lines.sort((x, y) => y.amount - x.amount);
+  return lines;
+}
+
+// What `from` currently owes `to` on the pairwise ledger (0 if nothing).
+export function pairOwed(lines: PairLine[], from: string, to: string): number {
+  const line = lines.find((t) => t.from === from && t.to === to);
   return line ? line.amount : 0;
 }
 

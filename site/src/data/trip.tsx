@@ -293,6 +293,7 @@ export const SETTLE_CTA = {
   owePrefix: 'this is what you owe. send it to',
   oweSuffix: 'venmo has no feelings.',
   owedLine: 'coming your way. start collecting, gently at first.',
+  alsoOwed: 'is coming back to you from the others.',
   squareLine: "you're all square. watch the others suffer.",
   anon: 'the tab is open and it knows your name.',
   settleBtn: '💸 settle up →',
@@ -305,7 +306,11 @@ export const RECEIPTS = {
   undoBtn: 'undo',
   loggedBy: 'logged by',
   allSettled: '🕊️ every debt paid. the group chat is at peace.',
-  settleHint: 'tap ✓ paid when the money actually moves. venmo first, tap second.',
+  settleHint: 'every line is a real debt from real expenses. no funny math. venmo first, tap ✓ paid second.',
+  youSend: 'YOU SEND',
+  youReceive: 'YOU RECEIVE',
+  restOfLedger: 'THE REST OF THE LEDGER',
+  yourClear: 'nothing to send. you are free.',
 };
 
 // ---------- home page cards ----------

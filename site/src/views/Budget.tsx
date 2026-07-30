@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Expense, Payment } from '../../shared/seeds';
 import { BUDGET_EMPTY, BUDGET_SUB, RECEIPTS, SQUAD, squadMeta, TOM_CALLOUT } from '../data/trip';
-import { computeBudget, money } from '../lib/settle';
+import { computeBudget, computePairwise, money, type PairLine } from '../lib/settle';
 
 export function Budget({ expenses, payments, whoami, onAdd, onDelete, onRecordPayment, onUndoPayment }: {
   expenses: Expense[];
@@ -19,9 +19,11 @@ export function Budget({ expenses, payments, whoami, onAdd, onDelete, onRecordPa
   const armTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => () => { if (armTimer.current) clearTimeout(armTimer.current); }, []);
 
-  const markPaid = (t: { from: string; to: string; amount: number }) => {
+  const markPaid = (t: PairLine) => {
     if (!whoami) return;
-    const key = `${t.from}>${t.to}`;
+    // the amount is part of the arm key: if the ledger refreshes and the line's
+    // amount changes mid-confirm, the pill disarms instead of recording the new number
+    const key = `${t.from}>${t.to}@${t.amount}`;
     if (armed !== key) {
       setArmed(key);
       if (armTimer.current) clearTimeout(armTimer.current);
@@ -34,6 +36,12 @@ export function Budget({ expenses, payments, whoami, onAdd, onDelete, onRecordPa
   };
 
   const bud = computeBudget(names, expenses, payments);
+  const lines = computePairwise(names, expenses, payments);
+  const sendLines = whoami ? lines.filter((t) => t.from === whoami) : [];
+  const receiveLines = whoami ? lines.filter((t) => t.to === whoami) : [];
+  const restLines = whoami ? lines.filter((t) => t.from !== whoami && t.to !== whoami) : lines;
+  const outSum = sendLines.reduce((s, t) => s + t.amount, 0);
+  const inSum = receiveLines.reduce((s, t) => s + t.amount, 0);
   const perPerson = bud.total / names.length;
   let topSpender = 'nobody', topAmt = -1;
   names.forEach((n) => { if ((bud.paid[n] || 0) > topAmt) { topAmt = bud.paid[n] || 0; topSpender = n; } });
@@ -137,6 +145,8 @@ export function Budget({ expenses, payments, whoami, onAdd, onDelete, onRecordPa
             {SQUAD.map((s) => {
               const net = Math.round((bud.net[s.name] || 0) * 100) / 100;
               const owed = net > 0.01, owes = net < -0.01;
+              // net can be square while pair debts are still open (owes A, owed by B)
+              const inMotion = !owed && !owes && lines.some((t) => t.from === s.name || t.to === s.name);
               return (
                 <div key={s.name} style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '13px 18px', borderBottom: '1px solid var(--border)' }}>
                   <div style={{ width: 34, height: 34, borderRadius: '50%', flex: '0 0 auto', background: s.color, color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 14 }}>{s.name[0]}</div>
@@ -148,7 +158,7 @@ export function Budget({ expenses, payments, whoami, onAdd, onDelete, onRecordPa
                     <div style={{ fontWeight: 700, fontSize: 15, color: owed ? 'var(--c-mint)' : owes ? 'var(--c-coral)' : 'var(--ink3)' }}>
                       {(owed ? '+' : owes ? '−' : '') + money(net)}
                     </div>
-                    <div style={{ fontSize: 10.5, color: 'var(--ink3)' }}>{owed ? 'is owed' : owes ? 'owes' : 'all square'}</div>
+                    <div style={{ fontSize: 10.5, color: 'var(--ink3)' }}>{owed ? 'is owed' : owes ? 'owes' : inMotion ? 'square overall, debts moving' : 'all square'}</div>
                   </div>
                 </div>
               );
@@ -157,35 +167,56 @@ export function Budget({ expenses, payments, whoami, onAdd, onDelete, onRecordPa
 
           <div style={{ borderRadius: 20, background: 'var(--surface)', border: '1px solid var(--border)', overflow: 'hidden', boxShadow: 'var(--shadowSm)' }}>
             <div className="list-head">💸 SETTLE UP</div>
-            {bud.settle.length ? (
+            {lines.length ? (
               <div style={{ padding: '6px 0' }}>
-                {bud.settle.map((t) => {
-                  const key = `${t.from}>${t.to}`;
-                  const mine = whoami === t.from || whoami === t.to;
-                  const isArmed = armed === key;
-                  return (
-                    <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '11px 18px', fontSize: 14 }}>
-                      <span style={{ fontWeight: 600, color: squadMeta[t.from]?.color ?? 'var(--ink)' }}>{t.from}</span>
-                      <span style={{ color: 'var(--ink3)' }}>pays</span>
-                      <span style={{ fontWeight: 600, color: squadMeta[t.to]?.color ?? 'var(--ink)' }}>{t.to}</span>
-                      <span style={{ flex: 1 }} />
-                      <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{money(t.amount)}</span>
-                      {mine && (
-                        <button
-                          onClick={() => markPaid(t)}
-                          style={{
-                            padding: '5px 12px', borderRadius: 999, cursor: 'pointer', fontSize: 12, fontWeight: 700,
-                            border: `1px solid ${isArmed ? 'var(--c-coral)' : 'var(--c-mint)'}`,
-                            background: isArmed ? 'var(--c-coral)' : 'transparent',
-                            color: isArmed ? '#fff' : 'var(--c-mint)',
-                          }}
-                        >
-                          {isArmed ? RECEIPTS.confirmBtn : RECEIPTS.paidBtn}
-                        </button>
+                {whoami && (
+                  <div style={{ padding: '8px 18px 4px', fontSize: 12.5, color: 'var(--ink2)' }}>
+                    {outSum > 0.005
+                      ? <>you send <b style={{ color: 'var(--c-coral)' }}>{money(outSum)}</b> across {sendLines.length} {sendLines.length === 1 ? 'person' : 'people'}{inSum > 0.005 && <> · <b style={{ color: 'var(--c-mint)' }}>{money(inSum)}</b> coming back</>}</>
+                      : inSum > 0.005
+                        ? <><b style={{ color: 'var(--c-mint)' }}>{money(inSum)}</b> coming back to you. {RECEIPTS.yourClear}</>
+                        : RECEIPTS.yourClear}
+                  </div>
+                )}
+                {([
+                  [RECEIPTS.youSend, sendLines, true],
+                  [RECEIPTS.youReceive, receiveLines, true],
+                  [whoami ? RECEIPTS.restOfLedger : null, restLines, false],
+                ] as [string | null, PairLine[], boolean][]).map(([header, group, withBtn]) => (
+                  group.length === 0 ? null : (
+                    <div key={header ?? 'all'}>
+                      {header && (
+                        <div style={{ padding: '10px 18px 2px', fontSize: 10.5, fontWeight: 700, letterSpacing: '1.2px', color: withBtn ? 'var(--ink2)' : 'var(--ink3)' }}>{header}</div>
                       )}
+                      {group.map((t) => {
+                        const key = `${t.from}>${t.to}@${t.amount}`;
+                        const isArmed = armed === key;
+                        return (
+                          <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 18px', fontSize: 14, opacity: withBtn || !whoami ? 1 : 0.55 }}>
+                            <span style={{ fontWeight: 600, color: squadMeta[t.from]?.color ?? 'var(--ink)' }}>{t.from}</span>
+                            <span style={{ color: 'var(--ink3)' }}>pays</span>
+                            <span style={{ fontWeight: 600, color: squadMeta[t.to]?.color ?? 'var(--ink)' }}>{t.to}</span>
+                            <span style={{ flex: 1 }} />
+                            <span style={{ fontWeight: 700, color: 'var(--ink)' }}>{money(t.amount)}</span>
+                            {withBtn && (
+                              <button
+                                onClick={() => markPaid(t)}
+                                style={{
+                                  padding: '5px 12px', borderRadius: 999, cursor: 'pointer', fontSize: 12, fontWeight: 700,
+                                  border: `1px solid ${isArmed ? 'var(--c-coral)' : 'var(--c-mint)'}`,
+                                  background: isArmed ? 'var(--c-coral)' : 'transparent',
+                                  color: isArmed ? '#fff' : 'var(--c-mint)',
+                                }}
+                              >
+                                {isArmed ? RECEIPTS.confirmBtn : RECEIPTS.paidBtn}
+                              </button>
+                            )}
+                          </div>
+                        );
+                      })}
                     </div>
-                  );
-                })}
+                  )
+                ))}
                 <div style={{ padding: '8px 18px 10px', fontSize: 11.5, color: 'var(--ink3)', fontStyle: 'italic' }}>{RECEIPTS.settleHint}</div>
               </div>
             ) : (

@@ -4,7 +4,7 @@ import type { BoardRow } from '../../shared/blackjack';
 import { BOOTH, CATS, DAYS, HOUSE, INFO_CARDS, PHASE, POUR, SETTLE_CTA, SQUAD, squadMeta, TONIGHT, TRIP_META, type Day } from '../data/trip';
 import { replayCeremony } from '../components/Ceremony';
 import { useCountdown, useElapsed } from '../lib/useCountdown';
-import { computeBudget, money } from '../lib/settle';
+import { computeBudget, computePairwise, money } from '../lib/settle';
 import { etDateStr, horoscopeFor } from '../lib/horoscope';
 import { TRIP_START_MS, tripDayIndex, tripPhase } from '../lib/tripPhase';
 import { Ticker } from '../components/Ticker';
@@ -49,8 +49,9 @@ export function Home({ pitches, expenses, payments = [], weather, casino, pours,
   const dayIdx = tripDayIndex();
   const bud = computeBudget(SQUAD.map((s) => s.name), expenses, payments);
   const perPerson = bud.total / SQUAD.length;
-  const myLines = whoami ? bud.settle.filter((t) => t.from === whoami) : [];
-  const owedLines = whoami ? bud.settle.filter((t) => t.to === whoami) : [];
+  const pairLines = computePairwise(SQUAD.map((s) => s.name), expenses, payments);
+  const myLines = whoami ? pairLines.filter((t) => t.from === whoami) : [];
+  const owedLines = whoami ? pairLines.filter((t) => t.to === whoami) : [];
   const iOwe = myLines.reduce((s, t) => s + t.amount, 0);
   const owedMe = owedLines.reduce((s, t) => s + t.amount, 0);
   const visible = pitches.filter((p) => p.status !== 'denied');
@@ -112,8 +113,10 @@ export function Home({ pitches, expenses, payments = [], weather, casino, pours,
         </div>
 
         {phase === 'after' && (() => {
-          const owing = iOwe > 0.01;
-          const collecting = !owing && owedMe > 0.01;
+          // line-count checks so the banner always agrees with the Budget ledger,
+          // even at one-cent boundaries
+          const owing = myLines.length > 0;
+          const collecting = !owing && owedLines.length > 0;
           const accent = owing ? 'var(--c-coral)' : collecting ? 'var(--c-mint)' : 'var(--c-gold)';
           const recipients = myLines.map((t) => (
             <b key={t.to} style={{ color: squadMeta[t.to]?.color ?? 'var(--ink)' }}>{t.to} ({money(t.amount)})</b>
@@ -132,6 +135,7 @@ export function Home({ pitches, expenses, payments = [], weather, casino, pours,
                       <span key={i}>{i > 0 && (i === recipients.length - 1 ? ' and ' : ', ')}{r}</span>
                     ))}
                     . {SETTLE_CTA.oweSuffix}
+                    {owedMe > 0.005 && <> <b style={{ color: 'var(--c-mint)' }}>{money(owedMe)}</b> {SETTLE_CTA.alsoOwed}</>}
                   </div>
                 </>
               ) : collecting ? (
